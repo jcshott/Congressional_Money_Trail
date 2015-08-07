@@ -74,7 +74,7 @@ class Contributors(db.Model):
 	name = db.Column(db.String(100))
 	employer = db.Column(db.String(50), nullable=True)
 	industry_id = db.Column(db.String(50), db.ForeignKey('industry.industry_id'), nullable=True)
-
+	
 	cont_type = db.relationship('Type_contrib', backref=db.backref('contributors'))
 	industry = db.relationship('Industry', backref=db.backref('contributors'))
 
@@ -85,7 +85,7 @@ class Contributors(db.Model):
 
 class Type_contrib(db.Model):
 	"""Details on what contributor types there are. I for Indivdual; C for PACs 
-	leaving room for more than just indiv. and pac in the future
+	leaving room for more than just indiv. and pac in the futures
 	"""
 
 	__tablename__='contributor_types'

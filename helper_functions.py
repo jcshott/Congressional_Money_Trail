@@ -11,7 +11,8 @@ def get_first_term_year(leg_id, apikey):
 	response = (requests.get(endpoint, params=query_params)).json()
 
 	if response['results'] == []:
-		return 2015
+		return 0	
+		#if brand new member, set to zerso so when calculate time in office, we get the current year
 	
 	else:	
 		first_term_year = int(response['results'][0]['terms'][0]['start'][:4]) #get just the year of the first term in office from the gnarly dict returned
