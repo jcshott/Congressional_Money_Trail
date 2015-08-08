@@ -17,7 +17,37 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 # This is horrible. Fix this so that, instead, it raises an error.
 app.jinja_env.undefined = StrictUndefined
 
+@app.route('/')
+def index():
+	"""Homepage"""
 
+	return render_template("homepage.html")
+
+@app.route('/login')
+def log_in():
+	"""add to session if they log-in via FB or Twitter allows to share via social media"""
+
+@app.route('/welcome')
+def welcome():
+	"""page where user selects Member of Congress to map"""
+	#code here!
+
+@app.route('/visual')
+def show_visual():
+	"""render the map of contributions to selected Member of Congress"""
+
+	#code here!	
+
+##may not need - will know after understand D3 better
+@app.route('/PAC_visual')
+def show_pac_info():
+	"""Show the contributors to selected PAC"""
+
+
+@app.route('/image_share')
+def share_image():
+	"""send captured image to social media sites"""
+	#code - should send captured image to a new page with options listed to share
 
 
 

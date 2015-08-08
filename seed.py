@@ -6,23 +6,26 @@ from helper_functions import get_first_term_year
 from codecs import encode
 from string import capwords
 
+#keep track of current legislators so 
+current_legislator_dict = {}
+
 def load_legislators():
     """Take information from Sunlight Fdn csv file; calls to Sunlight API for the first election"""
     #for first year elected. I have a function to do the API call for me, where do I define function?
     #need to figure out how to not hardcode my API key!  Look at Twitter bot
 
-    file_open = open("./src/other_data/legislators.csv")
+    file_open = open("./src/legislators.csv")
    
     for index, line in enumerate(file_open): #enumerate gives tuple of index of line & the line info. use to keep track of where we are & commmit every so often
         if index > 0: #skip first line that is a header
             legislators = line.rstrip().split(",")
             #checks if member is currently in office, 0 means no.
             
-            if int(legislators[9]) == 0:
-                continue
+            if int(legislators[9]) == 1:
             
-            else:
                 crp_id = legislators[20]
+                current_legislator_dict.setdefault(crp_id, True) #fill current members dict. so can only pull those values in our cont. table
+
                 bioguide_id = legislators[16]
                 first = legislators[1].decode("UTF-8")
                 last = legislators[3].decode("UTF-8")
@@ -66,12 +69,13 @@ def load_legislators():
                 if index % 100 == 0:
                     print "number of rows processed for db=", index
                     db.session.commit()
+
     db.session.commit()
 
 def load_industry_types():
     """input industry codes with their associated name into database"""
 
-    file_open = open("./src/other_data/catcodes.csv")
+    file_open = open("./src/catcodes.csv")
     
     for index, line in enumerate(file_open):
         if index > 0: #skip first line that is a header
@@ -96,20 +100,18 @@ def load_contribution_data():
     cont_id_dict = {} #to track contributor ids so don't try to add to db more than once
     type_id_dict = {} #same for contributor type codes
 
-    file_list = ["./src/test_data.csv", "./src/test_data_2.csv"] #make sure we read most recent file first so we get the most recent info on the contributors (like employer) since they are only added once.
+    file_list = ["./src/contributions.fec.2014.csv", "./src/contributions.fec.2012.csv", "./src/contributions.fec.2010.csv", "./src/contributions.fec.2008.csv", "./src/contributions.fec.2006.csv", "./src/contributions.fec.2004.csv", "./src/contributions.fec.2002.csv", "./src/contributions.fec.2000.csv", "./src/contributions.fec.1998.csv",] #make sure we read most recent file first so we get the most recent info on the contributors (like employer) since they are only added once.
 
     for item in file_list:
-        file_open = open(item)
+        file_open = open(item, 'rU')
 
         #because the names have a comma, my indices are getting thrown off. use csv reader.  
         contributions = csv.reader(file_open, skipinitialspace=True)
-        
+
         #csv reader parses each line into a list. so need to index into list
         for index, line in enumerate(contributions):
             if index > 0:
-                
-                print line
-                
+                             
                 #get info on contributor, incl checking our dict. before adding in case we already have their info & type.
                 contrib_id = line[11]
 
@@ -164,11 +166,13 @@ def load_contribution_data():
                 if line[28] == "P":
                     # transact_id = line[4] #set up with autoincrement/int. need to change table if want to use FEC info
                     leg_id = line[26]
-                    amount = int(float(line[8])) #was getting value error when string had .00
-                                        
-                    temp_contrib_leg_obj = Contrib_leg(contrib_id=contrib_id, leg_id=leg_id, amount=amount)
-                                     
-                    db.session.add(temp_contrib_leg_obj)
+                    print leg_id
+                    print current_legislator_dict
+
+                    if leg_id in current_legislator_dict:
+                        amount = int(float(line[8])) #was getting value error when string had .00       
+                        temp_contrib_leg_obj = Contrib_leg(contrib_id=contrib_id, leg_id=leg_id, amount=amount)                
+                        db.session.add(temp_contrib_leg_obj)
                 
                 elif line[28] == "C":
                     # transact_id = line[4] add back if I want to link to FEC info, didn't have in orig table
@@ -193,3 +197,7 @@ def load_contribution_data():
 
 if __name__ == "__main__":
     connect_to_db(app)
+
+    load_legislators()
+    load_industry_types()
+    load_contribution_data()
