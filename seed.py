@@ -6,7 +6,7 @@ from helper_functions import get_first_term_year
 from codecs import encode
 from string import capwords
 
-#keep track of current legislators so 
+#keep track of current legislators so can weed out cont. data we won't use
 current_legislator_dict = {}
 
 def load_legislators():
@@ -67,7 +67,7 @@ def load_legislators():
                 
                 #commit every 100 records, but ensures our index (where we are in file) stays the same so we don't start over!
                 if index % 100 == 0:
-                    print "number of rows processed for db=", index
+                    print "number of legislative rows processed for db=", index
                     db.session.commit()
 
     db.session.commit()
@@ -99,8 +99,9 @@ def load_contribution_data():
 
     cont_id_dict = {} #to track contributor ids so don't try to add to db more than once
     type_id_dict = {} #same for contributor type codes
-
-    file_list = ["./src/contributions.fec.2014.csv", "./src/contributions.fec.2012.csv", "./src/contributions.fec.2010.csv", "./src/contributions.fec.2008.csv", "./src/contributions.fec.2006.csv", "./src/contributions.fec.2004.csv", "./src/contributions.fec.2002.csv", "./src/contributions.fec.2000.csv", "./src/contributions.fec.1998.csv",] #make sure we read most recent file first so we get the most recent info on the contributors (like employer) since they are only added once.
+    
+    #make sure we read most recent file first so we get the most recent info on the contributors (like employer) since they are only added once.
+    file_list = ["./src/contributions.fec.2014.csv", "./src/contributions.fec.2012.csv", "./src/contributions.fec.2010.csv", "./src/contributions.fec.2008.csv", "./src/contributions.fec.2006.csv", "./src/contributions.fec.2004.csv", "./src/contributions.fec.2002.csv", "./src/contributions.fec.2000.csv", "./src/contributions.fec.1998.csv", "./src/contributions.fec.1996.csv", "./src/contributions.fec.1994.csv", "./src/contributions.fec.1992.csv", "./src/contributions.fec.1990.csv"] 
 
     for item in file_list:
         file_open = open(item, 'rU')
@@ -188,9 +189,9 @@ def load_contribution_data():
                     db.session.add(temp_contrib_pac_obj)
 
 
-                if index % 5 == 0: #change to 100 for real import
+                if index % 100 == 0:
                     db.session.commit()
-                    print "number of rows processed for db=", index
+                    print "number of contribution rows processed for db=", index
 
     
         db.session.commit()
