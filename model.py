@@ -17,21 +17,21 @@ class Legislator(db.Model):
 	__tablename__='legislators'
 
 	leg_id = db.Column(db.String(50), primary_key=True) #unique ID given by Ctr for Responsive Politics
-	bioguide_id = db.Column(db.String(8)) #need for getting picture
-	first = db.Column(db.String(30))
-	last = db.Column(db.String(50))
+	bioguide_id = db.Column(db.String(8), nullable=False) #need for getting picture
+	first = db.Column(db.String(30), nullable=False)
+	last = db.Column(db.String(50), nullable=False)
 	nickname = db.Column(db.String(20), nullable=True)
 	suffix = db.Column(db.String(5), nullable=True)
-	title = db.Column(db.String(3))
-	state = db.Column(db.String(2))
+	title = db.Column(db.String(3), nullable=False)
+	state = db.Column(db.String(2), nullable=False)
 	district = db.Column(db.Integer, nullable=True) #skip if a senator
 	sen_rank = db.Column(db.String(12), nullable=True) #Sr. or Jr. status of Senator
-	party = db.Column(db.String(1))
-	chamber = db.Column(db.String(10))
+	party = db.Column(db.String(1), nullable=False)
+	chamber = db.Column(db.String(10), nullable=False)
 	twitter_id = db.Column(db.String(20), nullable=True)
 	facebook_id = db.Column(db.String(50), nullable=True)
 	pict_link = db.Column(db.String(100)) #get from webaddress
-	off_website = db.Column(db.String(100)) 
+	off_website = db.Column(db.String(100), nullable=True) 
 	open_cong_url = db.Column(db.String(100), nullable=True)
 	first_elected = db.Column(db.Integer) #get from SLF call
 
@@ -47,9 +47,10 @@ class Contrib_leg(db.Model):
 	__tablename__ = 'contrib_legislators'
 
 	transact_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-	contrib_id = db.Column(db.String(50), db.ForeignKey('contributors.contrib_id')) #ID of who made contribution
-	leg_id = db.Column(db.String(50), db.ForeignKey('legislators.leg_id')) #ID of who gets contribution
-	amount = db.Column(db.Integer)
+	contrib_id = db.Column(db.String(50), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
+	leg_id = db.Column(db.String(50), db.ForeignKey('legislators.leg_id'), nullable=False) #ID of who gets contribution
+	amount = db.Column(db.Integer, nullable=False)
+	cycle = db.Column(db.Integer)
 	
 	contributor = db.relationship("Contributors", backref=db.backref('contrib_legislators', order_by=amount))
 	legislator = db.relationship("Legislator", backref=db.backref('contrib_legislators', order_by=amount))
@@ -70,8 +71,9 @@ class Contributors(db.Model):
 	__tablename__='contributors'
 
 	contrib_id = db.Column(db.String(50), primary_key=True)
-	contrib_type = db.Column(db.String(2), db.ForeignKey('contributor_types.contrib_type'))
-	name = db.Column(db.String(100))
+	contrib_type = db.Column(db.String(2), db.ForeignKey('contributor_types.contrib_type'), nullable=False)
+	name = db.Column(db.String(100), nullable=False)
+	contrib_state = db.Column(db.String(20), nullable=True)
 	employer = db.Column(db.String(50), nullable=True)
 	industry_id = db.Column(db.String(50), db.ForeignKey('industry.industry_id'), nullable=True)
 	
@@ -106,10 +108,11 @@ class Contrib_pac(db.Model):
 	__tablename__='contrib_pacs'
 
 	transact_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-	contrib_id = db.Column(db.String(50), db.ForeignKey('contributors.contrib_id')) #ID of who made contribution
+	contrib_id = db.Column(db.String(50), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
 	recpt_id = db.Column(db.String(50)) #ID of who gets contribution
-	amount = db.Column(db.Integer)
+	amount = db.Column(db.Integer, nullable=False)
 	rec_party = db.Column(db.String(3), nullable=True)
+	cycle = db.Column(db.Integer)
 
 	contributor = db.relationship("Contributors", backref=db.backref("contrib_pacs", order_by=amount))
 	

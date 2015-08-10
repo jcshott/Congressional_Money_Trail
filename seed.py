@@ -112,89 +112,90 @@ def load_contribution_data():
         #csv reader parses each line into a list. so need to index into list
         for index, line in enumerate(contributions):
             if index > 0:
-                             
-                #get info on contributor, incl checking our dict. before adding in case we already have their info & type.
-                contrib_id = line[11]
+                #through some data exploration. realized that John McCain's Presidential donations were in the data, not what I am evaluating so need to take out.
+                if line[38] != "federal:president":               
+                    #get info on contributor, incl checking our dict. before adding in case we already have their info & type.
+                    contrib_id = line[11]
 
-                #the names of the contributors are in all caps in file so this puts it into normal case. has no effect if already ok.
-                name = capwords(line[10])
-                contrib_type = line[12]
+                    #the names of the contributors are in all caps in file so this puts it into normal case. has no effect if already ok.
+                    name = capwords(line[10])
+                    contrib_type = line[12]
+                    contrib_state = line[18]
+                    cycle = int(line[2])
 
-                if line[14]:
-                    if line[14] == "NONE":
+                    if line[14]:
+                        if line[14] == "NONE":
+                            employer = None
+                        else:
+                            employer = capwords(line[14])
+                    else:
                         employer = None
+
+                    if line[20]:
+                        if line[20] == "NONE":
+                                industry_id = None
+                        else:
+                            industry_id = line[20]
                     else:
-                        employer = capwords(line[14])
-                else:
-                    employer = None
+                        industry_id = None
 
-                if line[20]:
-                    if line[20] == "NONE":
-                            industry_id = None
-                    else:
-                        industry_id = line[20]
-                else:
-                    industry_id = None
+                    #need to weed out multiples of the contributor going into table - otherwise fails PK constraint on contributor_id.
+                    #add the id as a key and set initial value to 1 but increment value every time you have someone with that id.
+                    cont_id_dict[contrib_id] = cont_id_dict.get(contrib_id, 0) + 1
 
-                #need to weed out multiples of the contributor going into table - otherwise fails PK constraint on contributor_id.
-                #add the id as a key and set initial value to 1 but increment value every time you have someone with that id.
-                cont_id_dict[contrib_id] = cont_id_dict.get(contrib_id, 0) + 1
+                    #allow for the person to be added to Contributor table first time encountered but not after.
+                    if cont_id_dict.get(contrib_id) == 1:
+                        temp_contrib_obj = Contributors(contrib_id=contrib_id, contrib_type=contrib_type, name=name, employer=employer, industry_id=industry_id, contrib_state=contrib_state)
+                        db.session.add(temp_contrib_obj)
 
-                #allow for the person to be added to Contributor table first time encountered but not after.
-                if cont_id_dict.get(contrib_id) == 1:
-                    temp_contrib_obj = Contributors(contrib_id=contrib_id, contrib_type=contrib_type, name=name, employer=employer, industry_id=industry_id)
-                    db.session.add(temp_contrib_obj)
+                                        
+                    #weed out multiples of the type-id trying to be committed to table because id is PK
+                    type_id_dict.setdefault(contrib_type, None)
 
-                                    
-                #weed out multiples of the type-id trying to be committed to table because id is PK
-                type_id_dict.setdefault(contrib_type, None)
+                    type_id_dict["I"] = "Individual"
+                    type_id_dict["C"] = "PAC"
 
-                type_id_dict["I"] = "Individual"
-                type_id_dict["C"] = "PAC"
-
-                type_label = type_id_dict.get(contrib_type, None)
-                
-                #need to add these once and only once.
-                type_id_dict["counter-indiv"] = type_id_dict.get("counter-indiv", 0) + 1
-                type_id_dict["counter-pac"] = type_id_dict.get('counter-pac', 0) + 1
-
-                if cont_id_dict.get("counter-indiv") == 1 or type_id_dict.get("counter-pac") == 1:
-                    temp_type_obj = Type_contrib(contrib_type=contrib_type, type_label=type_label)
-                    db.session.add(temp_type_obj)
-
-
-                #if to a politician, send info to politician table. else, send to pac cont. table
-                if line[28] == "P":
-                    # transact_id = line[4] #set up with autoincrement/int. need to change table if want to use FEC info
-                    leg_id = line[26]
-                    print leg_id
-                    print current_legislator_dict
-
-                    if leg_id in current_legislator_dict:
-                        amount = int(float(line[8])) #was getting value error when string had .00       
-                        temp_contrib_leg_obj = Contrib_leg(contrib_id=contrib_id, leg_id=leg_id, amount=amount)                
-                        db.session.add(temp_contrib_leg_obj)
-                
-                elif line[28] == "C":
-                    # transact_id = line[4] add back if I want to link to FEC info, didn't have in orig table
-                    recpt_id = line[26]
-                    amount = int(float(line[8]))
-
-                    if line[27]:
-                        recpt_party = line[27]
-                    else:
-                        recpt_party = None
+                    type_label = type_id_dict.get(contrib_type, None)
                     
-                    temp_contrib_pac_obj = Contrib_pac(contrib_id=contrib_id, recpt_id=recpt_id, amount=amount, rec_party=recpt_party)
-                    db.session.add(temp_contrib_pac_obj)
+                    #need to add these once and only once.
+                    type_id_dict["counter-indiv"] = type_id_dict.get("counter-indiv", 0) + 1
+                    type_id_dict["counter-pac"] = type_id_dict.get('counter-pac', 0) + 1
+
+                    if cont_id_dict.get("counter-indiv") == 1 or type_id_dict.get("counter-pac") == 1:
+                        temp_type_obj = Type_contrib(contrib_type=contrib_type, type_label=type_label)
+                        db.session.add(temp_type_obj)
 
 
-                if index % 100 == 0:
-                    db.session.commit()
-                    print "number of contribution rows processed for db=", index
+                    #if to a politician, send info to politician table. else, send to pac cont. table
+                    if line[28] == "P":
+                        # transact_id = line[4] #set up with autoincrement/int. need to change table if want to use FEC info
+                        leg_id = line[26]
+                        
+                        if leg_id in current_legislator_dict:
+                            amount = int(float(line[8])) #was getting value error when string had .00       
+                            temp_contrib_leg_obj = Contrib_leg(contrib_id=contrib_id, leg_id=leg_id, amount=amount, cycle=cycle)                
+                            db.session.add(temp_contrib_leg_obj)
+                    
+                    elif line[28] == "C":
+                        # transact_id = line[4] add back if I want to link to FEC info, didn't have in orig table
+                        recpt_id = line[26]
+                        amount = int(float(line[8]))
+
+                        if line[27]:
+                            recpt_party = line[27]
+                        else:
+                            recpt_party = None
+                        
+                        temp_contrib_pac_obj = Contrib_pac(contrib_id=contrib_id, recpt_id=recpt_id, amount=amount, rec_party=recpt_party, cycle=cycle)
+                        db.session.add(temp_contrib_pac_obj)
+
+
+                    if index % 100 == 0:
+                        db.session.commit()
+                        print "number of contribution rows processed for db=", index
 
     
-        db.session.commit()
+            db.session.commit()
 
 if __name__ == "__main__":
     connect_to_db(app)

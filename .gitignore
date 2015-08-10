@@ -4,3 +4,4 @@ env/
 src/
 models/
 *.pyc
+.ipynb_checkpoints/

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<form action="/trail_map">
+  <label> Pick a state:</label>
+    <select name="state"></select>
+
+    {% for state in states %}
+      <option value={{ "state" }}>{{ state }}</option>
+    {% endfor %}  
+</form>
+
+{% endblock %}

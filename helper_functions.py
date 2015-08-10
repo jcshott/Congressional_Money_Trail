@@ -12,11 +12,8 @@ def get_first_term_year(leg_id, apikey):
 
 	if response['results'] == []:
 		return 0	
-		#if brand new member, set to zerso so when calculate time in office, we get the current year
+		#if brand new member, set to zero so when calculate time in office, we get the current year
 	
 	else:	
 		first_term_year = int(response['results'][0]['terms'][0]['start'][:4]) #get just the year of the first term in office from the gnarly dict returned
 		return first_term_year
-
-# api=os.environ['Sunlight_API_Key']
-# get_first_term_year("N00007335", api)

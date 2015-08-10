@@ -31,10 +31,12 @@ def log_in():
 def welcome():
 	"""page where user selects Member of Congress to map"""
 	#code here!
+	#states = [Alabama, Montana, California, District of Columbia]
+	return render_template("welcome.html", states=states)
 
-@app.route('/visual')
-def show_visual():
-	"""render the map of contributions to selected Member of Congress"""
+@app.route('/trail_map')
+def show_trail_map():
+	"""render the D3 map of contributions to selected Member of Congress"""
 
 	#code here!	
 
