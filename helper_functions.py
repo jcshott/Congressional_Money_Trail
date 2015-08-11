@@ -17,3 +17,9 @@ def get_first_term_year(leg_id, apikey):
 	else:	
 		first_term_year = int(response['results'][0]['terms'][0]['start'][:4]) #get just the year of the first term in office from the gnarly dict returned
 		return first_term_year
+
+def ordered_tuples(dictionary):
+        orig_tuples = dictionary.iteritems()
+        ordered_tuples = sorted(orig_tuples, key=lambda dictionary: dictionary[1])
+        
+        return ordered_tuples

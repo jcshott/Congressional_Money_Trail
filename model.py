@@ -40,6 +40,28 @@ class Legislator(db.Model):
 
 		return "<Legislator mem_id=%s: first=%s last=%s, state=%s>" % (self.leg_id, self.first, self.last, self.state)
 
+	def serialize(self):
+		"""function so I can change the returned object from a query into a JSON object to show in my DOM"""
+
+		return {
+		    'leg_id': self.leg_id,
+		    'first': self.first,
+		    'last': self.last,
+		    'nickname': self.nickname,
+		    'suffix': self.suffix,
+		    'title': self.title,
+		    'state': self.state,
+		    'district': self.district,
+		    'sen_rank': self.sen_rank,
+		    'party': self.party,
+		    'chamber': self.chamber,
+		    'twitter_id': self.twitter_id,
+		    'facebook_id': self.facebook_id,
+		    'pict_link': self.pict_link,
+		    'off_website': self.off_website,
+		    'open_cong_url': self.open_cong_url,
+		    'first_elected': self.first_elected
+		    } 
 
 class Contrib_leg(db.Model):
 	"""data on contributions to Members of Congress"""
