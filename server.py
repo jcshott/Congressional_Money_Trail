@@ -1,7 +1,7 @@
 ## Lets make a web app! ##
 from jinja2 import StrictUndefined
 
-from flask import Flask, render_template, request, redirect, flash, session, jsonify, g
+from flask import Flask, render_template, request, redirect, flash, session, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 
 from helper_functions import ordered_tuples
@@ -84,20 +84,22 @@ def show_legislators():
 @app.route('/trail_map', methods=["GET"])
 def show_trail_map():
 	"""render the D3 map of contributions to selected Member of Congress"""
-	g.member_choice_id = request.args.get("member")
+	member_choice_id = request.args.get("member")
 
+	session["member_choice_id"] = member_choice_id
 
 	return render_template("trail_map.html")
 
 
-@app.route('/map_info', methods=["GET"])
+@app.route('/map_info.json', methods=["GET"])
 def get_tree_data():
 	#use for ajax request to do d3 magic. first, get the data just to appear on page.
 	# if request.method == "POST":
 
 	#sum of contributions from individuals to selected legislator
+	member_choice_id = session.get("member_choice_id")
 	
-	print "member_id", g.member_choice_id
+	print "member_id", member_choice_id
 
 	QUERY = """
         SELECT sum(amount)
@@ -135,9 +137,9 @@ def get_tree_data():
 
 	if member_obj.chamber == "House":
 		if member_obj.nickname:
-			member = "%s. %s %s (%s - %s%d)" % (member_obj.title, member_obj.nickname, member_obj.last, member_obj.party, member_obj.state, member_obj.district)
+			member = "%s. %s %s (%s - %s %d)" % (member_obj.title, member_obj.nickname, member_obj.last, member_obj.party, member_obj.state, member_obj.district)
 		else:
-			member = "%s. %s %s (%s - %s%d)" % (member_obj.title, member_obj.first, member_obj.last, member_obj.party, member_obj.state, member_obj.district)
+			member = "%s. %s %s (%s - %s %d)" % (member_obj.title, member_obj.first, member_obj.last, member_obj.party, member_obj.state, member_obj.district)
 
 	sum_i_contributions["name"] = indiv_contributions
 	sum_p_contributions["name"] = pac_contributions
