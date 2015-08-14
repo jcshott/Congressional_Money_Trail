@@ -84,18 +84,6 @@ class Contrib_leg(db.Model):
 	def __repr__(self):
 		return "<Contributor ID=%s, Reciever ID=%s, Amount=%s>" % (self.contrib_id, self.mem_id, self.amount)
 
-	# @classmethod
-	# def get_sum_indiv_contributions(cls, member_id):
-	# 	"""Get sum of individual donations to a selected Member of Congress"""
-
-	# 	#from SQLAlchemy docs = .scalar() returns the first thing in the list returned - in this instance, the sum of contributions.
-	# 	return indiv_contributions = db.session.query(func.sum(Contrib_leg.amount)).join(Contributors).filter(Contrib_leg.leg_id == member_id, Contributors.contrib_type == "I").scalar()
-
-	# @classmethod
-	# def get_sum_pac_contributions(cls, member_id):
-	# 	"""Get sum of PAC donations to a selected Member of Congress"""
-
-	# 	return indiv_contributions = db.session.query(func.sum(Contrib_leg.amount)).join(Contributors).filter(Contrib_leg.leg_id == member_id, Contributors.contrib_type == "C").scalar()
 
 class Contributors(db.Model):
 	"""Details on contributing entities

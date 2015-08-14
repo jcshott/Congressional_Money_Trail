@@ -29,7 +29,7 @@ def index():
 	indiv_to_mem_dict = {}
 	pac_to_mem_dict = {}
 
-	#sum of contributions from individuals to selected legislator
+	### Get ID and amount donated to Member of Congress for Indiv. & PACs. will use to calculate other info needed
 	QUERY = """
         SELECT contrib_id, amount
         FROM contrib_legislators JOIN contributors USING (contrib_id)
@@ -38,13 +38,7 @@ def index():
 	db_cursor.execute(QUERY, ("N00030780",))
 
 	indiv_contributions = db_cursor.fetchall()
-	indiv_sum = 0.0
-
-	for tup in indiv_contributions:
-		indiv_sum += float(tup[1])
-		indiv_to_mem_dict[tup[0]] = indiv_to_mem_dict.get(tup[0], 0) + tup[1]
-
-
+	#PAC info gathering
 	QUERY = """
         SELECT contrib_id, amount
         FROM contrib_legislators JOIN contributors USING (contrib_id)
@@ -53,6 +47,14 @@ def index():
 	db_cursor.execute(QUERY, ("N00030780",))
 
 	pac_contributions = db_cursor.fetchall()
+	
+	## populate indiv. & PAC dictionaries with key = contributor ID, value = total given to member 
+	indiv_sum = 0.0
+
+	for tup in indiv_contributions:
+		indiv_sum += float(tup[1])
+		indiv_to_mem_dict[tup[0]] = indiv_to_mem_dict.get(tup[0], 0) + tup[1]
+	
 	pac_sum = 0.0
 
 	for tup in pac_contributions:
@@ -62,13 +64,34 @@ def index():
 	## sort dictionaries to get top contributors
 	sorted_dict_pac = sorted(pac_to_mem_dict.items(), key=operator.itemgetter(1), reverse=True)
 	sorted_dict_indiv = sorted(indiv_to_mem_dict.items(), key=operator.itemgetter(1), reverse=True)
+	
+	#### Get totals for indiv contributors who give >= $2,000 in one contribution and small contributors (<$2,000)
+	sum_large_contrib = 0.0
+	sum_small_contrib = 0.0
 
-	print "top PAC", sorted_dict_pac[:10]
-	print "top Indiv", sorted_dict_indiv[:10]
-	print "PAC_sum: ", pac_sum
-	print "INdiv_sum: ", indiv_sum
+	for tup in indiv_contributions:
+		if float(tup[1]) >= 2000.00:
+			sum_large_contrib += float(tup[1])
+		else:
+			sum_small_contrib += float(tup[1])
+
+	#will have to query for names of contributors so put those names in a list (will be orderd by who gives most)
+	top_ten_indiv_names = []
+	top_ten_pac_names = []
+
+	for tup in sorted_dict_indiv[:10]:
+		contrib_name = Contributors.query.get(tup[0]).name
+		top_ten_indiv_names.append(contrib_name)
+
+	for tup in sorted_dict_pac[:10]:
+		contrib_name = Contributors.query.get(tup[0]).name
+		top_ten_pac_names.append(contrib_name)
+
+	
+	
 
 	return render_template("homepage.html")
+
 
 @app.route('/login')
 def log_in():
