@@ -1,14 +1,11 @@
 ## Lets make a web app! ##
 from jinja2 import StrictUndefined
-
 from flask import Flask, render_template, request, redirect, flash, session, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
-
-from helper_functions import ordered_tuples
-
+from helper_functions import ordered_tuples, create_contribution_dict
 from model import connect_to_db, db, Legislator, Contrib_leg, Contributors, Type_contrib, Contrib_pac
-
 import sqlite3
+import operator
 
 app = Flask(__name__)
 
@@ -26,10 +23,50 @@ app.jinja_env.undefined = StrictUndefined
 
 @app.route('/')
 def index():
-	"""Homepage"""
-##### TODO: Test this when db finishes seeding - find Kristen if there's a problem or see StOv. link ##########
+	"""Homepage  CORY GARDNER - test N00030780"""
+
+	## use dictionaries to store how much each indiv person/pac gives to the member then can sort and get top contributors
+	indiv_to_mem_dict = {}
+	pac_to_mem_dict = {}
+
+	#sum of contributions from individuals to selected legislator
+	QUERY = """
+        SELECT contrib_id, amount
+        FROM contrib_legislators JOIN contributors USING (contrib_id)
+        WHERE contrib_legislators.leg_id = ? AND contributors.contrib_type = 'I'
+        """
+	db_cursor.execute(QUERY, ("N00030780",))
+
+	indiv_contributions = db_cursor.fetchall()
+	indiv_sum = 0.0
+
+	for tup in indiv_contributions:
+		indiv_sum += float(tup[1])
+		indiv_to_mem_dict[tup[0]] = indiv_to_mem_dict.get(tup[0], 0) + tup[1]
 
 
+	QUERY = """
+        SELECT contrib_id, amount
+        FROM contrib_legislators JOIN contributors USING (contrib_id)
+        WHERE contrib_legislators.leg_id = ? AND contributors.contrib_type = 'C'
+        """
+	db_cursor.execute(QUERY, ("N00030780",))
+
+	pac_contributions = db_cursor.fetchall()
+	pac_sum = 0.0
+
+	for tup in pac_contributions:
+		pac_sum += float(tup[1])
+		pac_to_mem_dict[tup[0]] = pac_to_mem_dict.get(tup[0], 0) + tup[1]
+	
+	## sort dictionaries to get top contributors
+	sorted_dict_pac = sorted(pac_to_mem_dict.items(), key=operator.itemgetter(1), reverse=True)
+	sorted_dict_indiv = sorted(indiv_to_mem_dict.items(), key=operator.itemgetter(1), reverse=True)
+
+	print "top PAC", sorted_dict_pac[:10]
+	print "top Indiv", sorted_dict_indiv[:10]
+	print "PAC_sum: ", pac_sum
+	print "INdiv_sum: ", indiv_sum
 
 	return render_template("homepage.html")
 
@@ -78,12 +115,13 @@ def show_legislators():
 		members.append(member)
 
 	#sends a json object where each of the below variables is a key: value like in dict.  
-	#because passing members as list value, have to parse it in a more complicated way
+	#passing members as a list
 	return jsonify(state_selected=state_selected, senator1=senator1, senator2=senator2, members=members)
 
 @app.route('/trail_map', methods=["GET"])
 def show_trail_map():
-	"""render the D3 map of contributions to selected Member of Congress"""
+	"""Page where D3 map and other info on selected Member of Congress will display"""
+	
 	member_choice_id = request.args.get("member")
 
 	session["member_choice_id"] = member_choice_id
@@ -93,58 +131,12 @@ def show_trail_map():
 
 @app.route('/map_info.json', methods=["GET"])
 def get_tree_data():
-	#use for ajax request to do d3 magic. first, get the data just to appear on page.
-	# if request.method == "POST":
+	""" creating the json object that D3 needs to render the tree map.  the main function is defined in
+	helper_functions file """
 
-	#sum of contributions from individuals to selected legislator
 	member_choice_id = session.get("member_choice_id")
 	
-	print "member_id", member_choice_id
-
-	QUERY = """
-        SELECT sum(amount)
-        FROM contrib_legislators JOIN contributors USING (contrib_id)
-        WHERE contrib_legislators.leg_id = ? AND contributors.contrib_type = 'I'
-        """
-	db_cursor.execute(QUERY, (member_choice_id,))
-
-	indiv_contributions = db_cursor.fetchall()
-	indiv_contributions = indiv_contributions[0][0]
-
-	QUERY = """
-        SELECT sum(amount)
-        FROM contrib_legislators JOIN contributors USING (contrib_id)
-        WHERE contrib_legislators.leg_id = ? AND contributors.contrib_type = 'C'
-        """
-	db_cursor.execute(QUERY, (member_choice_id,))
-
-	pac_contributions = db_cursor.fetchall()
-	pac_contributions = pac_contributions[0][0]
-	
-	
-	#put all this into a dictionary and then jsonify for D3 to interpret.
-	contributions = {}
-	sum_i_contributions = {}
-	sum_p_contributions = {}
-
-	#take in selected member id, get member object from db and extract information to be displayed on node in browser.
-	member_obj = Legislator.query.get(member_choice_id)
-	if member_obj.chamber == "Senate":
-		if member_obj.nickname:
-			member = "%s. %s %s (%s - %s) %s" % (member_obj.title, member_obj.nickname, member_obj.last, member_obj.party, member_obj.state, member_obj.sen_rank)
-		else:
-			member = "%s. %s %s (%s - %s) %s" % (member_obj.title, member_obj.first, member_obj.last, member_obj.party, member_obj.state, member_obj.sen_rank)
-
-	if member_obj.chamber == "House":
-		if member_obj.nickname:
-			member = "%s. %s %s (%s - %s %d)" % (member_obj.title, member_obj.nickname, member_obj.last, member_obj.party, member_obj.state, member_obj.district)
-		else:
-			member = "%s. %s %s (%s - %s %d)" % (member_obj.title, member_obj.first, member_obj.last, member_obj.party, member_obj.state, member_obj.district)
-
-	sum_i_contributions["name"] = indiv_contributions
-	sum_p_contributions["name"] = pac_contributions
-	contributions["name"] = member
-	contributions["children"] = [sum_i_contributions, sum_p_contributions]
+	contributions = create_contribution_dict(member_choice_id)
 
 	return jsonify(contributions)
 	

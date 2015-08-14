@@ -1,4 +1,8 @@
-var margin = {top: 20, right: 120, bottom: 20, left: 120},
+function load_map(evt) {
+
+  evt.preventDefault();
+  
+var margin = {top: 20, right: 120, bottom: 20, left: 220},
     width = 960 - margin.right - margin.left,
     height = 800 - margin.top - margin.bottom;
 
@@ -18,7 +22,7 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.json("/trail_map.json", function(error, flare) {
+d3.json("/map_info.json", function(error, flare) {
   if (error) throw error;
 
   root = flare;
@@ -136,4 +140,5 @@ function click(d) {
     d._children = null;
   }
   update(d);
+}
 }

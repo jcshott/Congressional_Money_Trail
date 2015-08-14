@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<script src="/static/javascript/d3.js"></script>
 <script src="/static/javascript/d3.min.js"></script>
+<script>
+
+</script>
 
 <div id="map"> DIV for D3 VISUAL</div>
 
@@ -12,22 +14,12 @@
 .link { fill: none; stroke: #ccc; stroke-width: 1.5px; } 
 </style>
 
-
 <script>
 function load_map(evt) {
 
-	evt.preventDefault();
-
-	// // console.log("yo. post request");
-
-	
-	// // console.log(member_choice_id)
-
-	// $.get("/map_info", member_choice_id, function (result) {
-
-	// console.log(result)
-	
-var margin = {top: 20, right: 120, bottom: 20, left: 120},
+  evt.preventDefault();
+  
+var margin = {top: 20, right: 120, bottom: 20, left: 220},
     width = 960 - margin.right - margin.left,
     height = 800 - margin.top - margin.bottom;
 
@@ -167,13 +159,9 @@ function click(d) {
   update(d);
 }
 }
-// })
 
 $(document).on('ready', load_map)
-
 </script>
-
-
 
 <div id="sidebar">SIDEBAR of MEMBER INFO</div>
 
