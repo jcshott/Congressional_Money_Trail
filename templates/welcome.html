@@ -6,61 +6,81 @@
  
   <label> Pick a state:</label>
     <select name="state" id="state_value">
-
+    	<option> Choose a State </option>
     {% for state in states %}
       <option value="{{ state[0] }}"> {{ state[1] }} </option>
     {% endfor %}  
 </select>
-<input type="submit" id="submit_state">
 </form>
 
 <div id="legislators_display" style="display: none;"> 
 
 <h2> Pick a Member to Map </h2>
 
-<form display='none' id="member_list" method="get" action='/trail_map'> 
+<form id="member_list" method="get" action='/trail_map'> 
 	<label>Pick a Member of Congress: </label>
 	
 	<select name="member" id="member_choice">
 		<option >Senators</option>
 		<option id="sen1"> </option>
 		<option id="sen2"> </option>
-		<option>House Members </option>
+		<option >House Members </option>
 
 
-<input type="submit" id="submit_member">
+<input type="submit" id="submit_member" value="Map this Member">
 </form>
 </div>
 
 <script>
-// TODO: figure out how to make this work!
-// use Ajax to get show the legislators from the selected state
+// use Ajax to get show dropdown of the legislators from the selected state
 function showLegislators(evt) {
 
 	evt.preventDefault();
-	
+
+
+	//post request takes a dictionary so send key/value pair of the key I want to get 
 	state_value = {'state_value': $("#state_value").val()};
+
+	//ajax that sends the state selected and gets back the json values id'd on server.
+	//parse and put into the dropdown menu. assigning the leg_id to the value of the selection so can grab that on server side to query for contribution information.
 
 	$.post("/state_info", state_value, function (result) {
 			$("#sen1").attr("value", result.senator1.leg_id).html(result.senator1.title + ". " + result.senator1.first + " " +result.senator1.last + " (" + result.senator1.party +")");
 
 			$("#sen2").attr("value", result.senator2.leg_id).html(result.senator2.title + ". " + result.senator2.first + " " +result.senator2.last + " (" + result.senator2.party +")");
 
-		// cycle through list of members returned, to pull relevant info out.	
-			for (var i in result.members){
-				if (result.members[i].district === 0) {
-					district = " At-Large"
-				} else {
-					district = " - " + result.members[i].district
-				};
-				
-				$("#member_choice").append("<option value=" + result.members[i].leg_id + ">" + result.members[i].title + ". " + result.members[i].first + " " +result.members[i].last + " (" + result.members[i].party + district + ")" + "</option>")
+		var members = result.members
+		
+		function SortByDistrict(a, b){
+		  var aDist = a.district;
+		  var bDist= b.district; 
+		  return ((aDist < bDist) ? -1 : ((aDist > bDist) ? 1 : 0));
+		};
+
+		var sorted_members = members.sort(SortByDistrict);
+
+		$('option.house').remove();
+		// define special case for at-large (no district, only house member)
+		for (var i in sorted_members){
+			console.log("in loop")
+			if (sorted_members[i].district === 0) {
+				district = " - At-Large"
+			} else {
+				district = " - " + sorted_members[i].district
 			};
+				
+			// cycle through list of members returned, to pull relevant info out & put in drop-down menu
+			
+			$('#member_choice').append($("<option class=house></option>").val(sorted_members[i].leg_id).text(sorted_members[i].title + ". " + sorted_members[i].first + " " + sorted_members[i].last + " (" + sorted_members[i].party + district + ")")); 
 
-			$("#legislators_display").show();
-
+			};
 		});
+		
+		$("#legislators_display").show();
+
 	}
-$("#state_pick").on("submit", showLegislators);
+
+//list possible members only after choose state.	
+$("#state_pick").change("state_value", showLegislators);
 </script>
 {% endblock %}

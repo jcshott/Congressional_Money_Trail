@@ -1,6 +1,8 @@
 """Models and database functions"""
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
+from sqlalchemy.sql import label
 
 #Create connection to database
 
@@ -71,16 +73,29 @@ class Contrib_leg(db.Model):
 	transact_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
 	contrib_id = db.Column(db.String(50), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
 	leg_id = db.Column(db.String(50), db.ForeignKey('legislators.leg_id'), nullable=False) #ID of who gets contribution
+	
 	amount = db.Column(db.Integer, nullable=False)
 	cycle = db.Column(db.Integer)
 	
 	contributor = db.relationship("Contributors", backref=db.backref('contrib_legislators', order_by=amount))
 	legislator = db.relationship("Legislator", backref=db.backref('contrib_legislators', order_by=amount))
-
+	
 
 	def __repr__(self):
 		return "<Contributor ID=%s, Reciever ID=%s, Amount=%s>" % (self.contrib_id, self.mem_id, self.amount)
 
+	# @classmethod
+	# def get_sum_indiv_contributions(cls, member_id):
+	# 	"""Get sum of individual donations to a selected Member of Congress"""
+
+	# 	#from SQLAlchemy docs = .scalar() returns the first thing in the list returned - in this instance, the sum of contributions.
+	# 	return indiv_contributions = db.session.query(func.sum(Contrib_leg.amount)).join(Contributors).filter(Contrib_leg.leg_id == member_id, Contributors.contrib_type == "I").scalar()
+
+	# @classmethod
+	# def get_sum_pac_contributions(cls, member_id):
+	# 	"""Get sum of PAC donations to a selected Member of Congress"""
+
+	# 	return indiv_contributions = db.session.query(func.sum(Contrib_leg.amount)).join(Contributors).filter(Contrib_leg.leg_id == member_id, Contributors.contrib_type == "C").scalar()
 
 class Contributors(db.Model):
 	"""Details on contributing entities
@@ -93,14 +108,14 @@ class Contributors(db.Model):
 	__tablename__='contributors'
 
 	contrib_id = db.Column(db.String(50), primary_key=True)
-	contrib_type = db.Column(db.String(2), db.ForeignKey('contributor_types.contrib_type'), nullable=False)
 	name = db.Column(db.String(100), nullable=False)
 	contrib_state = db.Column(db.String(20), nullable=True)
+	contrib_type = db.Column(db.String(2), db.ForeignKey('contributor_types.contrib_type'), nullable=False)
 	employer = db.Column(db.String(50), nullable=True)
 	industry_id = db.Column(db.String(50), db.ForeignKey('industry.industry_id'), nullable=True)
 	
-	cont_type = db.relationship('Type_contrib', backref=db.backref('contributors'))
 	industry = db.relationship('Industry', backref=db.backref('contributors'))
+	cont_type = db.relationship('Type_contrib', backref=db.backref('contributors'))
 
 
 	def __repr__(self):
@@ -137,7 +152,6 @@ class Contrib_pac(db.Model):
 	cycle = db.Column(db.Integer)
 
 	contributor = db.relationship("Contributors", backref=db.backref("contrib_pacs", order_by=amount))
-	
 	
 	def __repr__(self):
 		return "<Contributor ID=%s, Recipient ID=%s, Amount=%s>" % (self.contrib_id, self.recpt_id, self.amount)

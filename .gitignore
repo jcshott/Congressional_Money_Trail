@@ -5,3 +5,5 @@ src/
 models/
 *.pyc
 .ipynb_checkpoints/
+*.db
+misc_scripts-NOT_FOR_PRODUCTION/

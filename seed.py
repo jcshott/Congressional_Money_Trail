@@ -1,4 +1,4 @@
-###All the data to my DB!  but really just a test set first....
+###All the data from Sunlight Foundation to the db! 
 import requests, os, csv
 from model import  connect_to_db, db, Legislator, Contrib_leg, Contributors, Type_contrib, Contrib_pac, Industry
 from server import app
@@ -113,7 +113,7 @@ def load_contribution_data():
         for index, line in enumerate(contributions):
             if index > 0:
                 #through some data exploration. realized that John McCain's Presidential donations were in the data, not what I am evaluating so need to take out.
-                if line[38] != "federal:president":               
+                if line[38] != "federal:president" and line[11] != "":           
                     #get info on contributor, incl checking our dict. before adding in case we already have their info & type.
                     contrib_id = line[11]
 
@@ -145,7 +145,7 @@ def load_contribution_data():
 
                     #allow for the person to be added to Contributor table first time encountered but not after.
                     if cont_id_dict.get(contrib_id) == 1:
-                        temp_contrib_obj = Contributors(contrib_id=contrib_id, contrib_type=contrib_type, name=name, employer=employer, industry_id=industry_id, contrib_state=contrib_state)
+                        temp_contrib_obj = Contributors(contrib_id=contrib_id, name=name, contrib_type=contrib_type, employer=employer, industry_id=industry_id, contrib_state=contrib_state)
                         db.session.add(temp_contrib_obj)
 
                                         
