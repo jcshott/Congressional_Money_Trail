@@ -27,8 +27,8 @@ class Legislator(db.Model):
 	title = db.Column(db.String(3), nullable=False)
 	state = db.Column(db.String(2), nullable=False)
 	district = db.Column(db.Integer, nullable=True) #skip if a senator
-	sen_rank = db.Column(db.String(12), nullable=True) #Sr. or Jr. status of Senator
-	party = db.Column(db.String(1), nullable=False)
+	sen_rank = db.Column(db.String(7), nullable=True) #Sr. or Jr. status of Senator
+	party = db.Column(db.String(3), nullable=False)
 	chamber = db.Column(db.String(10), nullable=False)
 	twitter_id = db.Column(db.String(20), nullable=True)
 	facebook_id = db.Column(db.String(50), nullable=True)
@@ -66,14 +66,16 @@ class Legislator(db.Model):
 		    } 
 
 class Contrib_leg(db.Model):
-	"""data on contributions to Members of Congress"""
+	"""data on contributions to Members of Congress
+		From Center for Responsive Politics
+	"""
 
 	__tablename__ = 'contrib_legislators'
 
 	transact_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-	contrib_id = db.Column(db.String(50), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
-	leg_id = db.Column(db.String(50), db.ForeignKey('legislators.leg_id'), nullable=False) #ID of who gets contribution
-	
+	FEC_trans_id = db.Column(db.String(19), nullable=False) #only unique within cycle
+	contrib_id = db.Column(db.String(15), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
+	leg_id = db.Column(db.String(10), db.ForeignKey('legislators.leg_id'), nullable=False) #ID of who gets contribution
 	amount = db.Column(db.Integer, nullable=False)
 	cycle = db.Column(db.Integer)
 	
@@ -82,7 +84,7 @@ class Contrib_leg(db.Model):
 	
 
 	def __repr__(self):
-		return "<Contributor ID=%s, Reciever ID=%s, Amount=%s>" % (self.contrib_id, self.mem_id, self.amount)
+		return "<Contributor ID=%s, Reciever ID=%s, Amount=%s>" % (self.contrib_id, self.leg_id, self.amount)
 
 
 class Contributors(db.Model):
@@ -95,11 +97,10 @@ class Contributors(db.Model):
 
 	__tablename__='contributors'
 
-	contrib_id = db.Column(db.String(50), primary_key=True)
+	contrib_id = db.Column(db.String(15), primary_key=True)
 	name = db.Column(db.String(100), nullable=False)
-	contrib_state = db.Column(db.String(20), nullable=True)
+	contrib_state = db.Column(db.String(2), nullable=True)
 	contrib_type = db.Column(db.String(2), db.ForeignKey('contributor_types.contrib_type'), nullable=False)
-	employer = db.Column(db.String(50), nullable=True)
 	industry_id = db.Column(db.String(50), db.ForeignKey('industry.industry_id'), nullable=True)
 	
 	industry = db.relationship('Industry', backref=db.backref('contributors'))
@@ -123,7 +124,7 @@ class Type_contrib(db.Model):
 	def __repr__(self):
 		return "<Type ID=%s, Label=%s>" % (self.contrib_type, self.type_label)
 
-
+### Holding on seeding this given had to change data source mid-project. leaving out reduces complexity for now.
 class Contrib_pac(db.Model):
 	"""tracking contributions to PACs, can be PAC-to-PAC or Individual-to-PAC
 

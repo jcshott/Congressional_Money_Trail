@@ -1,4 +1,4 @@
-###All the data from Sunlight Foundation to the db! 
+###All the data from CRP to the db! 
 import requests, os, csv
 from model import  connect_to_db, db, Legislator, Contrib_leg, Contributors, Type_contrib, Contrib_pac, Industry
 from server import app
@@ -8,6 +8,9 @@ from string import capwords
 
 #keep track of current legislators so can weed out cont. data we won't use
 current_legislator_dict = {}
+
+#to track contributor ids so don't try to add to db more than once
+cont_id_dict = {} 
 
 def load_legislators():
     """Take information from Sunlight Fdn csv file; calls to Sunlight API for the first election"""
@@ -90,116 +93,143 @@ def load_industry_types():
     db.session.commit()
 
 
-def load_contribution_data():
-    """load data from all the contributions files into 4 different tables in database:
+def load_indiv_contribution_data():
+    """load data from all the individual files to the contribution to legislators table, contributors table, and contributor type table
 
-        First proccesses Contributors & Contributor types (indiv or pac), then adds in the different kinds of contributions: Contrib to legislator and Contrib to PAC
-
+        parses the CRP data from "indivs" files for each cycle. currently only going back to 2004.
     """
 
-    cont_id_dict = {} #to track contributor ids so don't try to add to db more than once
-    type_id_dict = {} #same for contributor type codes
-    
     #make sure we read most recent file first so we get the most recent info on the contributors (like employer) since they are only added once.
-    file_list = ["./src/contributions.fec.2014.csv", "./src/contributions.fec.2012.csv", "./src/contributions.fec.2010.csv", "./src/contributions.fec.2008.csv", "./src/contributions.fec.2006.csv", "./src/contributions.fec.2004.csv", "./src/contributions.fec.2002.csv", "./src/contributions.fec.2000.csv", "./src/contributions.fec.1998.csv", "./src/contributions.fec.1996.csv", "./src/contributions.fec.1994.csv", "./src/contributions.fec.1992.csv", "./src/contributions.fec.1990.csv"] 
+    file_list = ["./src/individuals/indivs14.txt", "./src/individuals/indivs12.txt", "./src/individuals/indivs10.txt", "./src/individuals/indivs08.txt", "./src/individuals/indivs06.txt", "./src/individuals/indivs04.txt"] 
+    for file_path in file_list:
+        file_open = open(file_path)
+        
+        for index, line in enumerate(file_open):
+            value = line.split("|,|")
+            if value[4] in current_legislator_dict:
+                # per CRP documentation. to make sure only get indiv. donors, check that contrib_id has a value. first need to strip whitespace.
+                value[2].replace(" ", "")
+                if value[2] != ' ':
+                    contrib_id = value[2]
+                    FEC_trans_id = value[1]
+                    name = capwords(value[3])
+                    contrib_type = "I"
+                    contrib_state = value[9]
+                    cycle = value[0].strip('|')
+                    leg_id = value[4]
 
-    for item in file_list:
-        file_open = open(item, 'rU')
-
-        #because the names have a comma, my indices are getting thrown off. use csv reader.  
-        contributions = csv.reader(file_open, skipinitialspace=True)
-
-        #csv reader parses each line into a list. so need to index into list
-        for index, line in enumerate(contributions):
-            if index > 0:
-                #through some data exploration. realized that John McCain's Presidential donations were in the data, not what I am evaluating so need to take out.
-                if line[38] != "federal:president" and line[11] != "":           
-                    #get info on contributor, incl checking our dict. before adding in case we already have their info & type.
-                    contrib_id = line[11]
-
-                    #the names of the contributors are in all caps in file so this puts it into normal case. has no effect if already ok.
-                    name = capwords(line[10])
-                    contrib_type = line[12]
-                    contrib_state = line[18]
-                    cycle = int(line[2])
-
-                    if line[14]:
-                        if line[14] == "NONE":
-                            employer = None
-                        else:
-                            employer = capwords(line[14])
-                    else:
-                        employer = None
-
-                    if line[20]:
-                        if line[20] == "NONE":
+                    #first split of line makes it so there is one grouping of industry, data & amount given so need to further parse that.
+                    split_ind_amt_data = value[7].split(',')
+                    if split_ind_amt_data[0]:
+                        if split_ind_amt_data[0] == "NONE":
                                 industry_id = None
                         else:
-                            industry_id = line[20]
+                            industry_id = split_ind_amt_data[0].strip('|')
                     else:
                         industry_id = None
 
-                    #need to weed out multiples of the contributor going into table - otherwise fails PK constraint on contributor_id.
-                    #add the id as a key and set initial value to 1 but increment value every time you have someone with that id.
+                    amount = int(float(split_ind_amt_data[2]))
+
+                    # need to weed out multiples of the contributor going into table - otherwise fails PK constraint on contributor_id.
+                    # add the id as a key and set initial value to 1 but increment value every time you have someone with that id.
                     cont_id_dict[contrib_id] = cont_id_dict.get(contrib_id, 0) + 1
 
+                    
+                    if industry_id[0:2] != "Z9":
                     #allow for the person to be added to Contributor table first time encountered but not after.
-                    if cont_id_dict.get(contrib_id) == 1:
-                        temp_contrib_obj = Contributors(contrib_id=contrib_id, name=name, contrib_type=contrib_type, employer=employer, industry_id=industry_id, contrib_state=contrib_state)
-                        db.session.add(temp_contrib_obj)
+                        if cont_id_dict.get(contrib_id) == 1:
+                            temp_contrib_obj = Contributors(contrib_id=contrib_id, name=name, contrib_type=contrib_type, industry_id=industry_id, contrib_state=contrib_state)
 
-                                        
-                    #weed out multiples of the type-id trying to be committed to table because id is PK
-                    type_id_dict.setdefault(contrib_type, None)
+                            db.session.add(temp_contrib_obj)
 
-                    type_id_dict["I"] = "Individual"
-                    type_id_dict["C"] = "PAC"
+                        temp_contrib_leg_obj = Contrib_leg(contrib_id=contrib_id, FEC_trans_id=FEC_trans_id, leg_id=leg_id, amount=amount, cycle=cycle)
+                        db.session.add(temp_contrib_leg_obj)
 
-                    type_label = type_id_dict.get(contrib_type, None)
-                    
-                    #need to add these once and only once.
-                    type_id_dict["counter-indiv"] = type_id_dict.get("counter-indiv", 0) + 1
-                    type_id_dict["counter-pac"] = type_id_dict.get('counter-pac', 0) + 1
-
-                    if cont_id_dict.get("counter-indiv") == 1 or type_id_dict.get("counter-pac") == 1:
-                        temp_type_obj = Type_contrib(contrib_type=contrib_type, type_label=type_label)
-                        db.session.add(temp_type_obj)
+                        if index % 100 == 0:
+                            print "rows of indiv data: ", index
+                            db.session.commit()
+            
+        db.session.commit()
 
 
-                    #if to a politician, send info to politician table. else, send to pac cont. table
-                    if line[28] == "P":
-                        # transact_id = line[4] #set up with autoincrement/int. need to change table if want to use FEC info
-                        leg_id = line[26]
-                        
-                        if leg_id in current_legislator_dict:
-                            amount = int(float(line[8])) #was getting value error when string had .00       
-                            temp_contrib_leg_obj = Contrib_leg(contrib_id=contrib_id, leg_id=leg_id, amount=amount, cycle=cycle)                
-                            db.session.add(temp_contrib_leg_obj)
-                    
-                    elif line[28] == "C":
-                        # transact_id = line[4] add back if I want to link to FEC info, didn't have in orig table
-                        recpt_id = line[26]
-                        amount = int(float(line[8]))
+def load_pac_to_leg_contribution_data():
+    """load data from all the contributions files into 4 different tables in database:
 
-                        if line[27]:
-                            recpt_party = line[27]
-                        else:
-                            recpt_party = None
-                        
-                        temp_contrib_pac_obj = Contrib_pac(contrib_id=contrib_id, recpt_id=recpt_id, amount=amount, rec_party=recpt_party, cycle=cycle)
-                        db.session.add(temp_contrib_pac_obj)
-
-
-                    if index % 100 == 0:
-                        db.session.commit()
-                        print "number of contribution rows processed for db=", index
-
+        First proccesses Contributors & Contributor types (indiv or pac), then adds in the different kinds of contributions: Contrib to legislator and Contrib to PAC
+    """
     
-            db.session.commit()
+    file_list = ["./src/pac_to_cand/pacs14.txt", "./src/pac_to_cand/pacs12.txt", "./src/pac_to_cand/pacs10.txt", "./src/pac_to_cand/pacs08.txt", "./src/pac_to_cand/pacs06.txt", "./src/pac_to_cand/pacs04.txt"] 
+
+    for file_path in file_list:
+        file_open = open(file_path)
+        
+        for index, line in enumerate(file_open):
+            value = line.split(",")
+            leg_id = value[3].strip('|')
+
+            if leg_id in current_legislator_dict:
+                cont_type = value[7].strip('|')
+                industry_id = value[6].strip('|')
+                #z9 and z4 are considered non-contribution types -> transfers
+                if industry_id[0:2] != "z9" and industry_id[0:2] != "z4":
+                    if cont_type != "24A" and value[7] != "24N":
+                        cycle = value[0].strip('|')
+                        FEC_trans_id = value[1].strip('|')
+                        contrib_id = value[2].strip('|')
+                        amount = int(float(value[4]))
+                        
+                        temp_contrib_leg_obj = Contrib_leg(contrib_id=contrib_id, FEC_trans_id=FEC_trans_id, leg_id=leg_id, amount=amount, cycle=cycle)
+                        db.session.add(temp_contrib_leg_obj)  
+
+                        if index % 100 == 0:
+                            print "rows of pac data: ", index
+                            db.session.commit()
+
+        db.session.commit()             
+
+
+def load_pac_contributors():
+    """ load details on pact contributors into db from committee files"""
+
+    file_list = ["./src/pac_info/cmtes14.txt", "./src/pac_info/cmtes12.txt", "./src/pac_info/cmtes10.txt","./src/pac_info/cmtes08.txt", "./src/pac_info/cmtes06.txt", "./src/pac_info/cmtes04.txt"] 
+
+    for file_path in file_list:
+        file_open = open(file_path)
+       
+        for index, line in enumerate(file_open):
+            value = line.split(",")
+            contrib_id = value[1].strip('|')      
+            contrib_type = "C"
+
+            print "preloop: ", contrib_id
+            #check if contributor has been entered by checking dictionary of those already in db
+            if contrib_id not in cont_id_dict:
+                cont_id_dict.setdefault(contrib_id, True)
+                print "post-loop: ", contrib_id
+                name = value[2].strip('|')
+
+                if value[9]:
+                    industry_id = value[9].strip("|")
+
+                temp_contrib_obj = Contributors(contrib_id=contrib_id, industry_id=industry_id, name=name, contrib_type=contrib_type)
+                print "successful addition on line: ", index
+                db.session.add(temp_contrib_obj)
+                print "successful commit on line: ", index
+
+
+            if index % 100 == 0:
+                db.session.commit()
+                print "number of rows processed: ", index
+        
+        db.session.commit()
+                                    
+
 
 if __name__ == "__main__":
     connect_to_db(app)
 
     load_legislators()
     load_industry_types()
-    load_contribution_data()
+    load_indiv_contribution_data()
+    load_pac_to_leg_contribution_data()
+    load_pac_contributors()

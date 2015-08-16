@@ -1,7 +1,3 @@
-function load_map(evt) {
-
-  evt.preventDefault();
-  
 var margin = {top: 20, right: 120, bottom: 20, left: 220},
     width = 960 - margin.right - margin.left,
     height = 800 - margin.top - margin.bottom;
@@ -141,4 +137,4 @@ function click(d) {
   }
   update(d);
 }
-}
+

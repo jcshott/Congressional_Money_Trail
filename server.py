@@ -104,7 +104,11 @@ def share_image():
 	"""send captured image to social media sites"""
 	#code - should send captured image to a new page with options listed to share
 
+@app.route('/about')
+def describe_page():
+	""" Share info on where the data came from and some of the inconsistencies - include notes on how hard tracking contributions really is """
 
+	return render_template("about_the_site.html")
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point

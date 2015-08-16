@@ -1,7 +1,6 @@
 import requests, os, sqlite3, operator
 from model import connect_to_db, db, Legislator, Contrib_leg, Contributors, Type_contrib, Contrib_pac
 
-
 #need a connection to sqldb directly for quicker queries on db
 db_connection = sqlite3.connect("contributions.db", check_same_thread=False)
 db_cursor = db_connection.cursor()
@@ -90,79 +89,83 @@ def create_contribution_dict(member_choice_id):
 
 	for tup in sorted_dict_indiv[:10]:
 		contrib_name = Contributors.query.get(tup[0]).name
+		print "name: %s and id: %s" % (contrib_name, tup[0])
 		top_ten_indiv_child_list.append({"name": contrib_name})
 
 	for tup in sorted_dict_pac[:10]:
 		contrib_name = Contributors.query.get(tup[0]).name
+		print "name: %s and id: %s" % (contrib_name, tup[0])
 		top_ten_pac_child_list.append({"name": contrib_name})
+
+
 
 	#### Query for the top individual to PAC and PAC to PAC donations
 
-	# dict. where key = cont. id and value is list of 2 lists: 1. dictionaries of top indiv to PAC contribs. 2. PAC to PAC contribs
-	contrib_to_pac_dict = {}
+	# # dict. where key = cont. id and value is list of 2 lists: 1. dictionaries of top indiv to PAC contribs. 2. PAC to PAC contribs
+	# contrib_to_pac_dict = {}
 	
-	for tup in sorted_dict_pac[:10]:
-		#dictionary of contributors to current PAC with key/val = name of contributor/total contributions
-		indiv_to_pac_dict = {}
-		pac_to_pac_dict = {}
+	# for tup in sorted_dict_pac[:10]:
+	# 	#dictionary of contributors to current PAC with key/val = name of contributor/total contributions
+	# 	indiv_to_pac_dict = {}
+	# 	pac_to_pac_dict = {}
 
-		indiv_to_pac_sum = 0.0
-		pac_to_pac_sum = 0.0
+	# 	indiv_to_pac_sum = 0.0
+	# 	pac_to_pac_sum = 0.0
 
 
-		QUERY = """
-        SELECT contrib_pacs.amount, contributors.name
-        FROM contrib_pacs JOIN contributors USING (contrib_id)
-        WHERE contrib_pacs.recpt_id = ? AND contributors.contrib_type = 'I'
-        """
-		db_cursor.execute(QUERY, (tup[0],))
+	# 	QUERY = """
+ #        SELECT contrib_pacs.amount, contributors.name
+ #        FROM contrib_pacs JOIN contributors USING (contrib_id)
+ #        WHERE contrib_pacs.recpt_id = ? AND contributors.contrib_type = 'I'
+ #        """
+	# 	db_cursor.execute(QUERY, (tup[0],))
 
-		indiv_to_pac_cont = db_cursor.fetchall()
+	# 	indiv_to_pac_cont = db_cursor.fetchall()
 		
-		for item in indiv_to_pac_cont:
-			indiv_to_pac_sum += float(item[0])
-			indiv_to_pac_dict[item[1]] = indiv_to_pac_dict.get(item[1], 0) + item[0]
+	# 	for item in indiv_to_pac_cont:
+	# 		indiv_to_pac_sum += float(item[0])
+	# 		indiv_to_pac_dict[item[1]] = indiv_to_pac_dict.get(item[1], 0) + item[0]
 
 		
-		#PAC info gathering
-		QUERY = """
-        SELECT contrib_pacs.amount, contributors.name
-        FROM contrib_pacs JOIN contributors USING (contrib_id)
-        WHERE contrib_pacs.recpt_id = ? AND contributors.contrib_type = 'C'
-        """
-		db_cursor.execute(QUERY, (tup[0],))
+# 		#PAC info gathering
+# 		QUERY = """
+#         SELECT contrib_pacs.amount, contributors.name
+#         FROM contrib_pacs JOIN contributors USING (contrib_id)
+#         WHERE contrib_pacs.recpt_id = ? AND contributors.contrib_type = 'C'
+#         """
+# 		db_cursor.execute(QUERY, (tup[0],))
 
-		pac_to_pac_cont = db_cursor.fetchall()
+# 		pac_to_pac_cont = db_cursor.fetchall()
 		
-		for item in pac_to_pac_cont:
-			indiv_to_pac_sum += float(item[0])
-			pac_to_pac_dict[item[1]] = pac_to_pac_dict.get(item[0], 0) + item[0]
+# 		for item in pac_to_pac_cont:
+# 			indiv_to_pac_sum += float(item[0])
+# 			pac_to_pac_dict[item[1]] = pac_to_pac_dict.get(item[0], 0) + item[0]
 
-		sorted_indiv2pac = sorted(indiv_to_pac_dict.items(), key=operator.itemgetter(0), reverse=True)
-		sorted_pac2pac = sorted(pac_to_pac_dict.items(), key=operator.itemgetter(0), reverse=True)
+# 		sorted_indiv2pac = sorted(indiv_to_pac_dict.items(), key=operator.itemgetter(0), reverse=True)
+# 		sorted_pac2pac = sorted(pac_to_pac_dict.items(), key=operator.itemgetter(0), reverse=True)
 
-		#list of dictionaries of top contributor's names
-		top5_I_to_pac = []
-		top5_P_to_pac = []
+# 		#list of dictionaries of top contributor's names
+# 		top5_I_to_pac = []
+# 		top5_P_to_pac = []
 
-		for pair in sorted_indiv2pac[:5]:
-			contrib_name = pair[1]
-			top5_I_to_pac.append({"name": contrib_name})
+# 		for pair in sorted_indiv2pac[:5]:
+# 			contrib_name = pair[1]
+# 			top5_I_to_pac.append({"name": contrib_name})
 		
-		for pair in sorted_pac2pac[:5]:
-			contrib_name = pair[1]
-			top5_P_to_pac.append({"name": contrib_name})
+# 		for pair in sorted_pac2pac[:5]:
+# 			contrib_name = pair[1]
+# 			top5_P_to_pac.append({"name": contrib_name})
 
-		#dictionary with key = name and value = list of 2 lists = dict(key/val = "name": contrib_name
-		contrib_to_pac_dict.setdefault(tup[1], [])
-		contrib_to_pac_dict[tup[1]].append(top5_I_to_pac)
-		contrib_to_pac_dict[tup[1]].append(top5_P_to_pac)
+# 		#dictionary with key = name and value = list of 2 lists = dict(key/val = "name": contrib_name
+# 		contrib_to_pac_dict.setdefault(tup[1], [])
+# 		contrib_to_pac_dict[tup[1]].append(top5_I_to_pac)
+# 		contrib_to_pac_dict[tup[1]].append(top5_P_to_pac)
 
-## TODO - figure out how to add "children" key/value to the existing list of dictionaries
-		for dictionary in top_ten_pac_child_list:
-			if dictionary.get("name") == tup[1]:
-				dictionary["children"].get("children", [{"name": "Contributions from Individuals: " '${:,.0f}'.format(indiv_to_pac_sum)}, {"name": "Contributions from PACs: " '${:,.0f}'.format(pac_to_pac_sum)}])
-		print top_ten_pac_child_list
+# ## TODO - figure out how to add "children" key/value to the existing list of dictionaries
+# 		for dictionary in top_ten_pac_child_list:
+# 			if dictionary.get("name") == tup[1]:
+# 				dictionary["children"].get("children", [{"name": "Contributions from Individuals: " '${:,.0f}'.format(indiv_to_pac_sum)}, {"name": "Contributions from PACs: " '${:,.0f}'.format(pac_to_pac_sum)}])
+# 		print top_ten_pac_child_list
 
 ###################################################################
 ##### Build the dictionary that will become the JSON magic ########
