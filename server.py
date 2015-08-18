@@ -62,20 +62,29 @@ def show_legislators():
 
 	senators = []
 	representatives = []
+	print state_legislators
+	for item in state_legislators:
+		print item
+		print "chamber:", item.chamber
 
 	for member_object in state_legislators:
 		if member_object.chamber == "Senate":
-			member_object.serialize()
-			senators.append(member_object)
+			senator = member_object.serialize()
+			senators.append(senators)
+		
 		else:
-			member_object.serialize()
-			representatives.append(member_object)
+			print "object:", member_object
+			rep = member_object.serialize()
+			representatives.append(rep)
 
 	#account for D.C./territories with no senators.
 	if not senators:
-		return jsonify(state_selected=state_selected, members=representatives)
+		print "in house only loop"
+		return jsonify(state_selected=state_selected, representatives=representatives)
+	
 	else:
-		return jsonify(state_selected=state_selected, senators=senators, representatives=members)
+		print "in senate loop"
+		return jsonify(state_selected=state_selected, senators=senators, representatives=representatives)
 	
 	# #get list of objects of senators & house members
 	# senators_state = Legislator.query.filter(Legislator.state == state_selected, Legislator.chamber == "Senate").all()
@@ -107,7 +116,7 @@ def show_legislators():
 
 		#sends a json object where each of the below variables is a key: value like in dict.  
 		#passing members as a list
-		return jsonify(state_selected=state_selected, senator1=senator1, senator2=senator2, members=members)
+		# return jsonify(state_selected=state_selected, senator1=senator1, senator2=senator2, members=members)
 
 @app.route('/address_search') #methods=["POST"])
 def show_members_for_address():

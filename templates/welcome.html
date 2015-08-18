@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvOEtQIfXWSZq8tKg2S2RrHhOkikKxcY0&callback=initialize" async defer></script>
-<!-- <script src="/static/javascript/geocode.js"></script> -->
+<script src="/static/javascript/geocode.js"></script>
 
 <div id="pick_by_state">
 <form id="state_pick" method="post" action="/state_info.json">
@@ -20,13 +20,12 @@
 <h2> Pick a Member to Map </h2>
 
 <form id="member_list" method="get" action='/trail_map'> 
-	<label>Pick a Member of Congress: </label>
+	<label>Select a Member of Congress: </label>
 	
 	<select name="member" id="member_choice">
-		<option >Senators</option>
-		<option id="sen1"> </option>
-		<option id="sen2"> </option>
-		<option >House Members </option>
+		<!-- <option id="sen1"> </option>
+		<option id="sen2"> </option> -->
+		
 
 
 <input type="submit" id="submit_member" value="Map this Member">
@@ -40,48 +39,17 @@
 		<input id="address" type="textbox">
 		<input type="submit" id="submit_geocode" value="Find My Members of Congress">
 	</form>
+
+<div id="your_district_reps"> </div>	
+
 <script>
 
-var geocoder
-
-function initialize() {
-	console.log("initialized")
-	geocoder = new google.maps.Geocoder();
-	document.getElementById('submit_geocode').addEventListener('click', function(evt) {
-		evt.preventDefault();
-    geocodeAddress(geocoder);
-});
-}
-
-function geocodeAddress(geocoder) {
-  
-  var address = document.getElementById('address').value;
-  geocoder.geocode({'address': address}, function(results, status) {
-    if (status === google.maps.GeocoderStatus.OK) {
-
-      // console.log(results[0].geometry.location);
-      // console.log(results[0].geometry.location.G);
-      // console.log(results[0].geometry.location.K);
-// NEED to set up ajax request to get the info and send back into a div that shows members names, title, party.
-      // latitude = results[0].geometry.location.G
-      // longitude = results[0].geometry.location.K
-
-      // $.post("/address_search", state_value, function (result) {
-
-      // }
-
-    } else {
-      alert('Geocode was not successful for the following reason: ' + status);
-    }
-  });
-}
 
 // use Ajax to get show dropdown of the legislators from the selected state
-function showHouseMembers(evt) {
+function showLegislators(evt) {
 
 	evt.preventDefault();
-
-
+	$('#member_choice option').remove();
 	//post request takes a dictionary so send key/value pair of the key I want to get 
 	state_value = {'state_value': $("#state_value").val()};
 
@@ -89,17 +57,19 @@ function showHouseMembers(evt) {
 	//parse and put into the dropdown menu. assigning the leg_id to the value of the selection so can grab that on server side to query for contribution information.
 
 	$.post("/state_info", state_value, function (result) {
+		console.log(result)
+			
 			if (result.senators) {
-				$'#member_choice').append()
-				$('#member_choice').append($("<option class=house></option>").val(sorted_reps[i].leg_id).text(sorted_reps[i].title + ". " + sorted_reps[i].first + " " + sorted_reps[i].last + " (" + sorted_reps[i].party + district + ")")); 
+				$('#member_choice').append("<option class=chamber_label>" + "Senators" +"</option>");
+				$('#member_choice').append($("<option class=senate></option>").val(result.senators[i].leg_id).text(result.senators[i].title + ". " + result.senators[i].first + " " + result.senators[i].last + " (" + result.senators[i].party + ")")); 
 			}
 
-			
 
 			// $("#sen1").attr("value", result.senator1.leg_id).html(result.senator1.title + ". " + result.senator1.first + " " +result.senator1.last + " (" + result.senator1.party +")");
 
 			// $("#sen2").attr("value", result.senator2.leg_id).html(result.senator2.title + ". " + result.senator2.first + " " +result.senator2.last + " (" + result.senator2.party +")");
-
+		$('#member_choice').append("<option class=chamber_label>" + "House Members" +"</option>");
+		
 		var representatives = result.representatives
 		
 		// thanks stack overflow
@@ -111,10 +81,10 @@ function showHouseMembers(evt) {
 
 		var sorted_reps = representatives.sort(SortByDistrict);
 
-		$('option.house').remove();
+		
+
 		// define special case for at-large (no district, only house member)
 		for (var i in sorted_reps){
-			console.log("in loop")
 			if (sorted_reps[i].district === 0) {
 				district = " - At-Large"
 			} else {
@@ -126,6 +96,7 @@ function showHouseMembers(evt) {
 			$('#member_choice').append($("<option class=house></option>").val(sorted_reps[i].leg_id).text(sorted_reps[i].title + ". " + sorted_reps[i].first + " " + sorted_reps[i].last + " (" + sorted_reps[i].party + district + ")")); 
 
 			};
+
 		});
 		
 		$("#legislators_display").show();
@@ -133,7 +104,7 @@ function showHouseMembers(evt) {
 	}
 
 //list possible representatives only after choose state.	
-$("#state_pick").change("state_value", showHouseMembers);
+$("#state_pick").change("state_value", showLegislators);
 
 
 </script>
