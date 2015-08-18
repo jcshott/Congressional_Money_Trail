@@ -62,18 +62,14 @@ def show_legislators():
 
 	senators = []
 	representatives = []
-	print state_legislators
-	for item in state_legislators:
-		print item
-		print "chamber:", item.chamber
-
+	# print state_legislators
+	
 	for member_object in state_legislators:
 		if member_object.chamber == "Senate":
 			senator = member_object.serialize()
-			senators.append(senators)
+			senators.append(senator)
 		
 		else:
-			print "object:", member_object
 			rep = member_object.serialize()
 			representatives.append(rep)
 
@@ -118,36 +114,39 @@ def show_legislators():
 		#passing members as a list
 		# return jsonify(state_selected=state_selected, senator1=senator1, senator2=senator2, members=members)
 
-@app.route('/address_search') #methods=["POST"])
+@app.route('/address_search', methods=["POST"])
 def show_members_for_address():
 	"""show legislators for user based on address search
 		takes lat/long from google maps API and returns list of legislators
 
 	"""
 
-	lat_lon = request.form.get('')
+	lat_lon = request.form.get('coordinates')
+	latitude = request.form.get('coordinates')
+	print "request recieved: ", lat_lon
+	return lat_lon
 	#API call to Sunlight Foundation for legislators by lat/lon
-	legislators_list = congress.locate_legislators_by_lat_lon(lat_lon)
-		# lat=37.4770169, lon=-122.23780599999998
+	# legislators_list = congress.locate_legislators_by_lat_lon(lat_lon)
+	# 	# lat=37.4770169, lon=-122.23780599999998
 	
-	legislators_by_address = []
-	crp_ids = []
-	legislators_to_serialize = []
+	# legislators_by_address = []
+	# crp_ids = []
+	# legislators_to_serialize = []
 
-	for legislator in legislators_list:
-		crp_id = legislator.get('crp_id')
-		crp_ids.append(crp_id)
+	# for legislator in legislators_list:
+	# 	crp_id = legislator.get('crp_id')
+	# 	crp_ids.append(crp_id)
 		
-	for item in crp_ids:
-		member = Legislator.query.filter_by(leg_id = item).first()
-		legislators_to_serialize.append(member)
+	# for item in crp_ids:
+	# 	member = Legislator.query.filter_by(leg_id = item).first()
+	# 	legislators_to_serialize.append(member)
 
-	for item in legislators_to_serialize:
-		legislator = item.serialize()
-		legislators_by_address.append(legislator)
+	# for item in legislators_to_serialize:
+	# 	legislator = item.serialize()
+	# 	legislators_by_address.append(legislator)
 
-	print "members: ", legislators_by_address
-	return jsonify(legislators_by_address=legislators_by_address)
+	# print "members: ", legislators_by_address
+	# return jsonify(legislators_by_address=legislators_by_address)
 
 @app.route('/trail_map', methods=["GET"])
 def show_trail_map():

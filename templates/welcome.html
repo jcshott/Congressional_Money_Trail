@@ -23,9 +23,6 @@
 	<label>Select a Member of Congress: </label>
 	
 	<select name="member" id="member_choice">
-		<!-- <option id="sen1"> </option>
-		<option id="sen2"> </option> -->
-		
 
 
 <input type="submit" id="submit_member" value="Map this Member">
@@ -50,6 +47,7 @@ function showLegislators(evt) {
 
 	evt.preventDefault();
 	$('#member_choice option').remove();
+	$('#your_district_reps').html();
 	//post request takes a dictionary so send key/value pair of the key I want to get 
 	state_value = {'state_value': $("#state_value").val()};
 
@@ -57,45 +55,48 @@ function showLegislators(evt) {
 	//parse and put into the dropdown menu. assigning the leg_id to the value of the selection so can grab that on server side to query for contribution information.
 
 	$.post("/state_info", state_value, function (result) {
-		console.log(result)
+			console.log(result)
+			console.log(result.representatives)
+			console.log(result.representatives.length)
+
+		if (result.senators) {
+			$('#member_choice').append("<option class=chamber_label>" + "Senators" +"</option>");
 			
-			if (result.senators) {
-				$('#member_choice').append("<option class=chamber_label>" + "Senators" +"</option>");
-				$('#member_choice').append($("<option class=senate></option>").val(result.senators[i].leg_id).text(result.senators[i].title + ". " + result.senators[i].first + " " + result.senators[i].last + " (" + result.senators[i].party + ")")); 
-			}
-
-
-			// $("#sen1").attr("value", result.senator1.leg_id).html(result.senator1.title + ". " + result.senator1.first + " " +result.senator1.last + " (" + result.senator1.party +")");
-
-			// $("#sen2").attr("value", result.senator2.leg_id).html(result.senator2.title + ". " + result.senator2.first + " " +result.senator2.last + " (" + result.senator2.party +")");
-		$('#member_choice').append("<option class=chamber_label>" + "House Members" +"</option>");
+			for (var i in result.senators) {$('#member_choice').append($("<option class=senate></option>").val(result.senators[i].leg_id).text(result.senators[i].title + ". " + result.senators[i].first + " " + result.senators[i].last + " (" + result.senators[i].party + ")")); }
+		}
 		
-		var representatives = result.representatives
+		// empty seats
 		
-		// thanks stack overflow
-		function SortByDistrict(a, b){
-		  var aDist = a.district;
-		  var bDist= b.district; 
-		  return ((aDist < bDist) ? -1 : ((aDist > bDist) ? 1 : 0));
-		};
-
-		var sorted_reps = representatives.sort(SortByDistrict);
-
-		
-
-		// define special case for at-large (no district, only house member)
-		for (var i in sorted_reps){
-			if (sorted_reps[i].district === 0) {
-				district = " - At-Large"
-			} else {
-				district = " - " + sorted_reps[i].district
+		if (result.representatives.length > 0) {
+			$('#member_choice').append("<option class=chamber_label>" + "House Members" +"</option>");
+			
+			var representatives = result.representatives
+			
+			// thanks stack overflow
+			function SortByDistrict(a, b){
+			  var aDist = a.district;
+			  var bDist= b.district; 
+			  return ((aDist < bDist) ? -1 : ((aDist > bDist) ? 1 : 0));
 			};
+
+			var sorted_reps = representatives.sort(SortByDistrict);
+
+			// define special case for at-large (no district, only house member)
+			for (var i in sorted_reps){
+				if (sorted_reps[i].district === 0) {
+					district = " - At-Large"
+				} else {
+					district = " - " + sorted_reps[i].district
+				};
+					
+				// cycle through list of representatives returned, to pull relevant info out & put in drop-down menu
 				
-			// cycle through list of representatives returned, to pull relevant info out & put in drop-down menu
-			
-			$('#member_choice').append($("<option class=house></option>").val(sorted_reps[i].leg_id).text(sorted_reps[i].title + ". " + sorted_reps[i].first + " " + sorted_reps[i].last + " (" + sorted_reps[i].party + district + ")")); 
+				$('#member_choice').append($("<option class=house></option>").val(sorted_reps[i].leg_id).text(sorted_reps[i].title + ". " + sorted_reps[i].first + " " + sorted_reps[i].last + " (" + sorted_reps[i].party + district + ")")); 
 
-			};
+				};
+		} else {
+			$('#your_district_reps').html("Sorry, that seat is vacant")
+		}
 
 		});
 		
