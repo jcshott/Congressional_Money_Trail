@@ -12,16 +12,17 @@ var tree = d3.layout.tree()
 var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x]; });
 
+// defines where on our webpage (now, "body") the viz appears
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.right + margin.left)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.json("/map_info.json", function(error, flare) {
+d3.json("/map_info.json", function(error, mapData) {
   if (error) throw error;
 
-  root = flare;
+  root = mapData;
   root.x0 = height / 2;
   root.y0 = 0;
 
@@ -59,11 +60,14 @@ function update(source) {
       .on("click", click);
 
   nodeEnter.append("circle")
-      .attr("r", 1e-6)
-      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+      .attr("r", function(d) { return d.value; })
+      .style("fill", "#fff");
+
+      // .attr("r", 1e-6)
+      // .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
   nodeEnter.append("text")
-      .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
+      .attr("x", function(d) { return d.children || d._children ? (d.value + 4) * -1 : d.value + 4 })
       .attr("dy", ".35em")
       .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
       .text(function(d) { return d.name; })
@@ -75,7 +79,7 @@ function update(source) {
       .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 
   nodeUpdate.select("circle")
-      .attr("r", 4.5)
+      .attr("r", function(d) { return d.value; })
       .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
   nodeUpdate.select("text")

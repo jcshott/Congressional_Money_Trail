@@ -27,7 +27,7 @@ class Legislator(db.Model):
 	title = db.Column(db.String(3), nullable=False)
 	state = db.Column(db.String(2), nullable=False)
 	district = db.Column(db.Integer, nullable=True) #skip if a senator
-	sen_rank = db.Column(db.String(7), nullable=True) #Sr. or Jr. status of Senator
+	sen_rank = db.Column(db.String(15), nullable=True) #Sr. or Jr. status of Senator
 	party = db.Column(db.String(3), nullable=False)
 	chamber = db.Column(db.String(10), nullable=False)
 	twitter_id = db.Column(db.String(20), nullable=True)
@@ -73,9 +73,13 @@ class Contrib_leg(db.Model):
 	__tablename__ = 'contrib_legislators'
 
 	transact_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-	FEC_trans_id = db.Column(db.String(19), nullable=False) #only unique within cycle
+	FEC_trans_id = db.Column(db.String(20), nullable=False) #only unique within cycle
 	contrib_id = db.Column(db.String(15), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
+	# contrib_id = db.Column(db.String(15), nullable=False)
 	leg_id = db.Column(db.String(10), db.ForeignKey('legislators.leg_id'), nullable=False) #ID of who gets contribution
+	
+	# had problems when experimenting moving to postgres. turned off FK, but caused other problems.
+	# leg_id = db.Column(db.String(10), nullable=False) 
 	amount = db.Column(db.Integer, nullable=False)
 	cycle = db.Column(db.Integer)
 	
@@ -102,6 +106,9 @@ class Contributors(db.Model):
 	contrib_state = db.Column(db.String(2), nullable=True)
 	contrib_type = db.Column(db.String(2), db.ForeignKey('contributor_types.contrib_type'), nullable=False)
 	industry_id = db.Column(db.String(50), db.ForeignKey('industry.industry_id'), nullable=True)
+	
+	# had problems when experimenting moving to postgres. turned off FK, but caused other problems. need to figure out why some industry IDs aren't in my table - prob. subcategories
+	# industry_id = db.Column(db.String(50), nullable=True)
 	
 	industry = db.relationship('Industry', backref=db.backref('contributors'))
 	cont_type = db.relationship('Type_contrib', backref=db.backref('contributors'))
@@ -151,7 +158,7 @@ class Industry(db.Model):
 	__tablename__='industry'
 
 	industry_id = db.Column(db.String(10), primary_key=True)
-	industry_name = db.Column(db.String(40))
+	industry_name = db.Column(db.String(100))
 
 	def __repr__(self):
 		return "<Ind Name = %s, ID = %s>" % (self.industry_name, self.industry_id)

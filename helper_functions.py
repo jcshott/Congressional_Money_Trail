@@ -89,13 +89,11 @@ def create_contribution_dict(member_choice_id):
 
 	for tup in sorted_dict_indiv[:10]:
 		contrib_name = Contributors.query.get(tup[0]).name
-		print "name: %s and id: %s" % (contrib_name, tup[0])
-		top_ten_indiv_child_list.append({"name": contrib_name})
+		top_ten_indiv_child_list.append({"name": contrib_name, "value": 5})
 
 	for tup in sorted_dict_pac[:10]:
 		contrib_name = Contributors.query.get(tup[0]).name
-		print "name: %s and id: %s" % (contrib_name, tup[0])
-		top_ten_pac_child_list.append({"name": contrib_name})
+		top_ten_pac_child_list.append({"name": contrib_name, "value": 5})
 
 
 
@@ -184,14 +182,20 @@ def create_contribution_dict(member_choice_id):
 
 	large_contrib["name"] = "Total Contributions from Large Donors: " '${:,.0f}'.format(sum_large_contrib)
 	large_contrib["children"] = top_ten_indiv_child_list
+	large_contrib["value"] = int(100*(sum_large_contrib/(sum_large_contrib+sum_small_contrib)))
 
 	small_contrib["name"] = "Total Contributions from Small Donors: " '${:,.0f}'.format(sum_small_contrib)
+	small_contrib["value"] = int(100*(sum_small_contrib/(sum_large_contrib+sum_small_contrib)))
 
 	sum_i_contributions["name"] = "Contributions from Individuals: " '${:,.0f}'.format(indiv_sum)
 	sum_i_contributions["children"] = [large_contrib, small_contrib]
+	sum_i_contributions["value"] = int(100*(indiv_sum/(indiv_sum + pac_sum)))
+	sum_i_contributions["type"] = "blue"
 
 	sum_p_contributions["name"] = "Contributions from PACs: " '${:,.0f}'.format(pac_sum)
 	sum_p_contributions["children"] = top_ten_pac_child_list
+	sum_p_contributions["value"] = int(100*(pac_sum/(indiv_sum + pac_sum)))
+	sum_p_contributions["type"] = "red"
 
 
 	# sum_i_contributions["size"] = (indiv_contributions/(indiv_contributions + pac_contributions))*100
@@ -199,6 +203,7 @@ def create_contribution_dict(member_choice_id):
 
 	contributions["name"] = member
 	contributions["children"] = [sum_i_contributions, sum_p_contributions]
+	contributions["value"] = 10
 
 	return contributions
 

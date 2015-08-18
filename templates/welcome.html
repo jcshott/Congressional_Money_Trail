@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-<script src="https://code.jquery.com/jquery.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvOEtQIfXWSZq8tKg2S2RrHhOkikKxcY0&callback=initialize" async defer></script>
+<!-- <script src="/static/javascript/geocode.js"></script> -->
 
+<div id="pick_by_state">
 <form id="state_pick" method="post" action="/state_info.json">
  
   <label> Pick a state:</label>
@@ -30,10 +32,52 @@
 <input type="submit" id="submit_member" value="Map this Member">
 </form>
 </div>
+</div>
 
+<div id="pick_by_address"> OR 
+	<form>
+	<label>Enter Address to Find Your Members:</label>
+		<input id="address" type="textbox">
+		<input type="submit" id="submit_geocode" value="Find My Members of Congress">
+	</form>
 <script>
+
+var geocoder
+
+function initialize() {
+	console.log("initialized")
+	geocoder = new google.maps.Geocoder();
+	document.getElementById('submit_geocode').addEventListener('click', function(evt) {
+		evt.preventDefault();
+    geocodeAddress(geocoder);
+});
+}
+
+function geocodeAddress(geocoder) {
+  
+  var address = document.getElementById('address').value;
+  geocoder.geocode({'address': address}, function(results, status) {
+    if (status === google.maps.GeocoderStatus.OK) {
+
+      // console.log(results[0].geometry.location);
+      // console.log(results[0].geometry.location.G);
+      // console.log(results[0].geometry.location.K);
+// NEED to set up ajax request to get the info and send back into a div that shows members names, title, party.
+      // latitude = results[0].geometry.location.G
+      // longitude = results[0].geometry.location.K
+
+      // $.post("/address_search", state_value, function (result) {
+
+      // }
+
+    } else {
+      alert('Geocode was not successful for the following reason: ' + status);
+    }
+  });
+}
+
 // use Ajax to get show dropdown of the legislators from the selected state
-function showLegislators(evt) {
+function showHouseMembers(evt) {
 
 	evt.preventDefault();
 
@@ -45,33 +89,41 @@ function showLegislators(evt) {
 	//parse and put into the dropdown menu. assigning the leg_id to the value of the selection so can grab that on server side to query for contribution information.
 
 	$.post("/state_info", state_value, function (result) {
-			$("#sen1").attr("value", result.senator1.leg_id).html(result.senator1.title + ". " + result.senator1.first + " " +result.senator1.last + " (" + result.senator1.party +")");
+			if (result.senators) {
+				$'#member_choice').append()
+				$('#member_choice').append($("<option class=house></option>").val(sorted_reps[i].leg_id).text(sorted_reps[i].title + ". " + sorted_reps[i].first + " " + sorted_reps[i].last + " (" + sorted_reps[i].party + district + ")")); 
+			}
 
-			$("#sen2").attr("value", result.senator2.leg_id).html(result.senator2.title + ". " + result.senator2.first + " " +result.senator2.last + " (" + result.senator2.party +")");
+			
 
-		var members = result.members
+			// $("#sen1").attr("value", result.senator1.leg_id).html(result.senator1.title + ". " + result.senator1.first + " " +result.senator1.last + " (" + result.senator1.party +")");
+
+			// $("#sen2").attr("value", result.senator2.leg_id).html(result.senator2.title + ". " + result.senator2.first + " " +result.senator2.last + " (" + result.senator2.party +")");
+
+		var representatives = result.representatives
 		
+		// thanks stack overflow
 		function SortByDistrict(a, b){
 		  var aDist = a.district;
 		  var bDist= b.district; 
 		  return ((aDist < bDist) ? -1 : ((aDist > bDist) ? 1 : 0));
 		};
 
-		var sorted_members = members.sort(SortByDistrict);
+		var sorted_reps = representatives.sort(SortByDistrict);
 
 		$('option.house').remove();
 		// define special case for at-large (no district, only house member)
-		for (var i in sorted_members){
+		for (var i in sorted_reps){
 			console.log("in loop")
-			if (sorted_members[i].district === 0) {
+			if (sorted_reps[i].district === 0) {
 				district = " - At-Large"
 			} else {
-				district = " - " + sorted_members[i].district
+				district = " - " + sorted_reps[i].district
 			};
 				
-			// cycle through list of members returned, to pull relevant info out & put in drop-down menu
+			// cycle through list of representatives returned, to pull relevant info out & put in drop-down menu
 			
-			$('#member_choice').append($("<option class=house></option>").val(sorted_members[i].leg_id).text(sorted_members[i].title + ". " + sorted_members[i].first + " " + sorted_members[i].last + " (" + sorted_members[i].party + district + ")")); 
+			$('#member_choice').append($("<option class=house></option>").val(sorted_reps[i].leg_id).text(sorted_reps[i].title + ". " + sorted_reps[i].first + " " + sorted_reps[i].last + " (" + sorted_reps[i].party + district + ")")); 
 
 			};
 		});
@@ -80,7 +132,9 @@ function showLegislators(evt) {
 
 	}
 
-//list possible members only after choose state.	
-$("#state_pick").change("state_value", showLegislators);
+//list possible representatives only after choose state.	
+$("#state_pick").change("state_value", showHouseMembers);
+
+
 </script>
 {% endblock %}

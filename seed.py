@@ -85,8 +85,8 @@ def load_industry_types():
             temp_data = line.rstrip()
             industry_info = temp_data.split(",")
 
-            industry_code = industry_info[1]
-            industry_name = capwords(industry_info[3])
+            industry_code = industry_info[1].strip('"')
+            industry_name = capwords(industry_info[3]).strip('"')
 
             temp_industry_object = Industry(industry_id=industry_code, industry_name=industry_name)
             db.session.add(temp_industry_object)
@@ -108,9 +108,11 @@ def load_indiv_contribution_data():
             value = line.split("|,|")
             if value[4] in current_legislator_dict:
                 # per CRP documentation. to make sure only get indiv. donors, check that contrib_id has a value. first need to strip whitespace.
+                # this worked on the test set but not when running the full thing, non-I-contributors still got in. unsure why. so, just deleted 
+                # from db directly by deleting all from contrib_legislators table where id was 11-spaces long.
                 value[2].replace(" ", "")
                 if value[2] != ' ':
-                    contrib_id = value[2]
+                    contrib_id = value[2].strip()
                     FEC_trans_id = value[1]
                     name = capwords(value[3])
                     contrib_type = "I"
@@ -149,7 +151,7 @@ def load_indiv_contribution_data():
                             print "rows of indiv data: ", index
                             db.session.commit()
             
-        db.session.commit()
+            db.session.commit()
 
 
 def load_pac_to_leg_contribution_data():
