@@ -13,7 +13,7 @@ var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x]; });
 
 // defines where on our webpage (now, "body") the viz appears
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#map_viz").append("svg:svg")
     .attr("width", width + margin.right + margin.left)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")

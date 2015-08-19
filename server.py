@@ -62,7 +62,6 @@ def show_legislators():
 
 	senators = []
 	representatives = []
-	# print state_legislators
 	
 	for member_object in state_legislators:
 		if member_object.chamber == "Senate":
@@ -75,44 +74,10 @@ def show_legislators():
 
 	#account for D.C./territories with no senators.
 	if not senators:
-		print "in house only loop"
 		return jsonify(state_selected=state_selected, representatives=representatives)
 	
 	else:
-		print "in senate loop"
 		return jsonify(state_selected=state_selected, senators=senators, representatives=representatives)
-	
-	# #get list of objects of senators & house members
-	# senators_state = Legislator.query.filter(Legislator.state == state_selected, Legislator.chamber == "Senate").all()
-
-	# #account for D.C./territories with no senators.
-	# if not senators_state:
-	# 	house_state = Legislator.query.filter(Legislator.state == state_selected, Legislator.chamber == "House").all()
-	# 	members = []
-	# 	print "members: ", members
-	# 	for item in house_state:
-	# 		member = item.serialize()
-	# 		members.append(member)
-		
-	# 	return jsonify(state_selected=state_selected, members=members)
-	
-	# else:
-	# 	#can't send objects to the ajax to parse so need to serialize (fn defined on class Legislator) to send a json object
-	# 	senator1 = senators_state[0].serialize()
-	# 	senator2 = senators_state[1].serialize()
-
-	# 	house_state = Legislator.query.filter(Legislator.state == state_selected, Legislator.chamber == "House").all()
-		
-	# 	#same except b/c I don't know how many members there are for any given state, need to created list of json objects.
-	# 	members = []
-	# 	for item in house_state:
-	# 		member = item.serialize()
-	# 		members.append(member)
-	
-
-		#sends a json object where each of the below variables is a key: value like in dict.  
-		#passing members as a list
-		# return jsonify(state_selected=state_selected, senator1=senator1, senator2=senator2, members=members)
 
 @app.route('/address_search', methods=["POST"])
 def show_members_for_address():
@@ -121,32 +86,29 @@ def show_members_for_address():
 
 	"""
 
-	lat_lon = request.form.get('coordinates')
-	latitude = request.form.get('coordinates')
-	print "request recieved: ", lat_lon
-	return lat_lon
-	#API call to Sunlight Foundation for legislators by lat/lon
-	# legislators_list = congress.locate_legislators_by_lat_lon(lat_lon)
-	# 	# lat=37.4770169, lon=-122.23780599999998
+	latitude = request.form.get('latitude')
+	longitude = request.form.get('longitude')
 	
-	# legislators_by_address = []
-	# crp_ids = []
-	# legislators_to_serialize = []
+	#API call to Sunlight Foundation for legislators by lat/lon
+	legislators_list = congress.locate_legislators_by_lat_lon(lat=latitude, lon=longitude)
 
-	# for legislator in legislators_list:
-	# 	crp_id = legislator.get('crp_id')
-	# 	crp_ids.append(crp_id)
+	legislators_by_address = []
+	crp_ids = []
+	legislators_to_serialize = []
+
+	for legislator in legislators_list:
+		crp_id = legislator.get('crp_id')
+		crp_ids.append(crp_id)
 		
-	# for item in crp_ids:
-	# 	member = Legislator.query.filter_by(leg_id = item).first()
-	# 	legislators_to_serialize.append(member)
+	for item in crp_ids:
+		member = Legislator.query.filter_by(leg_id = item).first()
+		legislators_to_serialize.append(member)
 
-	# for item in legislators_to_serialize:
-	# 	legislator = item.serialize()
-	# 	legislators_by_address.append(legislator)
+	for item in legislators_to_serialize:
+		legislator = item.serialize()
+		legislators_by_address.append(legislator)
 
-	# print "members: ", legislators_by_address
-	# return jsonify(legislators_by_address=legislators_by_address)
+	return jsonify(legislators_by_address=legislators_by_address)
 
 @app.route('/trail_map', methods=["GET"])
 def show_trail_map():
@@ -156,7 +118,11 @@ def show_trail_map():
 
 	session["member_choice_id"] = member_choice_id
 
-	return render_template("trail_map.html")
+	member = Legislator.query.filter_by(leg_id = member_choice_id).first()
+
+	member_info = member.serialize()
+
+	return render_template("trail_map.html", member_info=member_info)
 
 
 @app.route('/map_info.json', methods=["GET"])
