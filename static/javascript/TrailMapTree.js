@@ -7,7 +7,7 @@ var i = 0,
     root;
 
 var tree = d3.layout.tree()
-    .size([height, width]);
+    .size([height, width])
 
 var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x]; });
@@ -44,7 +44,7 @@ function update(source) {
 
   // Compute the new tree layout.
   var nodes = tree.nodes(root).reverse(),
-      links = tree.links(nodes);
+    links = tree.links(nodes);
 
   // Normalize for fixed-depth.
   nodes.forEach(function(d) { d.y = d.depth * 180; });
@@ -84,6 +84,7 @@ function update(source) {
 
   nodeUpdate.select("text")
       .style("fill-opacity", 1);
+
 
   // Transition exiting nodes to the parent's new position.
   var nodeExit = node.exit().transition()

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-<style> .node { cursor: pointer; } 
+<style> 
+.node { cursor: pointer; } 
 .node circle { fill: #fff; stroke: steelblue; stroke-width: 1.5px; } 
 .node text { font: 10px sans-serif; } 
 .link { fill: none; stroke: #ccc; stroke-width: 1.5px; } 
@@ -8,19 +9,30 @@
 
 
 
-<div id="map_viz"> DIV for D3 VISUAL</div>
+<div id="map_viz"> </div>
 
-<div id="sidebar">SIDEBAR of MEMBER INFO
+<div id="sidebar">
+	<img src="{{member_info.pict_link}}"> </img>
 	{{member_info.get("title")}}. {{member_info.get("first")}} {{member_info.get("last")}} ({{member_info.get("party")}}) <br>
 	{% if member_info.get("chamber") == "Senate" %}
 	
-	{{member_info.get("state")}}: {{member_info.get("sen_rank")}} <br>
+	{% set abbr = member_info.get("state") %}
+	
+	{{states.get(abbr) }}: {{member_info.get("sen_rank")}} <br>
+
 	
 	{% else %}
 	
-	{{member_info.get("state")}}: District: {{member_info.get("district")}} <br>
+	{% set abbr = member_info.get("state") %}
+
+	{{ states.get(abbr) }}: District: {{member_info.get("district")}} <br>
+	
 	{% endif %}
 
+	First elected: {{member_info.first_elected}}<br>
+	Official Website: <a href="{{member_info.off_website}}" target="new">{{member_info.off_website}}<br>
+	<a href="http://wwww.twitter.com/{{member_info.twitter_id}}" target="new">Twitter</a><br>
+	<a href="http://wwww.facebook.com/{{member_info.facebook_id}}" target="new">Facebook</a>
 
 </div>
 <script src="/static/javascript/d3.min.js"></script>
