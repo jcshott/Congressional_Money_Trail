@@ -1,6 +1,6 @@
 
 
-var margin = {top: 20, right: 120, bottom: 20, left: 220},
+var margin = {top: 20, right: 120, bottom: 50, left: 220},
     width = 960 - margin.right - margin.left,
     height = 800 - margin.top - margin.bottom;
 
@@ -18,12 +18,18 @@ var diagonal = d3.svg.diagonal()
 var svg = d3.select("#map_viz").append("svg:svg")
     .attr("width", width + margin.right + margin.left)
     .attr("height", height + margin.top + margin.bottom)
-  .append("g")
+    .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // var color = d3.scale.category20b();
 var color = d3.scale.ordinal()
-    .range(['rgb(84,48,5)','rgb(140,81,10)','rgb(191,129,45)','rgb(223,194,125)','rgb(246,232,195)','rgb(245,245,245)','rgb(199,234,229)','rgb(128,205,193)','rgb(53,151,143)','rgb(1,102,94)','rgb(0,60,48)']);
+    .range(['rgb(199,234,229)','rgb(128,205,193)','rgb(53,151,143)','rgb(1,102,94)',
+      'rgb(0,60,48)', 'rgb(84,48,5)','rgb(191,129,45)','rgb(223,194,125)',
+      'rgb(246,232,195)']);
+
+var div = d3.select("#map_viz").append("div")   
+    .attr("class", "tooltip")               
+    .style("opacity", 0);
 
 d3.json("/map_info.json", function(error, mapData) {
   if (error) throw error;
@@ -53,7 +59,7 @@ function update(source) {
     links = tree.links(nodes);
 
   // Normalize for fixed-depth.
-  nodes.forEach(function(d) { d.y = d.depth * 180; });
+  nodes.forEach(function(d) { d.y = d.depth * 200; });
 
   // Update the nodes…
   var node = svg.selectAll("g.node")
@@ -64,25 +70,30 @@ function update(source) {
       .attr("class", "node")
       .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
       .on("click", click)
-// Tooltip - style more in CSS using text.info selector
-      .on("mouseover", function(d) {
-      var g = d3.select(this); // The node
-      // The class is used to remove the additional text later
-      var info = g.append('text')
-         .classed('info', true)
-         .attr('x', 20)
-         .attr('y', 10)
-         .text('More info');
-  })
-  .on("mouseout", function() {
-      // Remove the info text on mouse out.
-      d3.select(this).select('text.info').remove();
-  });
+      .on("mouseover", function(d) {      
+            div.transition()        
+                .duration(200)      
+                .style("opacity", .9);      
+            div .html(d.industry + "<br/>"  + d.close)  
+                .style("left", (d3.event.pageX) + "px")     
+                .style("top", (d3.event.pageY - 28) + "px");    
+            })                  
+        .on("mouseout", function(d) {       
+            div.transition()        
+                .duration(500)      
+                .style("opacity", 0);   
+        });
 
   nodeEnter.append("circle")
       .attr("r", function(d) { return d.value; })
-      .style("fill", function (d) {
-        return color(d.industry);
+      .style("fill", function (d) { 
+        if (d.industry === "R") {
+          return "#A80000"
+        } else if (d.industry === "D"){
+          return "#0033CC"
+        } else {
+          return color(d.industry);
+        }
       });
 
 
@@ -100,7 +111,7 @@ function update(source) {
 
   nodeUpdate.select("circle")
       .attr("r", function(d) { return d.value; })
-      .style("opacity", function(d) { return d._children || d.children ? 1 : 0.5 });
+      .style("opacity", function(d) { return d._children || d.children ? 0.5 : 0.5 });
 
   nodeUpdate.select("text")
       .style("fill-opacity", 1);
@@ -135,17 +146,7 @@ function update(source) {
       .attr("stroke", function (d) {
         return color(d.target.industry);
       })
-// come back to figure out how to get circle to append to link instead of be part of link
-  // link.insert("circle", "g")
-  //     .attr("r", function (d) {
-  //       return d.target.value;
-  //     })
-  //     .attr ("cx", function (d){
-  //       return d.source.x0;
-  //     })
-  //     .attr("cy", function (d) {
-  //       return d.source.y0;
-  //     });
+      .attr("stroke-linecap", "round");
 
   // Transition links to their new position.
   link.transition()

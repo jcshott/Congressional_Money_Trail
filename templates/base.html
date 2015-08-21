@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Welcome to Congressional Money Trail</title>
+  <title>Follow the Money: Congressional Money Trail</title>
 
   <script src="/static/javascript/jquery-2.1.4.min.js"></script>
  <!--  <link rel="stylesheet" href="/static/bootstrap/css/bootstrap-theme.min.css.css">
@@ -9,21 +9,6 @@
 </head>
 
 <body>
-  
-  {% if 'email' in session %}
-    <a href='/logout' id="logout-link">Log Out</a>
-  {% else %}
-    <a href='/login' id="login-link">Log In</a> 
-  {% endif %}
-  
-
-  <hr>
-
-    {% with messages = get_flashed_messages() %}
-      {% for message in messages %}
-          <div id="flash-block">{{ message }}</div>
-      {% endfor %}
-    {% endwith %}
 
   {% block content %} put your content here {% endblock %}
 

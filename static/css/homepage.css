@@ -1,0 +1,33 @@
+
+/* The body has an iamge that spans the entire size of the page.
+   Everything is centered and in white. */
+
+body {
+    background: #333 url("/static/img/IMG_8398.jpg");
+    background-size: cover;
+
+    color: white;
+    text-align: center;
+}
+
+/* site-wrapper and site-wrapper-inner are to vertically center content using
+   table/table-cell vertical centering. */
+
+.site-wrapper {
+    display: table;
+    width: 100%;
+    height: 100%;
+}
+
+.site-wrapper-inner {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+/* The footer always appears at the bottom of the browser window. */
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;  /* required because fixed position */
+}

@@ -208,9 +208,11 @@ def create_contribution_dict(member_choice_id):
 	large_contrib["name"] = "Total Contributions from Large Donors: " '${:,.0f}'.format(sum_large_contrib)
 	large_contrib["children"] = top_ten_indiv_child_list
 	large_contrib["value"] = int(100*(sum_large_contrib/(sum_large_contrib+sum_small_contrib)))
+	large_contrib["industry"] = "Large"
 	
 	small_contrib["name"] = "Total Contributions from Small Donors: " '${:,.0f}'.format(sum_small_contrib)
 	small_contrib["value"] = int(100*(sum_small_contrib/(sum_large_contrib+sum_small_contrib)))
+	small_contrib["industry"] = "Small"
 
 	sum_i_contributions["name"] = "Contributions from Individuals: " '${:,.0f}'.format(indiv_sum)
 	sum_i_contributions["children"] = [large_contrib, small_contrib]
@@ -226,6 +228,7 @@ def create_contribution_dict(member_choice_id):
 	contributions["name"] = member
 	contributions["children"] = [sum_i_contributions, sum_p_contributions]
 	contributions["value"] = 25
+	contributions["industry"] = member_obj.party
 
 	return contributions
 
