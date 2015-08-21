@@ -86,15 +86,40 @@ def create_contribution_dict(member_choice_id):
 	top_ten_indiv_child_list = []
 	top_ten_pac_child_list = []
 
+## This method loses title and middle initial
+	# for tup in sorted_dict_indiv[:10]:
+	# 	contributor = Contributors.query.filter(Contributors.contrib_id == tup[0]).one()
+	# 	contrib_name = contributor.name.split(',')
+	# 	contrib_last = contrib_name[0]
+	# 	contrib_first = contrib_name[1].split(" ")
+	# 	contrib_first = contrib_first[1]
+	# 	print "second first ", contrib_first
+	# 	contrib_name = contrib_first + " " + contrib_last
+	# 	contrib_industry = contributor.industry.industry_name
+	# 	if contributor.industry:
+	# 		top_ten_indiv_child_list.append({"name": contrib_name, "value": 5, "industry": contrib_industry})
+	# 	else:
+	# 		top_ten_indiv_child_list.append({"name": contrib_name, "value": 5, "industry": "unknown"})
+
+## This method has the names last, first m.i. title
 
 	for tup in sorted_dict_indiv[:10]:
-		contrib_name = Contributors.query.get(tup[0]).name
-		top_ten_indiv_child_list.append({"name": contrib_name, "value": 5})
+		contributor = Contributors.query.filter(Contributors.contrib_id == tup[0]).one()
+		contrib_name = contributor.name
+		contrib_industry = contributor.industry.industry_name
+		if contributor.industry:
+			top_ten_indiv_child_list.append({"name": contrib_name, "value": 5, "industry": contrib_industry})
+		else:
+			top_ten_indiv_child_list.append({"name": contrib_name, "value": 5, "industry": "unknown"})
 
 	for tup in sorted_dict_pac[:10]:
-		contrib_name = Contributors.query.get(tup[0]).name
-		top_ten_pac_child_list.append({"name": contrib_name, "value": 5})
-
+		contributor = Contributors.query.filter(Contributors.contrib_id == tup[0]).one()
+		contrib_name = contributor.name
+		contrib_industry = contributor.industry.industry_name
+		if contributor.industry:
+			top_ten_pac_child_list.append({"name": contrib_name, "value": 5, "industry": contrib_industry})
+		else:
+			top_ten_pac_child_list.append({"name": contrib_name, "value": 5, "industry": "unknown"})
 
 
 	#### Query for the top individual to PAC and PAC to PAC donations
@@ -183,27 +208,24 @@ def create_contribution_dict(member_choice_id):
 	large_contrib["name"] = "Total Contributions from Large Donors: " '${:,.0f}'.format(sum_large_contrib)
 	large_contrib["children"] = top_ten_indiv_child_list
 	large_contrib["value"] = int(100*(sum_large_contrib/(sum_large_contrib+sum_small_contrib)))
-
+	
 	small_contrib["name"] = "Total Contributions from Small Donors: " '${:,.0f}'.format(sum_small_contrib)
 	small_contrib["value"] = int(100*(sum_small_contrib/(sum_large_contrib+sum_small_contrib)))
 
 	sum_i_contributions["name"] = "Contributions from Individuals: " '${:,.0f}'.format(indiv_sum)
 	sum_i_contributions["children"] = [large_contrib, small_contrib]
 	sum_i_contributions["value"] = int(100*(indiv_sum/(indiv_sum + pac_sum)))
-	sum_i_contributions["type"] = "blue"
+	sum_i_contributions["industry"] = "Individuals"
+
 
 	sum_p_contributions["name"] = "Contributions from PACs: " '${:,.0f}'.format(pac_sum)
 	sum_p_contributions["children"] = top_ten_pac_child_list
 	sum_p_contributions["value"] = int(100*(pac_sum/(indiv_sum + pac_sum)))
-	sum_p_contributions["type"] = "red"
-
-
-	# sum_i_contributions["size"] = (indiv_contributions/(indiv_contributions + pac_contributions))*100
-	# sum_p_contributions["size"] = (pac_contributions/(indiv_contributions + pac_contributions))*100
+	sum_p_contributions["industry"] = "PACs"
 
 	contributions["name"] = member
 	contributions["children"] = [sum_i_contributions, sum_p_contributions]
-	contributions["value"] = 10
+	contributions["value"] = 25
 
 	return contributions
 

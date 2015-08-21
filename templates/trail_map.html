@@ -2,9 +2,9 @@
 {% block content %}
 <style> 
 .node { cursor: pointer; } 
-.node circle { fill: #fff; stroke: steelblue; stroke-width: 1.5px; } 
+/*.node circle {stroke: steelblue; stroke-width: 1.5px; } */
 .node text { font: 10px sans-serif; } 
-.link { fill: none; stroke: #ccc; stroke-width: 1.5px; } 
+.link { fill: none; opacity: 0.5;} 
 </style>
 
 
@@ -12,6 +12,7 @@
 <div id="map_viz"> </div>
 
 <div id="sidebar">
+	<a href="/welcome"> Choose new Member of Congress to map </a>
 	<img src="{{member_info.pict_link}}"> </img>
 	{{member_info.get("title")}}. {{member_info.get("first")}} {{member_info.get("last")}} ({{member_info.get("party")}}) <br>
 	{% if member_info.get("chamber") == "Senate" %}

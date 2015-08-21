@@ -52,44 +52,44 @@ function geocodeAddress(geocoder) {
         if (senior_sen && junior_sen && house_rep) {
           $('#sen1').show();
           $('#sen1id').attr("value", senior_sen.leg_id);
-          $('#sen1name').attr("value", senior_sen.title + ". " + senior_sen.first + " " + senior_sen.last + " (" + senior_sen.party + " - " + senior_sen.sen_rank + " )");
+          $('#sen1name').html(senior_sen.title + ". " + senior_sen.first + " " + senior_sen.last + " (" + senior_sen.party + " - " + senior_sen.sen_rank + " )");
 
           $('#sen2').show();
           $('#sen2id').attr("value", junior_sen.leg_id);
-          $('#sen2name').attr("value", junior_sen.title + ". " + junior_sen.first + " " + junior_sen.last + " (" + junior_sen.party + " - " + junior_sen.sen_rank + " )");
+          $('#sen2name').html(junior_sen.title + ". " + junior_sen.first + " " + junior_sen.last + " (" + junior_sen.party + " - " + junior_sen.sen_rank + " )");
 
           $('#rep').show();
           $('#repId').attr("value", house_rep.leg_id);
-          $('#repName').attr("value", house_rep.title + ". " + house_rep.first + " " + house_rep.last + " (" + house_rep.party + " - " + house_rep.district + " )");
+          $('#repName').html(house_rep.title + ". " + house_rep.first + " " + house_rep.last + " (" + house_rep.party + " - " + house_rep.district + " )");
         }
 
         else if (senior_sen && junior_sen) {
           
           $('#sen1').show();
           $('#sen1id').attr("value", senior_sen.leg_id);
-          $('#sen1name').attr("value", senior_sen.title + ". " + senior_sen.first + " " + senior_sen.last + " (" + senior_sen.party + " - " + senior_sen.sen_rank + " )");
+          $('#sen1name').html(senior_sen.title + ". " + senior_sen.first + " " + senior_sen.last + " (" + senior_sen.party + " - " + senior_sen.sen_rank + " )");
 
           $('#sen2').show();
           $('#sen2id').attr("value", junior_sen.leg_id);
-          $('#sen2name').attr("value", junior_sen.title + ". " + junior_sen.first + " " + junior_sen.last + " (" + junior_sen.party + " - " + junior_sen.sen_rank + " )");
+          $('#sen2name').html(junior_sen.title + ". " + junior_sen.first + " " + junior_sen.last + " (" + junior_sen.party + " - " + junior_sen.sen_rank + " )");
         }
 
         else if (senior_sen) {
           $('#sen1').show();
           $('#sen1id').attr("value", senior_sen.leg_id);
-          $('#sen1name').attr("value", senior_sen.title + ". " + senior_sen.first + " " + senior_sen.last + " (" + senior_sen.party + " - " + senior_sen.sen_rank + " )");
+          $('#sen1name').html(senior_sen.title + ". " + senior_sen.first + " " + senior_sen.last + " (" + senior_sen.party + " - " + senior_sen.sen_rank + " )");
         }
 
         else if (junior_sen) {
           $('#sen2').show();
           $('#sen2id').attr("value", junior_sen.leg_id);
-          $('#sen2name').attr("value", junior_sen.title + ". " + junior_sen.first + " " + junior_sen.last + " (" + junior_sen.party + " - " + junior_sen.sen_rank + " )");
+          $('#sen2name').html(junior_sen.title + ". " + junior_sen.first + " " + junior_sen.last + " (" + junior_sen.party + " - " + junior_sen.sen_rank + " )");
         }
 
         else if (!(senior_sen || junior_sen)){
           $('#rep').show();
           $('#repId').attr("value", house_rep.leg_id);
-          $('#repName').attr("value", house_rep.title + ". " + house_rep.first + " " + house_rep.last + " (" + house_rep.party + " - " + house_rep.district + " )");
+          $('#repName').html(house_rep.title + ". " + house_rep.first + " " + house_rep.last + " (" + house_rep.party + " - " + house_rep.district + " )");
         }
 
         })

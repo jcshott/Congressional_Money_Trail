@@ -3,10 +3,14 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.sql import label
+import requests, os, sqlite3, operator
 
 #Create connection to database
 
 db = SQLAlchemy()
+
+db_connection = sqlite3.connect("contributions.db", check_same_thread=False)
+db_cursor = db_connection.cursor()
 
 ####################################################################
 #Model definitions
@@ -63,7 +67,9 @@ class Legislator(db.Model):
 		    'off_website': self.off_website,
 		    'open_cong_url': self.open_cong_url,
 		    'first_elected': self.first_elected
-		    } 
+		    }
+
+
 
 class Contrib_leg(db.Model):
 	"""data on contributions to Members of Congress
@@ -98,7 +104,6 @@ class Contributors(db.Model):
 		Political Action Committees (PACs) (indicated by 'C')
 
 	"""
-
 	__tablename__='contributors'
 
 	contrib_id = db.Column(db.String(15), primary_key=True)
@@ -117,6 +122,61 @@ class Contributors(db.Model):
 	def __repr__(self):
 		return "<Contributor Name=%s, Type=%s, ID=%s>" % (self.name, self.contrib_type, self.contrib_id)
 
+	def get_top_indiv_to_pac(self):
+		""" Get contributions to PACs 
+		for a given PAC id, returns top 10 individual contributors to that pac from the contrib_pac table"""
+
+		indiv_to_pac_dict = {}
+
+		QUERY = """
+		SELECT contrib_pacs.amount, contributors.name
+		FROM contrib_pacs JOIN contributors USING (contrib_id)
+		WHERE contrib_pacs.recpt_id = ? AND contributors.contrib_type = 'I'
+		"""
+		db_cursor.execute(QUERY, (self.contrib_id,))
+
+		indiv_to_pac_cont = db_cursor.fetchall()
+		
+		indiv_to_pac_sum = 0
+
+		#fills dictionary of all individual contributors to a PAC with name: amount given.
+		for item in indiv_to_pac_cont:
+			indiv_to_pac_sum += float(item[0])
+			indiv_to_pac_dict[item[1]] = indiv_to_pac_dict.get(item[1], 0) + item[0]
+
+		#sort our indiv. contributors by amount given most -> least
+		sorted_indiv2pac = sorted(indiv_to_pac_dict.items(), key=operator.itemgetter(0), reverse=True)
+
+		#return list of 10 tuples: contributor name and amount given
+		return sorted_pac2pac[:10]
+
+	def get_top_pac_to_pac(self):
+		""" Get contributions to PACs 
+		for a given PAC id, returns top 10 PAC contributors to that pac from the contrib_pac table"""
+
+		pac_to_pac_dict = {}
+	
+		QUERY = """
+        SELECT contrib_pacs.amount, contributors.name
+        FROM contrib_pacs JOIN contributors USING (contrib_id)
+        WHERE contrib_pacs.recpt_id = ? AND contributors.contrib_type = 'C'
+        """
+		db_cursor.execute(QUERY, (self.contrib_id,))
+
+		pac_to_pac_cont = db_cursor.fetchall()
+		
+		pac_to_pac_sum = 0
+
+		#fills dictionary of all PAC contributors to a PAC with name: amount given.
+		for item in pac_to_pac_cont:
+			pac_to_pac_sum += float(item[0])
+			pac_to_pac_dict[item[1]] = pac_to_pac_dict.get(item[0], 0) + item[0]
+
+		#sort our PAC contributors by amount given most -> least
+		sorted_pac2pac = sorted(pac_to_pac_dict.items(), key=operator.itemgetter(0), reverse=True)
+
+		#return list of 10 tuples: contributor name and amount given
+		return sorted_pac2pac[:10]
 
 class Type_contrib(db.Model):
 	"""Details on what contributor types there are. I for Indivdual; C for PACs 
