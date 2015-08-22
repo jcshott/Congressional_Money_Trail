@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id="sidebar"> 
+<form id="state_pick" method="post" action="/state_info.json">
+ 
+  <label> Pick a state:</label>
+    <select name="state" id="state_value">
+    	<option> Choose a State </option>
+    {% for state in states %}
+      <option value="{{ state[0] }}"> {{ state[1] }} </option>
+    {% endfor %}  
+</select>
+</form>
+
+<h2> Pick a Member to Map </h2>
+
+<form id="member_list" method="get" action='/trail_map'> 
+	<label>Select a Member of Congress: </label>
+	
+	<select name="member" id="member_choice">
+
+
+<input type="submit" id="submit_member" value="Map this Member">
+</form>
+
+</div>
+
+{% endblock %}
