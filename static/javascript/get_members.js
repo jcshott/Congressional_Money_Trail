@@ -104,7 +104,7 @@ function geocodeAddress(geocoder) {
 function showLegislators(evt) {
 
   evt.preventDefault();
-  $('#member_choice option').remove();
+  $('.member_choice option').remove();
   $('#your_district_reps').html();
   //post request takes a dictionary so send key/value pair of the key I want to get 
   state_value = {'state_value': $("#state_value").val()};
@@ -117,15 +117,15 @@ function showLegislators(evt) {
       
 
     if (result.senators) {
-      $('#member_choice').append("<option class=chamber_label>" + "Senators" +"</option>");
+      $('#member_list').append("<option class=chamber_label>" + "Senators" +"</option>");
       
-      for (var i in result.senators) {$('#member_choice').append($("<option class=senate></option>").val(result.senators[i].leg_id).text(result.senators[i].title + ". " + result.senators[i].first + " " + result.senators[i].last + " (" + result.senators[i].party + ")")); }
+      for (var i in result.senators) {$('#member_list').append($("<option class=senate></option>").val(result.senators[i].leg_id).text(result.senators[i].title + ". " + result.senators[i].first + " " + result.senators[i].last + " (" + result.senators[i].party + ")")); }
     }
     
     // empty seats
     
     if (result.representatives.length > 0) {
-      $('#member_choice').append("<option class=chamber_label>" + "House Members" +"</option>");
+      $('#member_list').append("<option class=chamber_label>" + "House Members" +"</option>");
       
       var representatives = result.representatives
       
@@ -148,7 +148,7 @@ function showLegislators(evt) {
           
         // cycle through list of representatives returned, to pull relevant info out & put in drop-down menu
         
-        $('#member_choice').append($("<option class=house></option>").val(sorted_reps[i].leg_id).text(sorted_reps[i].title + ". " + sorted_reps[i].first + " " + sorted_reps[i].last + " (" + sorted_reps[i].party + district + ")")); 
+        $('#member_list').append($("<option class=house></option>").val(sorted_reps[i].leg_id).text(sorted_reps[i].title + ". " + sorted_reps[i].first + " " + sorted_reps[i].last + " (" + sorted_reps[i].party + district + ")")); 
 
         };
     } else {

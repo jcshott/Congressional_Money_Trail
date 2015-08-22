@@ -43,6 +43,9 @@ def index():
 def show_main_page():
 	"""all the magic"""
 
+	if session:
+		session.clear()
+
 	states = ordered_tuples(STATE_DICT)
 
 	# also need info in dict form to access on profile div
@@ -128,16 +131,18 @@ def show_trail_map():
 	
 	member_choice_id = request.form.get("member")
 
+	print "memId: ", member_choice_id
+	
 	session["member_choice_id"] = member_choice_id
 
 	member = Legislator.query.filter_by(leg_id = member_choice_id).first()
 
 	member_info = member.serialize()
 
-	# states = STATE_DICT
+	states = STATE_DICT
 	
-	return member_info
-	# return render_template("trail_map.html", member_info=member_info, states=states)
+	# return jsonify(member_info)
+	return render_template("memberprofilehold.html", member_info=member_info, states=states)
 
 
 @app.route('/map_info.json', methods=["GET"])
@@ -146,8 +151,10 @@ def get_tree_data():
 	helper_functions file """
 
 	member_choice_id = session.get("member_choice_id")
-	
+
 	contributions = create_contribution_dict(member_choice_id)
+
+	session.clear()
 
 	return jsonify(contributions)
 	

@@ -106,8 +106,9 @@ def create_contribution_dict(member_choice_id):
 	for tup in sorted_dict_indiv[:10]:
 		contributor = Contributors.query.filter(Contributors.contrib_id == tup[0]).one()
 		contrib_name = contributor.name
-		contrib_industry = contributor.industry.industry_name
+		
 		if contributor.industry:
+			contrib_industry = contributor.industry.industry_name
 			top_ten_indiv_child_list.append({"name": contrib_name, "value": 5, "industry": contrib_industry})
 		else:
 			top_ten_indiv_child_list.append({"name": contrib_name, "value": 5, "industry": "unknown"})
@@ -115,8 +116,9 @@ def create_contribution_dict(member_choice_id):
 	for tup in sorted_dict_pac[:10]:
 		contributor = Contributors.query.filter(Contributors.contrib_id == tup[0]).one()
 		contrib_name = contributor.name
-		contrib_industry = contributor.industry.industry_name
+		
 		if contributor.industry:
+			contrib_industry = contributor.industry.industry_name
 			top_ten_pac_child_list.append({"name": contrib_name, "value": 5, "industry": contrib_industry})
 		else:
 			top_ten_pac_child_list.append({"name": contrib_name, "value": 5, "industry": "unknown"})

@@ -3,31 +3,33 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvOEtQIfXWSZq8tKg2S2RrHhOkikKxcY0&callback=initialize" async defer></script>
 <script src="/static/javascript/get_members.js"></script>
 
-<div id="sidebar"> 
+<div id="sidebar">
 
-<form id="state_pick" method="post" action="/state_info.json">
- 
-  <label> Pick a state:</label>
-    <select name="state" id="state_value">
-    	<option> Choose a State </option>
-    {% for state in states %}
-      <option value="{{ state[0] }}"> {{ state[1] }} </option>
-    {% endfor %}  
-</select>
-</form>
-<div id="legislators_display" style="display: none;"> 
+	<form id="state_pick" method="post" action="/state_info.json">
+	 
+	  <label> Pick a state:</label>
+	    <select name="state" id="state_value">
+	    	<option> Choose a State </option>
+	    {% for state in states %}
+	      <option value="{{ state[0] }}"> {{ state[1] }} </option>
+	    {% endfor %}  
+	</select>
+	</form>
 
-<h2> Pick a Member to Map </h2>
+	<div id="legislators_display" style="display: none;"> 
 
-<form class='repsDistrict' method="get" action='/trail_map'> 
-	<label>Select a Member of Congress: </label>
-	
-	<select name="member" id="member_choice">
+	<h2> Pick a Member to Map </h2>
+
+	<form class='repsDistrict' method="get" action='/trail_map'> 
+		<label>Select a Member of Congress: </label>
+		
+		<select name="member" class="member_choice" id="member_list">
 
 
-<input type="submit" id="submit_member" value="Map this Member">
-</form>
-</div>
+	<input type="submit" id="submit_member" value="Map this Member">
+	</form>
+	</div>
+
 <!-- find members by address form -->
 <div id="pick_by_address"> OR 
 	<form>
@@ -35,63 +37,85 @@
 		<input id="address" type="textbox">
 		<input type="submit" id="submit_geocode" value="Find My Members of Congress">
 	</form>
-
-<div id="your_district_reps" style="display: none;"> Your Congressional Delegation (choose one):
-	<p> Senate </p>
-	<form class='repsDistrict' id="sen1" method="get" action='/trail_map' style="display: none;">
-		<!-- in j.s. I'll have the values for this correspond to legislator_id I need to query & name of member -->
-		<input id="sen1id" type="hidden" name="member">
-		<input class="senator" type="submit" value="Map this Member">
-		<label id="sen1name"></label>
-	</input>
-	</form>
-	<form class='repsDistrict' id="sen2" method="get" action='/trail_map' style="display: none;">
-		<!-- in j.s. I'll have the values for this correspond to legislator_id I need to query & name of member -->
-		<input id="sen2id" type="hidden" name="member">
-		<input class="senator" type="submit" value="Map this Member">
-			<label id="sen2name"></label>
+</div>
+	<div id="your_district_reps" style="display: none;"> Your Congressional Delegation (choose one):
+		<p> Senate </p>
+		<form class='repsDistrict' id="sen1" method="get" action='/trail_map' style="display: none;">
+			<!-- in j.s. I'll have the values for this correspond to legislator_id I need to query & name of member -->
+			<input class="member_choice" id="sen1id" type="hidden" name="member">
+			<input class="senator" type="submit" value="Map this Member">
+			<label id="sen1name"></label>
 		</input>
-	<p> House </p>
-	</form>
-		<form class='repsDistrict' id="rep" method="get" action='/trail_map' style="display: none;">
-		<!-- in j.s. I'll have the values for this correspond to legislator_id I need to query & name of member -->
-		<input id="repId" type="hidden" name="member">
-		<input class="representative" type="submit" value="Map this Member">
-			<label id="repName"></label>
-		</input>
-	</form>
+		</form>
+		<form class='repsDistrict' id="sen2" method="get" action='/trail_map' style="display: none;">
+			<!-- in j.s. I'll have the values for this correspond to legislator_id I need to query & name of member -->
+			<input class="member_choice" id="sen2id" type="hidden" name="member">
+			<input class="senator" type="submit" value="Map this Member">
+				<label id="sen2name"></label>
+			</input>
+		<p> House </p>
+		</form>
+			<form class='repsDistrict' id="rep" method="get" action='/trail_map' style="display: none;">
+			<!-- in j.s. I'll have the values for this correspond to legislator_id I need to query & name of member -->
+			<input class="member_choice" id="repId" type="hidden" name="member">
+			<input class="representative" type="submit" value="Map this Member">
+				<label id="repName"></label>
+			</input>
+		</form>
+	</div>
 
-</div>	
 </div>
 
 
-
+<button id="new_choice" style="display: none;">Map a new Member of Congress </button>
 
 <div id="map_viz" style="display: none;"> </div>
 
+
+
 <script src="/static/javascript/d3.min.js"></script>
 <script src="/static/javascript/TrailMapTree.js"></script>
-
-
-
 <script>
-
 //list possible representatives only after choose state.  
 $("#state_pick").change("state_value", showLegislators);
 
-// TODO: figure out why jquery not stopping the form submit
+// bind showing the TrailMapTree function call to the event named show map that is called after member choice is submitted (below)
+$("#map_viz").bind("showMap", showTrailMapTree);
+
 // send member_id to route that will send back info for member_profile
 $(".repsDistrict").on("submit", function (evt) {
 
-	console.log("in jquery");
-
 	evt.preventDefault();
 
-	member = {'member': $("#member").val()};
+	member = {'member': $(".member_choice").val()};
+
 	$.post("/trail_map", member, function (result){
-		$("#member_profile").show();
+		console.log("in ajax call")
+		// show the map visualization div and trigger the function call to d3 j.s. of TrailMapTree
+		$("#map_viz").show('slow', function () {
+			console.log("in map_viz call")
+			 $(this).trigger('showMap');
+		});
+
+		$("#legislators_display").hide();
+		$("#state_pick").hide();
+		$("#pick_by_address").hide();
+		$("#your_district_reps").hide();
+		$("#new_choice").show();
+		$("#sidebar").append(result);
 
 	});
+});
+
+$("#new_choice").on("click", function (evt){
+	$("#map_viz").empty();
+	$("#state_pick").show();
+	$("#pick_by_address").show();
+	$("#new_choice").hide();
+	$("#member_profile").remove();
 })
+
 </script>
+
+
 {% endblock %}

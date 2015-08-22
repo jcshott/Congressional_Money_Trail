@@ -1,4 +1,4 @@
-
+function showTrailMapTree() {
 
 var margin = {top: 20, right: 120, bottom: 50, left: 220},
     width = 960 - margin.right - margin.left,
@@ -84,8 +84,8 @@ function update(source) {
             div.transition()        
                 .duration(500)      
                 .style("opacity", 0);   
-        })
-        .attr("data-legend", function (d) { return d.industry});
+        });
+        // .attr("data-legend", function (d) { return d.industry});
 
   nodeEnter.append("circle")
       .attr("r", function(d) { return d.value; })
@@ -173,11 +173,11 @@ function update(source) {
   });
 }
 
-legend = svg.append("g")
-    .attr("class","legend")
-    .attr("transform","translate(50,30)")
-    .style("font-size","12px")
-    .call(d3.legend)
+// legend = svg.append("g")
+//     .attr("class","legend")
+//     .attr("transform","translate(50,30)")
+//     .style("font-size","12px")
+//     .call(d3.legend)
 
 // Toggle children on click.
 function click(d) {
@@ -189,4 +189,8 @@ function click(d) {
     d._children = null;
   }
   update(d);
+};
+
 }
+
+
