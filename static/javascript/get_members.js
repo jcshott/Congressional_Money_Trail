@@ -32,9 +32,6 @@ function geocodeAddress(geocoder) {
         var legislators = result.legislators_by_address
 
         for (var i in legislators) {
-          console.log(legislators[i].chamber)
-          console.log(legislators[i].sen_rank)
-          console.log(legislators[i].leg_id)
           
           if (legislators[i].chamber === "Senate" && legislators[i].sen_rank === "Senior Seat"){
             var senior_sen = legislators[i]
@@ -112,15 +109,12 @@ function showLegislators(evt) {
   //post request takes a dictionary so send key/value pair of the key I want to get 
   state_value = {'state_value': $("#state_value").val()};
 
-  console.log(state_value)
 
   //ajax that sends the state selected and gets back the json values id'd on server.
   //parse and put into the dropdown menu. assigning the leg_id to the value of the selection so can grab that on server side to query for contribution information.
 
   $.post("/state_info", state_value, function (result) {
-      console.log(result)
-      console.log(result.representatives)
-      console.log(result.representatives.length)
+      
 
     if (result.senators) {
       $('#member_choice').append("<option class=chamber_label>" + "Senators" +"</option>");

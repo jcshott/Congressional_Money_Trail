@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvOEtQIfXWSZq8tKg2S2RrHhOkikKxcY0&callback=initialize" async defer></script>
+<script src="/static/javascript/get_members.js"></script>
+
 <div id="sidebar"> 
+
 <form id="state_pick" method="post" action="/state_info.json">
  
   <label> Pick a state:</label>
@@ -11,10 +15,11 @@
     {% endfor %}  
 </select>
 </form>
+<div id="legislators_display" style="display: none;"> 
 
 <h2> Pick a Member to Map </h2>
 
-<form id="member_list" method="get" action='/trail_map'> 
+<form class='repsDistrict' method="get" action='/trail_map'> 
 	<label>Select a Member of Congress: </label>
 	
 	<select name="member" id="member_choice">
@@ -22,7 +27,71 @@
 
 <input type="submit" id="submit_member" value="Map this Member">
 </form>
+</div>
+<!-- find members by address form -->
+<div id="pick_by_address"> OR 
+	<form>
+	<label>Enter Address to Find Your Members:</label>
+		<input id="address" type="textbox">
+		<input type="submit" id="submit_geocode" value="Find My Members of Congress">
+	</form>
 
+<div id="your_district_reps" style="display: none;"> Your Congressional Delegation (choose one):
+	<p> Senate </p>
+	<form class='repsDistrict' id="sen1" method="get" action='/trail_map' style="display: none;">
+		<!-- in j.s. I'll have the values for this correspond to legislator_id I need to query & name of member -->
+		<input id="sen1id" type="hidden" name="member">
+		<input class="senator" type="submit" value="Map this Member">
+		<label id="sen1name"></label>
+	</input>
+	</form>
+	<form class='repsDistrict' id="sen2" method="get" action='/trail_map' style="display: none;">
+		<!-- in j.s. I'll have the values for this correspond to legislator_id I need to query & name of member -->
+		<input id="sen2id" type="hidden" name="member">
+		<input class="senator" type="submit" value="Map this Member">
+			<label id="sen2name"></label>
+		</input>
+	<p> House </p>
+	</form>
+		<form class='repsDistrict' id="rep" method="get" action='/trail_map' style="display: none;">
+		<!-- in j.s. I'll have the values for this correspond to legislator_id I need to query & name of member -->
+		<input id="repId" type="hidden" name="member">
+		<input class="representative" type="submit" value="Map this Member">
+			<label id="repName"></label>
+		</input>
+	</form>
+
+</div>	
 </div>
 
+
+
+
+<div id="map_viz" style="display: none;"> </div>
+
+<script src="/static/javascript/d3.min.js"></script>
+<script src="/static/javascript/TrailMapTree.js"></script>
+
+
+
+<script>
+
+//list possible representatives only after choose state.  
+$("#state_pick").change("state_value", showLegislators);
+
+// TODO: figure out why jquery not stopping the form submit
+// send member_id to route that will send back info for member_profile
+$(".repsDistrict").on("submit", function (evt) {
+
+	console.log("in jquery");
+
+	evt.preventDefault();
+
+	member = {'member': $("#member").val()};
+	$.post("/trail_map", member, function (result){
+		$("#member_profile").show();
+
+	});
+})
+</script>
 {% endblock %}

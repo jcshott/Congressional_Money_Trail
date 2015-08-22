@@ -39,20 +39,28 @@ def index():
 	return render_template("homepage.html")
 
 
-@app.route('/login')
-def log_in():
-	"""add to session if they log-in via FB or Twitter allows to share via social media"""
+@app.route('/main')
+def show_main_page():
+	"""all the magic"""
 
-@app.route('/welcome')
-def welcome():
-	"""page where user selects legislator to map"""
-	#passing info to jinja template so I can make drop-down of all states/territories in US
-	
+	states = ordered_tuples(STATE_DICT)
+
+	# also need info in dict form to access on profile div
 	state_dict = STATE_DICT
 
-	states = ordered_tuples(state_dict)
+	return render_template("main.html", states=states, state_dict=state_dict)
 
-	return render_template("welcome.html", states=states)
+
+# @app.route('/welcome')
+# def welcome():
+# 	"""page where user selects legislator to map"""
+# 	#passing info to jinja template so I can make drop-down of all states/territories in US
+	
+# 	state_dict = STATE_DICT
+
+# 	states = ordered_tuples(state_dict)
+
+# 	return render_template("welcome.html", states=states)
 
 @app.route('/state_info', methods=["POST"])
 def show_legislators():
@@ -114,11 +122,11 @@ def show_members_for_address():
 
 	return jsonify(legislators_by_address=legislators_by_address)
 
-@app.route('/trail_map', methods=["GET"])
+@app.route('/trail_map', methods=["POST"])
 def show_trail_map():
 	"""Page where D3 map and other info on selected Member of Congress will display"""
 	
-	member_choice_id = request.args.get("member")
+	member_choice_id = request.form.get("member")
 
 	session["member_choice_id"] = member_choice_id
 
@@ -126,9 +134,10 @@ def show_trail_map():
 
 	member_info = member.serialize()
 
-	states = STATE_DICT
+	# states = STATE_DICT
 	
-	return render_template("trail_map.html", member_info=member_info, states=states)
+	return member_info
+	# return render_template("trail_map.html", member_info=member_info, states=states)
 
 
 @app.route('/map_info.json', methods=["GET"])

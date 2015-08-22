@@ -72,12 +72,11 @@ function update(source) {
       .attr("class", "node")
       .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
       .on("click", click)
-      .attr("data-legend",function(d) { return d.industry})
       .on("mouseover", function(d) {      
             div.transition()        
                 .duration(200)      
                 .style("opacity", .9);      
-            div .html(d.industry + "<br/>"  + d.close)  
+            div .html(d.industry)  
                 .style("left", (d3.event.pageX) + "px")     
                 .style("top", (d3.event.pageY - 28) + "px");    
             })                  
@@ -85,7 +84,8 @@ function update(source) {
             div.transition()        
                 .duration(500)      
                 .style("opacity", 0);   
-        });
+        })
+        .attr("data-legend", function (d) { return d.industry});
 
   nodeEnter.append("circle")
       .attr("r", function(d) { return d.value; })
@@ -98,6 +98,7 @@ function update(source) {
           return color(d.industry);
         }
       });
+
 
 
   nodeEnter.append("text")
