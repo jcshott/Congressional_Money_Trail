@@ -25,11 +25,13 @@ var svg = d3.select("#map_viz").append("svg:svg")
 var color = d3.scale.ordinal()
     .range(['rgb(199,234,229)','rgb(128,205,193)','rgb(53,151,143)','rgb(1,102,94)',
       'rgb(0,60,48)', 'rgb(84,48,5)','rgb(191,129,45)','rgb(223,194,125)',
-      'rgb(246,232,195)']);
+      'rgb(246,232,195)'])
 
 var div = d3.select("#map_viz").append("div")   
     .attr("class", "tooltip")               
     .style("opacity", 0);
+
+
 
 d3.json("/map_info.json", function(error, mapData) {
   if (error) throw error;
@@ -70,6 +72,7 @@ function update(source) {
       .attr("class", "node")
       .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
       .on("click", click)
+      .attr("data-legend",function(d) { return d.industry})
       .on("mouseover", function(d) {      
             div.transition()        
                 .duration(200)      
@@ -168,6 +171,12 @@ function update(source) {
     d.y0 = d.y;
   });
 }
+
+legend = svg.append("g")
+    .attr("class","legend")
+    .attr("transform","translate(50,30)")
+    .style("font-size","12px")
+    .call(d3.legend)
 
 // Toggle children on click.
 function click(d) {
