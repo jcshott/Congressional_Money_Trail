@@ -54,17 +54,6 @@ def show_main_page():
 	return render_template("main.html", states=states, state_dict=state_dict)
 
 
-# @app.route('/welcome')
-# def welcome():
-# 	"""page where user selects legislator to map"""
-# 	#passing info to jinja template so I can make drop-down of all states/territories in US
-	
-# 	state_dict = STATE_DICT
-
-# 	states = ordered_tuples(state_dict)
-
-# 	return render_template("welcome.html", states=states)
-
 @app.route('/state_info', methods=["POST"])
 def show_legislators():
 	"""when a state is selected, show the list of legislators from that state"""
@@ -131,8 +120,6 @@ def show_trail_map():
 	
 	member_choice_id = request.form.get("member")
 
-	print "memId: ", member_choice_id
-	
 	session["member_choice_id"] = member_choice_id
 
 	member = Legislator.query.filter_by(leg_id = member_choice_id).first()
@@ -141,7 +128,6 @@ def show_trail_map():
 
 	states = STATE_DICT
 	
-	# return jsonify(member_info)
 	return render_template("memberprofilehold.html", member_info=member_info, states=states)
 
 
@@ -154,7 +140,6 @@ def get_tree_data():
 
 	contributions = create_contribution_dict(member_choice_id)
 
-	session.clear()
 
 	return jsonify(contributions)
 	

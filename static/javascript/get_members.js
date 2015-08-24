@@ -26,75 +26,36 @@ function geocodeAddress(geocoder) {
       var coordinates = {'latitude': latitude, 'longitude': longitude}
 
         $.post("/address_search", coordinates, function (result) {
+        
+        $('#repsByAddress').html();
+        $('#your_district_reps').show();
 
-        $('#your_district_reps').show()
 
         var legislators = result.legislators_by_address
 
-        for (var i in legislators) {
-          
-          if (legislators[i].chamber === "Senate" && legislators[i].sen_rank === "Senior Seat"){
-            var senior_sen = legislators[i]
-            }
-
-          else if (legislators[i].chamber === "Senate" && legislators[i].sen_rank === "Junior Seat"){
-            var junior_sen = legislators[i]
-            }
-          else {
-            var house_rep = legislators[i]
+        for (var i in legislators) { 
+          if (legislators[i].chamber === "House" && legislators[i].district === 0) {
+              district = legislators[i].state
+            } else if (legislators[i].chamber === "House") {
+              district = legislators[i].district
+            };
           }
-        
-        // handle what members show up depending if there are vacant seats or its a house member only (i.e.delegates)  
-        }
-        if (senior_sen && junior_sen && house_rep) {
-          $('#sen1').show();
-          $('#sen1id').attr("value", senior_sen.leg_id);
-          $('#sen1name').html(senior_sen.title + ". " + senior_sen.first + " " + senior_sen.last + " (" + senior_sen.party + " - " + senior_sen.sen_rank + " )");
-
-          $('#sen2').show();
-          $('#sen2id').attr("value", junior_sen.leg_id);
-          $('#sen2name').html(junior_sen.title + ". " + junior_sen.first + " " + junior_sen.last + " (" + junior_sen.party + " - " + junior_sen.sen_rank + " )");
-
-          $('#rep').show();
-          $('#repId').attr("value", house_rep.leg_id);
-          $('#repName').html(house_rep.title + ". " + house_rep.first + " " + house_rep.last + " (" + house_rep.party + " - " + house_rep.district + " )");
-        }
-
-        else if (senior_sen && junior_sen) {
           
-          $('#sen1').show();
-          $('#sen1id').attr("value", senior_sen.leg_id);
-          $('#sen1name').html(senior_sen.title + ". " + senior_sen.first + " " + senior_sen.last + " (" + senior_sen.party + " - " + senior_sen.sen_rank + " )");
+        $('#repsByAddress').html("Your Congressional Delegation for District " + district);
+         
+        $('.member_choice option').remove();
 
-          $('#sen2').show();
-          $('#sen2id').attr("value", junior_sen.leg_id);
-          $('#sen2name').html(junior_sen.title + ". " + junior_sen.first + " " + junior_sen.last + " (" + junior_sen.party + " - " + junior_sen.sen_rank + " )");
+        for (var i in legislators) {
+                           
+          $('#address_member_list').append($("<option class='member_choice'></option>").val(legislators[i].leg_id).text(legislators[i].title + ". " + legislators[i].first + " " + legislators[i].last + " (" + legislators[i].party + ")"));
         }
-
-        else if (senior_sen) {
-          $('#sen1').show();
-          $('#sen1id').attr("value", senior_sen.leg_id);
-          $('#sen1name').html(senior_sen.title + ". " + senior_sen.first + " " + senior_sen.last + " (" + senior_sen.party + " - " + senior_sen.sen_rank + " )");
-        }
-
-        else if (junior_sen) {
-          $('#sen2').show();
-          $('#sen2id').attr("value", junior_sen.leg_id);
-          $('#sen2name').html(junior_sen.title + ". " + junior_sen.first + " " + junior_sen.last + " (" + junior_sen.party + " - " + junior_sen.sen_rank + " )");
-        }
-
-        else if (!(senior_sen || junior_sen)){
-          $('#rep').show();
-          $('#repId').attr("value", house_rep.leg_id);
-          $('#repName').html(house_rep.title + ". " + house_rep.first + " " + house_rep.last + " (" + house_rep.party + " - " + house_rep.district + " )");
-        }
-
-        })
+                
+        });
 
       }
 
      else {
-      alert('Geocode was not successful for the following reason: ' + status);
+      alert('Address could not be found for the following reason: ' + status);
     }
   });
 }
@@ -117,15 +78,15 @@ function showLegislators(evt) {
       
 
     if (result.senators) {
-      $('#member_list').append("<option class=chamber_label>" + "Senators" +"</option>");
+      $('#member_list').append("<option class='chamber_label'>" + "Senators" +"</option>");
       
-      for (var i in result.senators) {$('#member_list').append($("<option class=senate></option>").val(result.senators[i].leg_id).text(result.senators[i].title + ". " + result.senators[i].first + " " + result.senators[i].last + " (" + result.senators[i].party + ")")); }
+      for (var i in result.senators) {$('#member_list').append($("<option class='member_choice'></option>").val(result.senators[i].leg_id).text(result.senators[i].title + ". " + result.senators[i].first + " " + result.senators[i].last + " (" + result.senators[i].party + ")")); }
     }
     
-    // empty seats
+    // check for empty seats
     
     if (result.representatives.length > 0) {
-      $('#member_list').append("<option class=chamber_label>" + "House Members" +"</option>");
+      $('#member_list').append("<option class='chamber_label'>" + "House Members" +"</option>");
       
       var representatives = result.representatives
       
@@ -148,11 +109,12 @@ function showLegislators(evt) {
           
         // cycle through list of representatives returned, to pull relevant info out & put in drop-down menu
         
-        $('#member_list').append($("<option class=house></option>").val(sorted_reps[i].leg_id).text(sorted_reps[i].title + ". " + sorted_reps[i].first + " " + sorted_reps[i].last + " (" + sorted_reps[i].party + district + ")")); 
+        $('#member_list').append($("<option class='member_choice'></option>").val(sorted_reps[i].leg_id).text(sorted_reps[i].title + ". " + sorted_reps[i].first + " " + sorted_reps[i].last + " (" + sorted_reps[i].party + district + ")")); 
 
         };
     } else {
-      $('#your_district_reps').html("Sorry, that seat is vacant")
+      $('#member_list').append($("<option ></option>").text("Seat is vacant, choose again."));
+      $('#submit_member').attr("class", "disabled");
     }
 
     });

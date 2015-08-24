@@ -1,7 +1,10 @@
+// for key - append another g with squares/circles that have the same data attached and color them then add text that is the text of data(industry)
+//look at axis to define what you are looking at in the tree
+
 function showTrailMapTree() {
 
-var margin = {top: 20, right: 120, bottom: 50, left: 220},
-    width = 960 - margin.right - margin.left,
+var margin = {top: 20, right: 50, bottom: 50, left: 300},
+    width = 2000 - margin.right - margin.left,
     height = 800 - margin.top - margin.bottom;
 
 var i = 0,
@@ -14,24 +17,17 @@ var tree = d3.layout.tree()
 var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x]; });
 
-// defines where on our webpage (now, "body") the viz appears
+// defines where on our webpage the viz appears
 var svg = d3.select("#map_viz").append("svg:svg")
     .attr("width", width + margin.right + margin.left)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// var color = d3.scale.category20b();
-var color = d3.scale.ordinal()
-    .range(['rgb(199,234,229)','rgb(128,205,193)','rgb(53,151,143)','rgb(1,102,94)',
-      'rgb(0,60,48)', 'rgb(84,48,5)','rgb(191,129,45)','rgb(223,194,125)',
-      'rgb(246,232,195)'])
 
-var div = d3.select("#map_viz").append("div")   
+var tooltip = d3.select("#map_viz").append("div")   
     .attr("class", "tooltip")               
     .style("opacity", 0);
-
-
 
 d3.json("/map_info.json", function(error, mapData) {
   if (error) throw error;
@@ -55,13 +51,18 @@ d3.json("/map_info.json", function(error, mapData) {
 d3.select(self.frameElement).style("height", "800px");
 
 function update(source) {
+var color = d3.scale.category20b();
+// var color = d3.scale.ordinal()
+//     .range(['rgb(199,234,229)','rgb(128,205,193)','rgb(53,151,143)','rgb(1,102,94)',
+//       'rgb(0,60,48)', 'rgb(84,48,5)','rgb(191,129,45)','rgb(223,194,125)',
+//       'rgb(246,232,195)']);
 
   // Compute the new tree layout.
   var nodes = tree.nodes(root).reverse(),
     links = tree.links(nodes);
 
   // Normalize for fixed-depth.
-  nodes.forEach(function(d) { d.y = d.depth * 200; });
+  nodes.forEach(function(d) { d.y = d.depth * 300; });
 
   // Update the nodes…
   var node = svg.selectAll("g.node")
@@ -73,32 +74,37 @@ function update(source) {
       .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
       .on("click", click)
       .on("mouseover", function(d) {      
-            div.transition()        
+            tooltip.transition()        
                 .duration(200)      
                 .style("opacity", .9);      
-            div .html(d.industry)  
-                .style("left", (d3.event.pageX) + "px")     
+            tooltip.html(d.tooltip_text)  
+                .style("left", (d3.event.pageX - 300) + "px")     
                 .style("top", (d3.event.pageY - 28) + "px");    
             })                  
         .on("mouseout", function(d) {       
-            div.transition()        
+            tooltip.transition()        
                 .duration(500)      
                 .style("opacity", 0);   
         });
-        // .attr("data-legend", function (d) { return d.industry});
+        
+var industry = function (d) {
+  return d.industry
+};
+
+console.log(industry);
 
   nodeEnter.append("circle")
       .attr("r", function(d) { return d.value; })
       .style("fill", function (d) { 
         if (d.industry === "R") {
-          return "#A80000"
-        } else if (d.industry === "D"){
+          return "#ED152F"
+        } else if (d.industry === "D" | d.industry === "I"){
           return "#0033CC"
         } else {
           return color(d.industry);
         }
-      });
-
+      })
+      .attr("data-legend", function (d) { return d.industry});
 
 
   nodeEnter.append("text")
@@ -116,6 +122,7 @@ function update(source) {
   nodeUpdate.select("circle")
       .attr("r", function(d) { return d.value; })
       .style("opacity", function(d) { return d._children || d.children ? 0.5 : 0.5 });
+
 
   nodeUpdate.select("text")
       .style("fill-opacity", 1);
@@ -150,6 +157,7 @@ function update(source) {
       .attr("stroke", function (d) {
         return color(d.target.industry);
       })
+      .attr("fill-opacity", 0)
       .attr("stroke-linecap", "round");
 
   // Transition links to their new position.
@@ -173,11 +181,11 @@ function update(source) {
   });
 }
 
-// legend = svg.append("g")
-//     .attr("class","legend")
-//     .attr("transform","translate(50,30)")
-//     .style("font-size","12px")
-//     .call(d3.legend)
+legend = svg.append("g")
+    .attr("class","legend")
+    .attr("transform","translate(50,30)")
+    .style("font-size","12px")
+    .call(d3.legend)
 
 // Toggle children on click.
 function click(d) {

@@ -1,0 +1,23 @@
+.node { cursor: pointer; } 
+/*.node circle {stroke: steelblue; stroke-width: 1.5px; } */
+.node text { font: 10px sans-serif; } 
+.link { fill: none; opacity: 0.5;}
+div.tooltip {   
+  position: absolute;           
+  text-align: center;           
+  width: 60px;                  
+  height: 60px;                 
+  padding: 2px;             
+  font: 12px sans-serif;        
+  background: #AA7047;   
+  border: 0px;      
+  border-radius: 8px;           
+  pointer-events: none;
+   
+}
+
+.legend rect {
+  fill:white;
+  stroke:black;
+  opacity:0.8;}
+  
