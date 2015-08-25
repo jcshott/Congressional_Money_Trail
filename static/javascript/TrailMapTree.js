@@ -1,10 +1,9 @@
 // for key - append another g with squares/circles that have the same data attached and color them then add text that is the text of data(industry)
-//look at axis to define what you are looking at in the tree
 
 function showTrailMapTree() {
 
-var margin = {top: 20, right: 50, bottom: 50, left: 250},
-    width = 2000 - margin.right - margin.left,
+var margin = {top: 20, right: 50, bottom: 75, left: 250},
+    width = 1000 - margin.right - margin.left,
     height = 800 - margin.top - margin.bottom;
 
 var i = 0,
@@ -63,7 +62,7 @@ function update(source) {
     links = tree.links(nodes);
 
   // Normalize for fixed-depth.
-  nodes.forEach(function(d) { d.y = d.depth * 300; });
+  nodes.forEach(function(d) { d.y = d.depth * 200; });
 
   // Update the nodes…
   var node = svg.selectAll("g.node")
@@ -78,15 +77,13 @@ function update(source) {
             tooltip.transition()        
                 .duration(200)      
                 .style("opacity", .9);      
-            if (d.tooltip_click) {
-              tooltip.html(d.tooltip_click)
-                      .attr("class", "tooltip_click")
-            }
-            tooltip.html(d.tooltip_text)
-                .attr("class", "tooltip_text")
+            tooltip.html(d.tooltip_text)  
                 .style("left", (d3.event.pageX - 300) + "px")     
-                .style("top", (d3.event.pageY - 28) + "px");    
-            })                 
+                .style("top", (d3.event.pageY - 28) + "px");
+            d3.select(".tooltip").append("div")
+                .text(d.tooltip_click)
+                .style("font-weight", "bold");
+            })                  
         .on("mouseout", function(d) {       
             tooltip.transition()        
                 .duration(500)      

@@ -2,7 +2,7 @@
 from jinja2 import StrictUndefined
 from flask import Flask, render_template, request, redirect, flash, session, jsonify, g
 from flask_debugtoolbar import DebugToolbarExtension
-from helper_functions import ordered_tuples, create_contribution_dict
+from helper_functions import ordered_tuples
 from model import connect_to_db, db, Legislator, Contrib_leg, Contributors, Type_contrib, Contrib_pac
 import sqlite3, operator, os
 from sunlight import congress
@@ -138,8 +138,9 @@ def get_tree_data():
 
 	member_choice_id = session.get("member_choice_id")
 
-	contributions = create_contribution_dict(member_choice_id)
-
+	selected_member = Legislator.query.filter_by(leg_id = member_choice_id).first()
+	
+	contributions = selected_member.create_contribution_dict()
 
 	return jsonify(contributions)
 	
@@ -163,6 +164,6 @@ if __name__ == "__main__":
     connect_to_db(app)
 
     # Use the DebugToolbar
-    DebugToolbarExtension(app)
+    # DebugToolbarExtension(app)
 
     app.run()
