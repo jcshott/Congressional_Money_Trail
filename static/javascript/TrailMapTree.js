@@ -28,6 +28,10 @@ var tooltip = d3.select("#map_viz").append("div")
     .attr("class", "tooltip")               
     .style("opacity", 0);
 
+// Breadcrumb dimensions: width, height, spacing, width of tip/tail.
+var b = {
+  w: 75, h: 30, s: 3, t: 10
+};
 
 d3.json("/map_info.json", function(error, mapData) {
   if (error) throw error;
@@ -95,7 +99,7 @@ function update(source) {
       .attr("r", function(d) { return d.value; })
       .style("fill", function (d) { 
         if (d.industry === "R") {
-          return "#a50026"
+          return "#7E2217"
         } else if (d.industry === "D" | d.industry === "I"){
           return "#313695"
         } else {

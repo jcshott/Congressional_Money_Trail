@@ -1,14 +1,14 @@
 .node { cursor: pointer; } 
 /*.node circle {stroke: steelblue; stroke-width: 1.5px; } */
-.node text { font: 10px sans-serif; } 
+.node text { font: 15px sans-serif; } 
 .link { fill: none; opacity: 0.5;}
 
 div.tooltip {   
   position: absolute;           
   text-align: center;           
   width: 120px;                  
-  height: 120px;                 
-  padding: 2px;             
+  /*height: 120px;                 */
+  padding: 3px;             
   font: 12px sans-serif;        
   background: #D7D5CD;   
   border: 0px;      

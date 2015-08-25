@@ -221,7 +221,7 @@ class Legislator(db.Model):
 
 		contributions["name"] = member
 		contributions["children"] = [sum_i_contributions, sum_p_contributions]
-		contributions["value"] = 25
+		contributions["value"] = 50
 		contributions["industry"] = member_obj.party
 		contributions["tooltip_text"] = "Click through map to see who contributes to %s. %s" % (member_obj.title, member_obj.last)
 

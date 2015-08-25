@@ -7,9 +7,21 @@
 
 <div class="container-fluid">
 
-<div class="row navbar"> <button id="new_choice" style="display: none;">Map a new Member of Congress </button> </div>
+<div class="row navbar"> <button id="new_choice" style="display: none;">Map a new Member of Congress </button> 
+<!-- Large modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg">Click for info on data</button>
+
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      Data from Center for Responsive Politics (opensecrets.org).  Campaign data is for election cycles since 1990.  
+    </div>
+  </div>
+</div>
+</div>
 
 <div class="row main">
+
 
 <div id="sidebar" class="col-md-2">
 
@@ -67,6 +79,8 @@
 </div>
 
 <script>
+
+$('#myModal').modal("show");
 //list possible representatives only after choose state.  
 $("#state_pick").change("state_value", showLegislators);
 
