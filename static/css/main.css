@@ -2,22 +2,53 @@
 /*.node circle {stroke: steelblue; stroke-width: 1.5px; } */
 .node text { font: 10px sans-serif; } 
 .link { fill: none; opacity: 0.5;}
-div.tooltip {   
+
+/*div.tooltip {   
   position: absolute;           
   text-align: center;           
-  width: 60px;                  
-  height: 60px;                 
+  width: 120px;                  
+  height: 120px;                 
   padding: 2px;             
   font: 12px sans-serif;        
-  background: #AA7047;   
+  background: #D7D5CD;   
   border: 0px;      
   border-radius: 8px;           
   pointer-events: none;
    
 }
+*/
+div.tooltip {
+  width: 120px;
+  height: auto;
+  padding: 10px;
+  background-color: #D7D5CD;
+  border-radius: 10px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
 
-.legend rect {
-  fill:white;
-  stroke:black;
-  opacity:0.8;}
-  
+#tooltip.hidden {
+  display: none;
+}
+
+.tooltip_text {
+  margin: 0;
+  font-family: sans-serif;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.tooltip_click {
+  margin: 0;
+  font-family: sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 20px;
+}
+/* The footer always appears at the bottom of the browser window. */
+
+#footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;  /* required because fixed position */
+}

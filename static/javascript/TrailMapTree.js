@@ -3,7 +3,7 @@
 
 function showTrailMapTree() {
 
-var margin = {top: 20, right: 50, bottom: 50, left: 300},
+var margin = {top: 20, right: 50, bottom: 50, left: 250},
     width = 2000 - margin.right - margin.left,
     height = 800 - margin.top - margin.bottom;
 
@@ -29,6 +29,7 @@ var tooltip = d3.select("#map_viz").append("div")
     .attr("class", "tooltip")               
     .style("opacity", 0);
 
+
 d3.json("/map_info.json", function(error, mapData) {
   if (error) throw error;
 
@@ -51,11 +52,11 @@ d3.json("/map_info.json", function(error, mapData) {
 d3.select(self.frameElement).style("height", "800px");
 
 function update(source) {
-var color = d3.scale.category20b();
-// var color = d3.scale.ordinal()
-//     .range(['rgb(199,234,229)','rgb(128,205,193)','rgb(53,151,143)','rgb(1,102,94)',
-//       'rgb(0,60,48)', 'rgb(84,48,5)','rgb(191,129,45)','rgb(223,194,125)',
-//       'rgb(246,232,195)']);
+
+  // var color = d3.scale.category20();
+  var color = d3.scale.ordinal()
+      .range(['rgb(166,219,160)','rgb(90,174,97)','rgb(27,120,55)','rgb(199,234,229)','rgb(128,205,193)','rgb(53,151,143)','rgb(1,102,94)','rgb(0,60,48)', 'rgb(84,48,5)','rgb(191,129,45)','rgb(223,194,125)','rgb(246,232,195)']);
+
 
   // Compute the new tree layout.
   var nodes = tree.nodes(root).reverse(),
@@ -77,34 +78,33 @@ var color = d3.scale.category20b();
             tooltip.transition()        
                 .duration(200)      
                 .style("opacity", .9);      
-            tooltip.html(d.tooltip_text)  
+            if (d.tooltip_click) {
+              tooltip.html(d.tooltip_click)
+                      .attr("class", "tooltip_click")
+            }
+            tooltip.html(d.tooltip_text)
+                .attr("class", "tooltip_text")
                 .style("left", (d3.event.pageX - 300) + "px")     
                 .style("top", (d3.event.pageY - 28) + "px");    
-            })                  
+            })                 
         .on("mouseout", function(d) {       
             tooltip.transition()        
                 .duration(500)      
                 .style("opacity", 0);   
         });
-        
-var industry = function (d) {
-  return d.industry
-};
 
-console.log(industry);
 
   nodeEnter.append("circle")
       .attr("r", function(d) { return d.value; })
       .style("fill", function (d) { 
         if (d.industry === "R") {
-          return "#ED152F"
+          return "#a50026"
         } else if (d.industry === "D" | d.industry === "I"){
-          return "#0033CC"
+          return "#313695"
         } else {
           return color(d.industry);
         }
-      })
-      .attr("data-legend", function (d) { return d.industry});
+      });
 
 
   nodeEnter.append("text")
@@ -121,7 +121,7 @@ console.log(industry);
 
   nodeUpdate.select("circle")
       .attr("r", function(d) { return d.value; })
-      .style("opacity", function(d) { return d._children || d.children ? 0.5 : 0.5 });
+      .style("opacity", function(d) { return d._children || d.children ? 0.75 : 0.5 });
 
 
   nodeUpdate.select("text")
@@ -181,11 +181,7 @@ console.log(industry);
   });
 }
 
-legend = svg.append("g")
-    .attr("class","legend")
-    .attr("transform","translate(50,30)")
-    .style("font-size","12px")
-    .call(d3.legend)
+
 
 // Toggle children on click.
 function click(d) {

@@ -26,7 +26,7 @@ body {
 
 /* The footer always appears at the bottom of the browser window. */
 
-footer {
+#footer {
     position: fixed;
     bottom: 0;
     width: 100%;  /* required because fixed position */
