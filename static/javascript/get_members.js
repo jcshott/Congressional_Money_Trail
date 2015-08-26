@@ -113,8 +113,9 @@ function showLegislators(evt) {
 
         };
     } else {
-      $('#member_list').append($("<option ></option>").text("Seat is vacant, choose again."));
-      $('#submit_member').attr("class", "disabled");
+      $('#legislators_display').hide();
+      $('#noMember').show();
+      // $('#submit_member').attr("class", "disabled");
     }
 
     });

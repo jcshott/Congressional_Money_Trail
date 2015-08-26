@@ -82,19 +82,9 @@ class Legislator(db.Model):
 	###################################################################
 
 		#take in selected member id, get member object from db and extract information to be displayed on node in browser.
-		member_obj = Legislator.query.get(self.leg_id)
-		if member_obj.chamber == "Senate":
-			if member_obj.nickname:
-				member = "%s. %s %s (%s - %s)" % (member_obj.title, member_obj.nickname, member_obj.last, member_obj.party, member_obj.state)
-			else:
-				member = "%s. %s %s (%s - %s)" % (member_obj.title, member_obj.first, member_obj.last, member_obj.party, member_obj.state)
-
-		if member_obj.chamber == "House":
-			if member_obj.nickname:
-				member = "%s. %s %s (%s - %s)" % (member_obj.title, member_obj.nickname, member_obj.last, member_obj.party, member_obj.state)
-			else:
-				member = "%s. %s %s (%s - %s)" % (member_obj.title, member_obj.first, member_obj.last, member_obj.party, member_obj.state)
-
+		member_obj = Legislator.query.get(self.leg_id)	
+		member = "%s. %s" % (member_obj.title, member_obj.last)
+			
 		## use dictionaries to store how much each indiv person/pac gives to the member then can sort and get top contributors
 		indiv_to_mem_dict = {}
 		pac_to_mem_dict = {}

@@ -1,10 +1,11 @@
 // for key - append another g with squares/circles that have the same data attached and color them then add text that is the text of data(industry)
+var mapKeyText = ["Distribution of Individual v. PAC money recieved", "Large v. Small Contributors", "Top 10 Contributors"]
 
 function showTrailMapTree() {
 
-var margin = {top: 20, right: 50, bottom: 75, left: 250},
-    width = 1000 - margin.right - margin.left,
-    height = 800 - margin.top - margin.bottom;
+var margin = {top: 20, right: 50, bottom: 75, left: 200},
+    width = 1200 - margin.right - margin.left,
+    height = 900 - margin.top - margin.bottom;
 
 var i = 0,
     duration = 750,
@@ -28,10 +29,6 @@ var tooltip = d3.select("#map_viz").append("div")
     .attr("class", "tooltip")               
     .style("opacity", 0);
 
-// Breadcrumb dimensions: width, height, spacing, width of tip/tail.
-var b = {
-  w: 75, h: 30, s: 3, t: 10
-};
 
 d3.json("/map_info.json", function(error, mapData) {
   if (error) throw error;
@@ -39,6 +36,7 @@ d3.json("/map_info.json", function(error, mapData) {
   root = mapData;
   root.x0 = height / 2;
   root.y0 = 0;
+
 
   function collapse(d) {
     if (d.children) {
@@ -52,13 +50,14 @@ d3.json("/map_info.json", function(error, mapData) {
   update(root);
 });
 
+
 d3.select(self.frameElement).style("height", "800px");
 
 function update(source) {
 
   // var color = d3.scale.category20();
   var color = d3.scale.ordinal()
-      .range(['rgb(166,219,160)','rgb(90,174,97)','rgb(27,120,55)','rgb(199,234,229)','rgb(128,205,193)','rgb(53,151,143)','rgb(1,102,94)','rgb(0,60,48)', 'rgb(84,48,5)','rgb(191,129,45)','rgb(223,194,125)','rgb(246,232,195)']);
+        .range(['rgb(166,219,160)','rgb(90,174,97)','rgb(27,120,55)','rgb(199,234,229)','rgb(128,205,193)','rgb(53,151,143)','rgb(1,102,94)','rgb(0,60,48)', 'rgb(84,48,5)','rgb(191,129,45)','rgb(223,194,125)','rgb(246,232,195)']);
 
 
   // Compute the new tree layout.
@@ -102,7 +101,7 @@ function update(source) {
           return "#7E2217"
         } else if (d.industry === "D" | d.industry === "I"){
           return "#313695"
-        } else {
+        } else { 
           return color(d.industry);
         }
       });
@@ -183,7 +182,6 @@ function update(source) {
 }
 
 
-
 // Toggle children on click.
 function click(d) {
   if (d.children) {
@@ -194,8 +192,15 @@ function click(d) {
     d._children = null;
   }
   update(d);
+
 };
+
 
 }
 
 
+// function updateHeader (d){
+//     memoryStack.push()
+//     alert("updating the header");
+
+// }

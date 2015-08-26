@@ -13,11 +13,23 @@
 
 <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
   <div class="modal-dialog modal-lg">
+
     <div class="modal-content">
+    	<div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">About the data used on this site</h4>
+      </div>
+      <div class="modal-body">
       Data from Center for Responsive Politics (opensecrets.org).  Campaign data is for election cycles since 1990.  
+    	</div>
     </div>
   </div>
 </div>
+
+<button type="button" id="popover" class="btn btn-default" style="display: none;" data-container="body" data-toggle="popover" data-placement="bottom" data-content="You are looking at a visualization of campaign contributions for the Member of Congress shown on the left.  First you'll see the distribution how much the representative recieved from Political Action Committess (PACs) v. Individual donors.  Hover on a node to see more information and click on the nodes to follow the trail - the end will show the Top 10 Individual or PAC contributors.">
+  What am I seeing?
+</button>
+
 </div>
 
 <div class="row main">
@@ -49,6 +61,8 @@
 	<input type="submit" id="submit_member" value="Map this Member">
 	</form>
 	</div>
+
+	<div id="noMember" style="display: none;">Sorry, that seat is currently vacant or there is no data currently available for that Member of Congress. Please choose another state or enter an address</div>
 
 <!-- find members by address form -->
 <div id="pick_by_address"> OR 
@@ -83,6 +97,9 @@
 $('#myModal').modal("show");
 //list possible representatives only after choose state.  
 $("#state_pick").change("state_value", showLegislators);
+$("#state_pick").change("state_value", function () {
+	$("#noMember").hide();
+})
 
 // bind showing the TrailMapTree function call to the event named show map that is called after member choice is submitted (below)
 $("#map_viz").bind("showMap", showTrailMapTree);
@@ -109,6 +126,7 @@ $("form.repsDistrict").on("submit", function (evt) {
 		$("#your_district_reps").hide();
 		$("#new_choice").show();
 		$("#sidebar").append(result);
+		$('#popover').show();
 
 	});
 });
@@ -116,10 +134,17 @@ $("form.repsDistrict").on("submit", function (evt) {
 $("#new_choice").on("click", function (evt){
 	$("#map_viz").empty();
 	$("#state_pick").show();
+	$('#state_pick').find('option:first').attr('selected', 'selected');
 	$("#pick_by_address").show();
 	$("#new_choice").hide();
 	$("#member_profile").remove();
+	$("#popover").hide();
 })
+
+$('#popoover').popover('hide');
+$('#popover').on('click', function() {
+	$('#popover').popover('toggle');
+ })
 
 </script>
 

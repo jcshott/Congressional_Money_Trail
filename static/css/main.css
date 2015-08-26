@@ -10,7 +10,8 @@ div.tooltip {
   /*height: 120px;                 */
   padding: 3px;             
   font: 12px sans-serif;        
-  background: #D7D5CD;   
+  background: #D7D5CD;
+  opacity: 0.5;  
   border: 0px;      
   border-radius: 8px;           
   pointer-events: none;
@@ -23,4 +24,12 @@ div.tooltip {
     position: fixed;
     bottom: 0;
     width: 100%;  /* required because fixed position */
+    text-align: center;
 }
+
+/*.axis path,
+.axis line {
+  fill:'rgb(84,48,5)';
+  stroke: 'rgb(84,48,5)';
+  shape-rendering: crispEdges;
+}*/

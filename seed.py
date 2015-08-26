@@ -231,7 +231,7 @@ if __name__ == "__main__":
     connect_to_db(app)
 
     load_legislators()
-    load_industry_types()
-    load_indiv_contribution_data()
-    load_pac_to_leg_contribution_data()
-    load_pac_contributors()
+    # load_industry_types()
+    # load_indiv_contribution_data()
+    # load_pac_to_leg_contribution_data()
+    # load_pac_contributors()
