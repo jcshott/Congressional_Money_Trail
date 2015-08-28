@@ -47,7 +47,7 @@ function geocodeAddress(geocoder) {
 
         for (var i in legislators) {
                            
-          $('#address_member_list').append($("<option class='member_choice'></option>").val(legislators[i].leg_id).text(legislators[i].title + ". " + legislators[i].first + " " + legislators[i].last + " (" + legislators[i].party + ")"));
+          $('#address_member_list').append($("<option class='member_choice form-control'></option>").val(legislators[i].leg_id).text(legislators[i].title + ". " + legislators[i].first + " " + legislators[i].last + " (" + legislators[i].party + ")"));
         }
                 
         });
@@ -78,7 +78,7 @@ function showLegislators(evt) {
       
 
     if (result.senators) {
-      $('#member_list').append("<option class='chamber_label'>" + "Senators" +"</option>");
+      $('#member_list').append("<option class='chamber_label form-control'>" + "Senators" +"</option>");
       
       for (var i in result.senators) {$('#member_list').append($("<option class='member_choice'></option>").val(result.senators[i].leg_id).text(result.senators[i].title + ". " + result.senators[i].first + " " + result.senators[i].last + " (" + result.senators[i].party + ")")); }
     }
@@ -86,7 +86,7 @@ function showLegislators(evt) {
     // check for empty seats
     
     if (result.representatives.length > 0) {
-      $('#member_list').append("<option class='chamber_label'>" + "House Members" +"</option>");
+      $('#member_list').append("<option class='chamber_label form-control'>" + "House Members" +"</option>");
       
       var representatives = result.representatives
       
@@ -109,7 +109,7 @@ function showLegislators(evt) {
           
         // cycle through list of representatives returned, to pull relevant info out & put in drop-down menu
         
-        $('#member_list').append($("<option class='member_choice'></option>").val(sorted_reps[i].leg_id).text(sorted_reps[i].title + ". " + sorted_reps[i].first + " " + sorted_reps[i].last + " (" + sorted_reps[i].party + district + ")")); 
+        $('#member_list').append($("<option class='member_choice form-control'></option>").val(sorted_reps[i].leg_id).text(sorted_reps[i].title + ". " + sorted_reps[i].first + " " + sorted_reps[i].last + " (" + sorted_reps[i].party + district + ")")); 
 
         };
     } else {

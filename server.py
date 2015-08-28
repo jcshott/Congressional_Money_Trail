@@ -116,7 +116,7 @@ def show_members_for_address():
 
 @app.route('/trail_map', methods=["POST"])
 def show_trail_map():
-	"""Page where D3 map and other info on selected Member of Congress will display"""
+	"""Page where info on selected Member of Congress will display"""
 	
 	member_choice_id = request.form.get("member")
 

@@ -72,7 +72,7 @@ class Legislator(db.Model):
 	def create_contribution_dict(self):
 		"""Create a dictionary from my database data that is selected based on user input
 
-		takes in the id of a Member of Congress (that is sent to the server via a GET request)
+		takes in the instance of a selected Member of Congress (that is identified from the user, instantiated on server side)
 		returns a dictionary that can be jsonified
 
 		"""
@@ -82,8 +82,8 @@ class Legislator(db.Model):
 	###################################################################
 
 		#take in selected member id, get member object from db and extract information to be displayed on node in browser.
-		member_obj = Legislator.query.get(self.leg_id)	
-		member = "%s. %s" % (member_obj.title, member_obj.last)
+		
+		member = "%s. %s" % (self.title, self.last)
 			
 		## use dictionaries to store how much each indiv person/pac gives to the member then can sort and get top contributors
 		indiv_to_mem_dict = {}
@@ -148,9 +148,9 @@ class Legislator(db.Model):
 			
 			if contributor.industry:
 				contrib_industry = contributor.industry.industry_name
-				top_ten_indiv_child_list.append({"name": contrib_name, "value": 10, "industry": contrib_industry, "tooltip_text": "Top 10 Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), member_obj.title, member_obj.last)})
+				top_ten_indiv_child_list.append({"name": contrib_name, "value": 10, "industry": contrib_industry, "tooltip_text": "Top 10 Indiv. Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "indiv"})
 			else:
-				top_ten_indiv_child_list.append({"name": contrib_name, "value": 10, "industry": "unknown", "tooltip_text": "Top 10 Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), member_obj.title, member_obj.last)})
+				top_ten_indiv_child_list.append({"name": contrib_name, "value": 10, "industry": "unknown", "tooltip_text": "Top 10 Indiv. Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "indiv"})
 
 		for tup in sorted_dict_pac[:10]:
 			contributor = Contributors.query.filter(Contributors.contrib_id == tup[0]).one()
@@ -159,9 +159,9 @@ class Legislator(db.Model):
 
 			if contributor.industry:
 				contrib_industry = contributor.industry.industry_name
-				top_ten_pac_child_list.append({"name": contrib_name, "value": 10, "industry": contrib_industry, "tooltip_text": "Top 10 Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), member_obj.title, member_obj.last)})
+				top_ten_pac_child_list.append({"name": contrib_name, "value": 10, "industry": contrib_industry, "tooltip_text": "Top 10 PAC Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "PAC"})
 			else:
-				top_ten_pac_child_list.append({"name": contrib_name, "value": 10, "industry": "unknown", "tooltip_text": "Top 10 Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), member_obj.title, member_obj.last)})
+				top_ten_pac_child_list.append({"name": contrib_name, "value": 10, "industry": "unknown", "tooltip_text": "Top 10 PAC Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "PAC"})
 
 
 		#### Future: Query for the top individual to PAC and PAC to PAC donations
@@ -212,8 +212,8 @@ class Legislator(db.Model):
 		contributions["name"] = member
 		contributions["children"] = [sum_i_contributions, sum_p_contributions]
 		contributions["value"] = 50
-		contributions["industry"] = member_obj.party
-		contributions["tooltip_text"] = "Click through map to see who contributes to %s. %s" % (member_obj.title, member_obj.last)
+		contributions["industry"] = self.party
+		contributions["tooltip_text"] = "Click through map to see who contributes to %s. %s" % (self.title, self.last)
 
 		# if member_obj.party == "D":
 		# 	contributions["icon"] = "/static/img/donkey-democrat-logo.jpg"

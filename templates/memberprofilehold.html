@@ -1,32 +1,36 @@
 <div id="member_profile">
 	
-	<img src="{{member_info.pict_link}}" style="width: 100px;"> </img>
-	{{member_info.get("title")}}. {{member_info.get("first")}} {{member_info.get("last")}} ({{member_info.get("party")}}) <br>
+	<img src="{{member_info.pict_link}}" style="width: 100px;" class="img-rounded"> </img>
+	The Honorable {{member_info.get("first")}} {{member_info.get("last")}}  <br>
+	{% if member_info.get("party") == "D" %}
+	Democrat<br>
+	{% elif member_info.get("party") == "I" %}
+	Independent <br>
+	{% else %}
+	Republican<br>
+	{% endif %}
+
 	{% if member_info.get("chamber") == "Senate" %}
-	
+	U.S. Senate<br>
 	{% set abbr = member_info.get("state") %}
 	
-	{{states.get(abbr) }}: {{member_info.get("sen_rank")}} <br>
+	{{states.get(abbr) }} {{member_info.get("sen_rank")[:6]}} Senator<br>
 
 	
 	{% else %}
 	
 	{% set abbr = member_info.get("state") %}
-
-	{{ states.get(abbr) }}: District: {{member_info.get("district")}} <br>
+	U.S. House of Representatives<br>
+	{{ states.get(abbr) }} District: {{member_info.get("district")}} <br>
 	
 	{% endif %}
 
 	First elected: {{member_info.first_elected}}<br>
 	Official Website: <a href="{{member_info.off_website}}" target="new">{{member_info.off_website}}<br>
-	<a href="http://wwww.twitter.com/{{member_info.twitter_id}}" target="new">Twitter</a><br>
-	<a href="http://wwww.facebook.com/{{member_info.facebook_id}}" target="new">Facebook</a> <br>
+	<a href="http://www.twitter.com/{{member_info.twitter_id}}" target="new">Follow on Twitter</a><br>
+	<a href="http://www.facebook.com/{{member_info.facebook_id}}" target="new">Follow on Facebook</a> <br>
 
-<h4> Share on Twitter! <h4>
 
-<a href="https://twitter.com/share" class="twitter-share-button" data-text="See where your federal representatives get their campaign money" data-via="jcshott" data-size="large" data-count="none" data-hashtags="FollowTheMoneyTrail,Congress">Tweet</a>
-
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-
+  		
 </div>
 

@@ -5,96 +5,149 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvOEtQIfXWSZq8tKg2S2RrHhOkikKxcY0&callback=initialize" async defer></script>
 <script src="/static/javascript/get_members.js"></script>
 
+	<!-- <div class="navbar navbar-default navbar-static-top"> -->
+		<!-- <div class="container"> -->
+		
+		<!-- Large modal button -->
+		<!-- <button type="button" class="btn btn-default" data-toggle="modal" data-target=".modal-info">Click for info on data</button> -->
+
+<!-- 		<button type="button" id="popover" class="btn btn-default" style="display: none;" data-container="body" data-toggle="popover" data-placement="bottom" data-content="You are looking at a visualization of campaign contributions for the Member of Congress shown on the left.  First you'll see the distribution how much the Member of Congress recieved from Political Action Committess (PACs) v. Individual donors.  Hover on a node to see more information and click on the nodes to follow the trail - the end will show the Top 10 Individual or PAC contributors.">
+		  What am I seeing?
+		</button> -->
+
+	    <!-- <div class="navbar-collapse collapse"> -->
+		    <!-- <ul class="nav navbar-nav navbar-right"> -->
+		        <!-- <li> -->
+		            <!-- Share page on twitter button -->
+
+		        <!-- </li> -->
+		    <!-- </ul> -->
+	    <!-- </div> -->
+		<!-- </div> -->
+	<!-- </div> -->
+
 <div class="container-fluid">
 
-<div class="row navbar"> <button id="new_choice" style="display: none;">Map a new Member of Congress </button> 
-<!-- Large modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg">Click for info on data</button>
+	<div class="row main">
+		<div class="col-md-2" id="sidebar">
 
-<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-  <div class="modal-dialog modal-lg">
+				<div id="twitterButton">  
+<!-- 					Share page on twitter button -->
+						<a href="https://twitter.com/share" class="twitter-share-button" data-text="See where your federal representatives get their campaign money" data-via="jcshott" data-size="large" data-count="none" data-hashtags="FollowTheMoneyTrail,Congress">Tweet</a>
 
-    <div class="modal-content">
-    	<div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">About the data used on this site</h4>
-      </div>
-      <div class="modal-body">
-      Data from Center for Responsive Politics (opensecrets.org).  Campaign data is for election cycles since 1990.  
-    	</div>
-    </div>
-  </div>
-</div>
+						<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+				</div>
 
-<button type="button" id="popover" class="btn btn-default" style="display: none;" data-container="body" data-toggle="popover" data-placement="bottom" data-content="You are looking at a visualization of campaign contributions for the Member of Congress shown on the left.  First you'll see the distribution how much the representative recieved from Political Action Committess (PACs) v. Individual donors.  Hover on a node to see more information and click on the nodes to follow the trail - the end will show the Top 10 Individual or PAC contributors.">
-  What am I seeing?
-</button>
+				<div class="row forms">
+					<div class="form-group">
+						<form id="state_pick" method="post" action="/state_info.json">
+						 
+						  <label> Pick a state:</label>
+						    <select class="form-control" name="state" id="state_value">
+						    	<option> Choose a State </option>
+						    {% for state in states %}
+						      <option value="{{ state[0] }}"> {{ state[1] }} </option>
+						    {% endfor %}  
+						</select>
+						</form>
+					</div>
+					
+					<div id="legislators_display" class="form-group" style="display: none;"> 
 
-</div>
+						<h2> Pick a Member to Map </h2>
 
-<div class="row main">
-
-
-<div id="sidebar" class="col-md-2">
-
-	<form id="state_pick" method="post" action="/state_info.json">
-	 
-	  <label> Pick a state:</label>
-	    <select name="state" id="state_value">
-	    	<option> Choose a State </option>
-	    {% for state in states %}
-	      <option value="{{ state[0] }}"> {{ state[1] }} </option>
-	    {% endfor %}  
-	</select>
-	</form>
-
-	<div id="legislators_display" style="display: none;"> 
-
-	<h2> Pick a Member to Map </h2>
-
-	<form class='repsDistrict' method="get" action='/trail_map'> 
-		<label>Select a Member of Congress: </label>
-		
-		<select name="member" class="member_choice" id="member_list">
+						<form class='repsDistrict' method="get" action='/trail_map'> 
+							<label>Select a Member of Congress: </label>
+							
+							<select name="member" class="member_choice form-control" id="member_list">
 
 
-	<input type="submit" id="submit_member" value="Map this Member">
-	</form>
-	</div>
+							<input type="submit" class="btn btn-default" id="submit_member" value="Map this Member">
+						</form>
+					</div>
 
-	<div id="noMember" style="display: none;">Sorry, that seat is currently vacant or there is no data currently available for that Member of Congress. Please choose another state or enter an address</div>
+					<div id="noMember" style="display: none;">Sorry, that seat is currently vacant or there is no data currently available for that Member of Congress. Please choose another state or enter an address
+					</div>
 
-<!-- find members by address form -->
-<div id="pick_by_address"> OR 
-	<form>
-	<label>Enter Address to Find Your Members:</label>
-		<input id="address" type="textbox">
-		<input type="submit" id="submit_geocode" value="Find My Members of Congress">
-	</form>
-</div>
+					<!-- find members by address form -->
+					<div id="pick_by_address" class="form-group"> 
+						<form>
+							<label> Enter Address to Find Your Congressional Delegation </label>
+							<input id="address" type="textbox" class="form-control" placeholder="Address">
+							<input type="submit" class="btn btn-default" id="submit_geocode" value="Find My Delegation">
+						</form>
+					</div>
 
 
-	<div id="your_district_reps" style="display: none;"> 
-		<form class='repsDistrict' method="get" action='/trail_map'> 
-			<label id="repsByAddress"> </label>
-		
-			<select name="member" class="member_choice" id="address_member_list">
+					<div id="your_district_reps" class="form-group" style="display: none;"> 
+						<form class='repsDistrict' method="get" action='/trail_map'> 
+							<label id="repsByAddress"> </label>
+						
+							<select name="member" class="member_choice form-control" id="address_member_list">
+							
+							<input type="submit" class="btn btn-default" id="submit_member" value="Map this Member">
+						</form>
+
+					</div>
+				</div>
+				
+				<div class="row member_profile"></div>
+
+				<div class="row new_member">
+
+				 	<button type="button" class="btn btn-default" id="new_choice" style="display: none;">Map a new legislator </button> 
+				</div>
 			
-			<input type="submit" id="submit_member" value="Map this Member">
-		</form>
 
+			</div>
+
+
+		<div id="map_viz" class="col-md-10" style="display: none;"> 
+
+					<button type="button" id="popover" class="btn btn-default" style="display: none;" data-container="body" data-toggle="popover" data-placement="bottom" data-content="You are looking at a visualization of campaign contributions for the Member of Congress shown on the left.  First you'll see the distribution how much the Member of Congress recieved from Political Action Committess (PACs) v. Individual donors.  Hover on a node to see more information and click on the nodes to follow the trail - the end will show the Top 10 Individual or PAC contributors.">
+					  What am I seeing?
+					</button>
+
+		</div>
+		
+		<div class="row" id="footer">
+			<div class="col-md-12">
+    			Created by Corey Shott. Hackbright Academy Summer 2015
+
+    			<!-- Large modal button -->
+				<button type="button" id="info_button" class="btn btn-default" data-toggle="modal" data-target=".modal-info">Click for info on data</button>
+
+    		</div>
+		
+		</div>
 	</div>
-
 </div>
 
-<div id="map_viz" class="col-md-10" style="display: none;"> </div>
+	<div class="modal fade modal-info" role="dialog" aria-labelledby="gridSystemModalLabel">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title" id="gridSystemModalLabel">Learn about the data used on this site</h4>
+		      </div>
+		      <div class="modal-body">
+		      	Congressional Money Trail utilizes congressional campaign data from the Center for Responsive Politics (OpenSecrets.org).  Contribution figures are based on totals since 1994 and amounts vary depending on how long a Member of Congress has been in office.  
 
-</div>
-</div>
+		      		<img src="/static/img/opensecrets_databy250x88.gif" ref="http://www.opensecrets.org"></img>
+		      
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
+		      </div>
+		    </div>/<!-- .modal-content -->
+		  </div>/ <!-- .modal-dialog -->
+		</div> <!-- /.modal -->
+</div>
 <script>
 
-$('#myModal').modal("show");
+$('#myModal').modal("toggle");
+
 //list possible representatives only after choose state.  
 $("#state_pick").change("state_value", showLegislators);
 $("#state_pick").change("state_value", function () {
@@ -125,7 +178,7 @@ $("form.repsDistrict").on("submit", function (evt) {
 		$("#pick_by_address").hide();
 		$("#your_district_reps").hide();
 		$("#new_choice").show();
-		$("#sidebar").append(result);
+		$(".forms").append(result);
 		$('#popover').show();
 
 	});
@@ -139,12 +192,12 @@ $("#new_choice").on("click", function (evt){
 	$("#new_choice").hide();
 	$("#member_profile").remove();
 	$("#popover").hide();
-})
+});
 
-$('#popoover').popover('hide');
+$('#popover').popover('hide');
 $('#popover').on('click', function() {
 	$('#popover').popover('toggle');
- })
+ });
 
 </script>
 

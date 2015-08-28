@@ -1,11 +1,9 @@
-// for key - append another g with squares/circles that have the same data attached and color them then add text that is the text of data(industry)
-var mapKeyText = ["Distribution of Individual v. PAC money recieved", "Large v. Small Contributors", "Top 10 Contributors"]
 
 function showTrailMapTree() {
 
-var margin = {top: 20, right: 50, bottom: 75, left: 200},
+var margin = {top: 2, right: 50, bottom: 75, left: 150},
     width = 1200 - margin.right - margin.left,
-    height = 900 - margin.top - margin.bottom;
+    height = 800 - margin.top - margin.bottom;
 
 var i = 0,
     duration = 750,
@@ -65,7 +63,12 @@ function update(source) {
     links = tree.links(nodes);
 
   // Normalize for fixed-depth.
-  nodes.forEach(function(d) { d.y = d.depth * 200; });
+  nodes.forEach(function(d) { 
+    if (d.type === "indiv") {
+          return d.y = d.depth * 250;
+        } else {
+          return d.y = d.depth * 200;
+        } });
 
   // Update the nodes…
   var node = svg.selectAll("g.node")
@@ -98,7 +101,7 @@ function update(source) {
       .attr("r", function(d) { return d.value; })
       .style("fill", function (d) { 
         if (d.industry === "R") {
-          return "#7E2217"
+          return "#B5150C"
         } else if (d.industry === "D" | d.industry === "I"){
           return "#313695"
         } else { 
@@ -198,9 +201,3 @@ function click(d) {
 
 }
 
-
-// function updateHeader (d){
-//     memoryStack.push()
-//     alert("updating the header");
-
-// }
