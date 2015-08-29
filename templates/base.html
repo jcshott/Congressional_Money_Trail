@@ -12,6 +12,19 @@
 </head>
 
 <body>
+	<div id="fb-root"></div>
+
+<script>
+(function(d, s, id) {
+	console.log("fb initialized")
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "http://connect.facebook.net/en_US/all.js%23xfbml=1&status=0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+
+</script>
 
   {% block content %} put your content here 
 

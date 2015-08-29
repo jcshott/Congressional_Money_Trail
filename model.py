@@ -82,7 +82,6 @@ class Legislator(db.Model):
 	###################################################################
 
 		#take in selected member id, get member object from db and extract information to be displayed on node in browser.
-		
 		member = "%s. %s" % (self.title, self.last)
 			
 		## use dictionaries to store how much each indiv person/pac gives to the member then can sort and get top contributors
@@ -148,9 +147,9 @@ class Legislator(db.Model):
 			
 			if contributor.industry:
 				contrib_industry = contributor.industry.industry_name
-				top_ten_indiv_child_list.append({"name": contrib_name, "value": 10, "industry": contrib_industry, "tooltip_text": "Top 10 Indiv. Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "indiv"})
+				top_ten_indiv_child_list.append({"name": contrib_name, "value": 10, "industry": contrib_industry, "tooltip_text": "Top 10 Indiv. Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "indiv", "member_party": self.party})
 			else:
-				top_ten_indiv_child_list.append({"name": contrib_name, "value": 10, "industry": "unknown", "tooltip_text": "Top 10 Indiv. Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "indiv"})
+				top_ten_indiv_child_list.append({"name": contrib_name, "value": 10, "industry": "unknown", "tooltip_text": "Top 10 Indiv. Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "indiv", "member_party": self.party})
 
 		for tup in sorted_dict_pac[:10]:
 			contributor = Contributors.query.filter(Contributors.contrib_id == tup[0]).one()
@@ -159,9 +158,9 @@ class Legislator(db.Model):
 
 			if contributor.industry:
 				contrib_industry = contributor.industry.industry_name
-				top_ten_pac_child_list.append({"name": contrib_name, "value": 10, "industry": contrib_industry, "tooltip_text": "Top 10 PAC Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "PAC"})
+				top_ten_pac_child_list.append({"name": contrib_name, "value": 10, "industry": contrib_industry, "tooltip_text": "Top 10 PAC Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "PAC", "member_party": self.party})
 			else:
-				top_ten_pac_child_list.append({"name": contrib_name, "value": 10, "industry": "unknown", "tooltip_text": "Top 10 PAC Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "PAC"})
+				top_ten_pac_child_list.append({"name": contrib_name, "value": 10, "industry": "unknown", "tooltip_text": "Top 10 PAC Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "PAC", "member_party": self.party})
 
 
 		#### Future: Query for the top individual to PAC and PAC to PAC donations
@@ -188,11 +187,13 @@ class Legislator(db.Model):
 		large_contrib["industry"] = "Large"
 		large_contrib["tooltip_click"] = "Click to see top 10 individual donors"
 		large_contrib["tooltip_text"] = "Total Contributions from Large Donors: %s" % ('${:,.0f}'.format(sum_large_contrib))
+		large_contrib["member_party"] = self.party
 		
 		small_contrib["name"] = "Small Individual Donors"
 		small_contrib["value"] = int(100*(sum_small_contrib/(sum_large_contrib+sum_small_contrib)))
 		small_contrib["industry"] = "Small"
 		small_contrib["tooltip_text"] = "Total Contributions from Small Donors: " '${:,.0f}'.format(sum_small_contrib)
+		small_contrib["member_party"] = self.party
 
 		sum_i_contributions["name"] = "Individual Donors"
 		sum_i_contributions["children"] = [large_contrib, small_contrib]
@@ -200,6 +201,7 @@ class Legislator(db.Model):
 		sum_i_contributions["industry"] = "Individuals"
 		sum_i_contributions["tooltip_click"] = "Click node to see breakdown of large & small donors"
 		sum_i_contributions["tooltip_text"] = "Total Contributions from Individuals: %s" % ('${:,.0f}'.format(indiv_sum))
+		sum_i_contributions["member_party"] = self.party
 
 
 		sum_p_contributions["name"] = "Political Action Commitee Donors"
@@ -208,12 +210,21 @@ class Legislator(db.Model):
 		sum_p_contributions["industry"] = "PACs"
 		sum_p_contributions["tooltip_click"] = "Click node to see top 10 PAC contributors"
 		sum_p_contributions["tooltip_text"] = "Total Contributions from Political Action Committees (PACs): %s" % ('${:,.0f}'.format(pac_sum))
+		sum_p_contributions["member_party"] = self.party
 
 		contributions["name"] = member
 		contributions["children"] = [sum_i_contributions, sum_p_contributions]
 		contributions["value"] = 50
 		contributions["industry"] = self.party
-		contributions["tooltip_text"] = "Click through map to see who contributes to %s. %s" % (self.title, self.last)
+		contributions["member_party"] = self.party
+
+		if self.party == "D":
+			contributions["tooltip_click"] = "Click through map to see who contributes to %s. %s (Democrat)" % (self.title, self.last)
+		if self.party == "R":
+			contributions["tooltip_click"] = "Click through map to see who contributes to %s. %s (Republican)" % (self.title, self.last)
+		if self.party == "I" or self.party == None:
+			contributions["tooltip_click"] = "Click through map to see who contributes to %s. %s (Independent)" % (self.title, self.last)
+
 
 		# if member_obj.party == "D":
 		# 	contributions["icon"] = "/static/img/donkey-democrat-logo.jpg"

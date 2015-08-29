@@ -11,34 +11,30 @@ body::after {
     opacity : 0.4;
     z-index: -1;
 }
-/*
-div.navbar {
-  width: 100%;
-  background: none;
-  }*/
 
-/*.btn#popover {
-  position: absolute;
-  right: 0;
-}*/
 
 .btn#twitterButton {
   position: absolute;
   right: 0;
 }
 
-/*div#sidebar {
-  margin-left: 5px;
-  background-color: rgba(149, 161, 141, 0.4);
-  height: 100%
-}*/
+div.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: rgba(149, 161, 141, 0.4);
 
-div.forms {
-  margin-left: 5px;
-  margin-top: 40px;
-  padding: 3px;
-  background-color: rgba(149, 161, 141, 0.4);
-}
+  }
+
+  div.main {
+    margin-left: 10%;
+  }
 
 .btn {
   background: #95A18D;
@@ -49,14 +45,17 @@ div.forms {
 }
 
 .node { cursor: pointer; } 
-.node text { font: 12px sans-serif; } 
+.node text { 
+  font: 13px sans-serif; 
+} 
+
 .link { fill: none; opacity: 0.6;}
 
 div.tooltip {   
   position: absolute;           
   text-align: center;           
   width: 120px;                  
-  padding: 3px;             
+  padding: 5px;             
   font: 12px sans-serif;        
   background: #D7D5CD;
   opacity: 0.5;  

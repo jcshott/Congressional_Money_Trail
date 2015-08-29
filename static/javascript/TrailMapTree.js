@@ -55,8 +55,16 @@ function update(source) {
 
   // var color = d3.scale.category20();
   var color = d3.scale.ordinal()
-        .range(['rgb(166,219,160)','rgb(90,174,97)','rgb(27,120,55)','rgb(199,234,229)','rgb(128,205,193)','rgb(53,151,143)','rgb(1,102,94)','rgb(0,60,48)', 'rgb(84,48,5)','rgb(191,129,45)','rgb(223,194,125)','rgb(246,232,195)']);
+        .range(['rgb(166,219,160)', 'rgb(27,120,55)', 'rgb(90,174,97)','rgb(199,234,229)','rgb(128,205,193)','rgb(53,151,143)','rgb(1,102,94)','rgb(0,60,48)', 'rgb(84,48,5)','rgb(191,129,45)']);
 
+// var color_dem = d3.scale.ordinal()
+//         .range(['rgb(116,169,207)','rgb(54,144,192)','rgb(5,112,176)','rgb(4,90,141)','rgb(2,56,88)','rgb(103,169,207)','rgb(2,129,138)','rgb(1,108,89)','rgb(1,70,54)'])
+
+// var color_repub = d3.scale.ordinal()
+//         .range(['rgb(252,146,114)','rgb(251,106,74)','rgb(239,59,44)','rgb(203,24,29)','rgb(165,15,21)','rgb(103,0,13)', 'rgb(252,78,42)','rgb(227,26,28)','rgb(189,0,38)','rgb(128,0,38)'])
+
+// var color_indep = d3.scale.ordinal()
+//         .range(['rgb(116,196,118)','rgb(35,139,69)','rgb(0,109,44)','rgb(0,68,27)','rgb(120,198,121)','rgb(65,171,93)','rgb(35,132,67)','rgb(0,104,55)','rgb(0,69,41)'])
 
   // Compute the new tree layout.
   var nodes = tree.nodes(root).reverse(),
@@ -88,7 +96,8 @@ function update(source) {
                 .style("top", (d3.event.pageY - 28) + "px");
             d3.select(".tooltip").append("div")
                 .text(d.tooltip_click)
-                .style("font-weight", "bold");
+                .style("font-weight", "bold")
+                .style("margin-top", "5px");
             })                  
         .on("mouseout", function(d) {       
             tooltip.transition()        
@@ -99,11 +108,24 @@ function update(source) {
 
   nodeEnter.append("circle")
       .attr("r", function(d) { return d.value; })
+      // .style("fill", function(d){
+      //   if (d.member_party === "R") {
+      //     return color_repub(d.industry);
+      //   }
+      //   else if (d.member_party === "D"){
+      //     return color_dem(d.industry);
+      //   }
+      //   else if (d.member_party === "I"){
+      //     return color_indep(d.industry);
+      //   }
+      // });
       .style("fill", function (d) { 
         if (d.industry === "R") {
-          return "#B5150C"
-        } else if (d.industry === "D" | d.industry === "I"){
-          return "#313695"
+          return "#B5150C";
+        } else if (d.industry === "D") {
+          return "#313695";
+        } else if (d.industry === "I") {
+          return "#88419d";
         } else { 
           return color(d.industry);
         }

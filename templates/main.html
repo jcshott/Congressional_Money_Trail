@@ -5,38 +5,15 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvOEtQIfXWSZq8tKg2S2RrHhOkikKxcY0&callback=initialize" async defer></script>
 <script src="/static/javascript/get_members.js"></script>
 
-	<!-- <div class="navbar navbar-default navbar-static-top"> -->
-		<!-- <div class="container"> -->
-		
-		<!-- Large modal button -->
-		<!-- <button type="button" class="btn btn-default" data-toggle="modal" data-target=".modal-info">Click for info on data</button> -->
-
-<!-- 		<button type="button" id="popover" class="btn btn-default" style="display: none;" data-container="body" data-toggle="popover" data-placement="bottom" data-content="You are looking at a visualization of campaign contributions for the Member of Congress shown on the left.  First you'll see the distribution how much the Member of Congress recieved from Political Action Committess (PACs) v. Individual donors.  Hover on a node to see more information and click on the nodes to follow the trail - the end will show the Top 10 Individual or PAC contributors.">
-		  What am I seeing?
-		</button> -->
-
-	    <!-- <div class="navbar-collapse collapse"> -->
-		    <!-- <ul class="nav navbar-nav navbar-right"> -->
-		        <!-- <li> -->
-		            <!-- Share page on twitter button -->
-
-		        <!-- </li> -->
-		    <!-- </ul> -->
-	    <!-- </div> -->
-		<!-- </div> -->
-	<!-- </div> -->
-
 <div class="container-fluid">
 
 	<div class="row main">
-		<div class="col-md-2" id="sidebar">
+		<div class="col-md-2 sidebar" id="sidebar">
 
-				<div id="twitterButton">  
+				<!-- <div id="twitterButton">   -->
 <!-- 					Share page on twitter button -->
-						<a href="https://twitter.com/share" class="twitter-share-button" data-text="See where your federal representatives get their campaign money" data-via="jcshott" data-size="large" data-count="none" data-hashtags="FollowTheMoneyTrail,Congress">Tweet</a>
-
-						<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-				</div>
+						<!-- <a href="https://twitter.com/share" class="twitter-share-button" data-text="See where your federal representatives get their campaign money" data-via="jcshott" data-size="large" data-count="none" data-hashtags="FollowTheMoneyTrail,Congress">Tweet</a> -->
+				<!-- </div> -->
 
 				<div class="row forms">
 					<div class="form-group">
@@ -97,32 +74,29 @@
 
 				 	<button type="button" class="btn btn-default" id="new_choice" style="display: none;">Map a new legislator </button> 
 				</div>
-			
-
-			</div>
-
-
-		<div id="map_viz" class="col-md-10" style="display: none;"> 
-
+					
 					<button type="button" id="popover" class="btn btn-default" style="display: none;" data-container="body" data-toggle="popover" data-placement="bottom" data-content="You are looking at a visualization of campaign contributions for the Member of Congress shown on the left.  First you'll see the distribution how much the Member of Congress recieved from Political Action Committess (PACs) v. Individual donors.  Hover on a node to see more information and click on the nodes to follow the trail - the end will show the Top 10 Individual or PAC contributors.">
 					  What am I seeing?
 					</button>
+			</div>
 
-		</div>
+
+		<div id="map_viz" class="col-md-10 main" style="display: none;"> </div>
 		
-		<div class="row" id="footer">
+
+	</div>
+			<div class="row" id="footer">
 			<div class="col-md-12">
     			Created by Corey Shott. Hackbright Academy Summer 2015
-
-    			<!-- Large modal button -->
+    			<img src="/static/img/82px-muddy-boot-print-clip-art-30508.png"><img>
+    			<!-- modal button -->
 				<button type="button" id="info_button" class="btn btn-default" data-toggle="modal" data-target=".modal-info">Click for info on data</button>
 
     		</div>
 		
 		</div>
-	</div>
 </div>
-
+<!-- modal content -->
 	<div class="modal fade modal-info" role="dialog" aria-labelledby="gridSystemModalLabel">
 		  <div class="modal-dialog" role="document">
 		    <div class="modal-content">
@@ -144,9 +118,12 @@
 		  </div>/ <!-- .modal-dialog -->
 		</div> <!-- /.modal -->
 </div>
+
+
 <script>
 
 $('#myModal').modal("toggle");
+
 
 //list possible representatives only after choose state.  
 $("#state_pick").change("state_value", showLegislators);
@@ -199,7 +176,12 @@ $('#popover').on('click', function() {
 	$('#popover').popover('toggle');
  });
 
+// twitter functionality
+!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+
+
 </script>
+
 
 
 {% endblock %}
