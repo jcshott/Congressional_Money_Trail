@@ -78,16 +78,20 @@ function showLegislators(evt) {
       
 
     if (result.senators) {
-      $('#member_list').append("<option class='chamber_label form-control'>" + "Senators" +"</option>");
-      
-      for (var i in result.senators) {$('#member_list').append($("<option class='member_choice'></option>").val(result.senators[i].leg_id).text(result.senators[i].title + ". " + result.senators[i].first + " " + result.senators[i].last + " (" + result.senators[i].party + ")")); }
+      // $('#member_list').append("<option class='chamber_label form-control'>" + "Senators" +"</option>");
+      $('#member_list').append("<optgroup label='Senators'>");
+
+      for (var i in result.senators) {$('#member_list').append($("<option class='member_choice'></option>").val(result.senators[i].leg_id).text(result.senators[i].title + ". " + result.senators[i].first + " " + result.senators[i].last + " (" + result.senators[i].party + ")")); };
+
+      $('#member_list').append("</optgroup>");
     }
     
     // check for empty seats
     
     if (result.representatives.length > 0) {
-      $('#member_list').append("<option class='chamber_label form-control'>" + "House Members" +"</option>");
-      
+      // $('#member_list').append("<option class='chamber_label form-control'>" + "House Members" +"</option>");
+      $('#member_list').append("<optgroup label='House Members'>");
+
       var representatives = result.representatives
       
       // thanks stack overflow
@@ -110,6 +114,7 @@ function showLegislators(evt) {
         // cycle through list of representatives returned, to pull relevant info out & put in drop-down menu
         
         $('#member_list').append($("<option class='member_choice form-control'></option>").val(sorted_reps[i].leg_id).text(sorted_reps[i].title + ". " + sorted_reps[i].first + " " + sorted_reps[i].last + " (" + sorted_reps[i].party + district + ")")); 
+        $('#member_list').append("</optgroup>");
 
         };
     } else {

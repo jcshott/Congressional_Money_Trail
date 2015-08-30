@@ -26,21 +26,15 @@
 	{% endif %}
 
 	First elected: {{member_info.first_elected}}<br>
-	Official Website: <a href="{{member_info.off_website}}" target="new">{{member_info.off_website}} </a><br>
+	<span class="glyphicon glyphicon-globe" aria-hidden="true"></span> <a href="{{member_info.off_website}}" target="new">{{member_info.off_website}} </a><br>
 	
 	{% if member_info.twitter_id %}
 		<div id="twitter"> </div><br>
 
 	{% endif %}
 
-	{% if member_info.facebook_id %}
-
-		<div class="fb-follow" data-href="https://www.facebook.com/zuck" data-layout="button" data-width="200" data-height="25" data-show-faces="true"></div>
-	
-	{% endif %}
-	
-
 </div>
+
 
 <script>
 twttr.widgets.createMentionButton(

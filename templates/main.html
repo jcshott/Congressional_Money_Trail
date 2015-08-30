@@ -38,6 +38,7 @@
 							
 							<select name="member" class="member_choice form-control" id="member_list">
 
+							</select>
 
 							<input type="submit" class="btn btn-default" id="submit_member" value="Map this Member">
 						</form>
@@ -68,62 +69,98 @@
 					</div>
 				</div>
 				
-				<div class="row member_profile"></div>
+				<div class="row member_profile">
+					<div class="row new_member">
 
-				<div class="row new_member">
-
-				 	<button type="button" class="btn btn-default" id="new_choice" style="display: none;">Map a new legislator </button> 
+				 		<button type="button" class="btn btn-default" id="new_choice" style="display: none;"> <span class="glyphicon glyphicon-edit"></span>  Map a new legislator </button> 
+					</div>
+				
 				</div>
-					
-					<button type="button" id="popover" class="btn btn-default" style="display: none;" data-container="body" data-toggle="popover" data-placement="bottom" data-content="You are looking at a visualization of campaign contributions for the Member of Congress shown on the left.  First you'll see the distribution how much the Member of Congress recieved from Political Action Committess (PACs) v. Individual donors.  Hover on a node to see more information and click on the nodes to follow the trail - the end will show the Top 10 Individual or PAC contributors.">
-					  What am I seeing?
-					</button>
+
 			</div>
 
 
 		<div id="map_viz" class="col-md-10 main" style="display: none;"> </div>
-		
+	
+		<!-- expanding Sidebar -->
+		<div id="wrapper">
+
+	      <div id="sidebar-wrapper">
+	      <ul id="sidebar_menu" class="sidebar-nav">
+	           <li class="sidebar-brand"><a id="menu-toggle" href="#"><span id="main_icon" class="glyphicon glyphicon-question-sign"></span>More Info</a></li>
+	      </ul>
+	        <ul class="sidebar-nav" id="sidebar">     
+	          <li><a id="dataButton" class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="dataInfo"><span class="sub_icon glyphicon glyphicon-stats"></span>The data</a></li>
+
+	        	<div id="dataInfo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+		      		<div class="panel-body">
+		        		Congressional Money Trail utilizes congressional campaign data from the Center for Responsive Politics (OpenSecrets.org).  Contribution figures are based on totals since 1994 and amounts vary depending on how long a Member of Congress has been in office.
+		      		</div>
+				</div>
+
+	          <li><a id="graphButton" class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="mapInfo"><span class="sub_icon glyphicon glyphicon-info-sign"></span>The graphic</a></li>
+
+	           <div id="graphInfo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+			      <div class="panel-body">
+			        You are looking at a visualization of campaign contributions for the Member of Congress shown on the left.  First you'll see the distribution how much the Member of Congress recieved from Political Action Committess (PACs) v. Individual donors.  Hover on a node to see more information and click on the nodes to follow the trail - the end will show the Top 10 Individual or PAC contributors.
+			      </div>
+    			</div>
+
+
+	          <li><a id="siteButton" class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="siteInfo"><span class="sub_icon glyphicon glyphicon-globe"></span>The site</a></li>
+	        	<div id="siteInfo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+		      		<div class="panel-body">
+		        		Here I'll put info about the website. Created by Corey Shott. Hackbright Academy Summer 2015
+		      		</div>
+				</div>
+	        </ul>
+
+	      </div>
+	    
+	    </div>
 
 	</div>
 			<div class="row" id="footer">
 			<div class="col-md-12">
-    			Created by Corey Shott. Hackbright Academy Summer 2015
     			<img src="/static/img/82px-muddy-boot-print-clip-art-30508.png"><img>
-    			<!-- modal button -->
-				<button type="button" id="info_button" class="btn btn-default" data-toggle="modal" data-target=".modal-info">Click for info on data</button>
-
     		</div>
 		
 		</div>
 </div>
-<!-- modal content -->
-	<div class="modal fade modal-info" role="dialog" aria-labelledby="gridSystemModalLabel">
-		  <div class="modal-dialog" role="document">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		        <h4 class="modal-title" id="gridSystemModalLabel">Learn about the data used on this site</h4>
-		      </div>
-		      <div class="modal-body">
-		      	Congressional Money Trail utilizes congressional campaign data from the Center for Responsive Politics (OpenSecrets.org).  Contribution figures are based on totals since 1994 and amounts vary depending on how long a Member of Congress has been in office.  
 
-		      		<img src="/static/img/opensecrets_databy250x88.gif" ref="http://www.opensecrets.org"></img>
-		      
-		      </div>
-		      <div class="modal-footer">
-		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-
-		      </div>
-		    </div>/<!-- .modal-content -->
-		  </div>/ <!-- .modal-dialog -->
-		</div> <!-- /.modal -->
 </div>
 
 
 <script>
 
-$('#myModal').modal("toggle");
+// info sidebar toggle
+$("#menu-toggle").click(function(e) {
+	e.preventDefault();
+	
+	$("#wrapper").toggleClass("active");
 
+    if ($('#dataButton').attr("href")) {
+        $('#dataButton').removeAttr("href");
+    } else {
+        $('#dataButton').attr("href", "#dataInfo");
+    };
+
+    if ($('#graphButton').attr("href")) {
+        $('#graphButton').removeAttr("href");
+    } else {
+        $('#graphButton').attr("href", "#graphInfo");
+    };
+
+    if ($('#siteButton').attr("href")) {
+        $('#siteButton').removeAttr("href");
+    } else {
+        $('#siteButton').attr("href", "#siteInfo");
+    };
+
+});
+
+// accordion toggle in info
+$('.collapse').collapse("toggle");
 
 //list possible representatives only after choose state.  
 $("#state_pick").change("state_value", showLegislators);
@@ -156,7 +193,6 @@ $("form.repsDistrict").on("submit", function (evt) {
 		$("#your_district_reps").hide();
 		$("#new_choice").show();
 		$(".forms").append(result);
-		$('#popover').show();
 
 	});
 });
@@ -168,13 +204,8 @@ $("#new_choice").on("click", function (evt){
 	$("#pick_by_address").show();
 	$("#new_choice").hide();
 	$("#member_profile").remove();
-	$("#popover").hide();
-});
 
-$('#popover').popover('hide');
-$('#popover').on('click', function() {
-	$('#popover').popover('toggle');
- });
+});
 
 // twitter functionality
 !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
