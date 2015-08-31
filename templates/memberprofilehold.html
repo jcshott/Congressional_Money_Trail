@@ -1,7 +1,7 @@
 <div id="member_profile">
 	
-	<img src="{{member_info.pict_link}}" style="width: 100px;" class="img-rounded"> </img>
-	The Honorable {{member_info.get("first")}} {{member_info.get("last")}}  <br>
+	<img src="{{member_info.pict_link}}" class="img-rounded img-responsive center-block"> </img>
+	The Honorable {{member_info.get("first")}} {{member_info.get("last")}}  <br> <br>
 	{% if member_info.get("party") == "D" %}
 	Democrat<br>
 	{% elif member_info.get("party") == "I" %}
@@ -21,12 +21,21 @@
 	
 	{% set abbr = member_info.get("state") %}
 	U.S. House of Representatives<br>
+
+	{% if member_info.get("district") == 0 %}
+	
+	{{ states.get(abbr) }} At-Large <br>
+
+	{% else %}
+
 	{{ states.get(abbr) }} District: {{member_info.get("district")}} <br>
+
+	{% endif %}
 	
 	{% endif %}
 
 	First elected: {{member_info.first_elected}}<br>
-	<span class="glyphicon glyphicon-globe" aria-hidden="true"></span> <a href="{{member_info.off_website}}" target="new">{{member_info.off_website}} </a><br>
+	<a href="{{member_info.off_website}}" target="new">{{member_info.off_website}} </a><br>
 	
 	{% if member_info.twitter_id %}
 		<div id="twitter"> </div><br>

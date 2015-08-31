@@ -41,9 +41,11 @@ function geocodeAddress(geocoder) {
             };
           }
           
-        $('#repsByAddress').html("Your Congressional Delegation for District " + district);
+        $('#repsByAddress').html("District " + district);
          
         $('.member_choice option').remove();
+
+        $('#address_member_list').append("<option class='form-control'>" + "State Delegation" +"</option>"); 
 
         for (var i in legislators) {
                            
@@ -75,22 +77,23 @@ function showLegislators(evt) {
   //parse and put into the dropdown menu. assigning the leg_id to the value of the selection so can grab that on server side to query for contribution information.
 
   $.post("/state_info", state_value, function (result) {
-      
+    
+    $('#member_list').append("<option class='form-control'>" + "State Delegation" +"</option>");  
 
     if (result.senators) {
-      // $('#member_list').append("<option class='chamber_label form-control'>" + "Senators" +"</option>");
-      $('#member_list').append("<optgroup label='Senators'>");
+      $('#member_list').append("<option class='chamber_label form-control'>" + "Senators" +"</option>");
+      // $('#member_list').append("<optgroup label='Senators'>");
 
       for (var i in result.senators) {$('#member_list').append($("<option class='member_choice'></option>").val(result.senators[i].leg_id).text(result.senators[i].title + ". " + result.senators[i].first + " " + result.senators[i].last + " (" + result.senators[i].party + ")")); };
 
-      $('#member_list').append("</optgroup>");
+      // $('#member_list').append("</optgroup>");
     }
     
     // check for empty seats
     
     if (result.representatives.length > 0) {
-      // $('#member_list').append("<option class='chamber_label form-control'>" + "House Members" +"</option>");
-      $('#member_list').append("<optgroup label='House Members'>");
+      $('#member_list').append("<option class='chamber_label form-control'>" + "House Members" +"</option>");
+      // $('#member_list').append("<optgroup label='House Members'>");
 
       var representatives = result.representatives
       
@@ -114,7 +117,7 @@ function showLegislators(evt) {
         // cycle through list of representatives returned, to pull relevant info out & put in drop-down menu
         
         $('#member_list').append($("<option class='member_choice form-control'></option>").val(sorted_reps[i].leg_id).text(sorted_reps[i].title + ". " + sorted_reps[i].first + " " + sorted_reps[i].last + " (" + sorted_reps[i].party + district + ")")); 
-        $('#member_list').append("</optgroup>");
+        // $('#member_list').append("</optgroup>");
 
         };
     } else {

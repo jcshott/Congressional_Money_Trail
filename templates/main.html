@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-
+<link href='https://fonts.googleapis.com/css?family=Cabin:700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="/static/css/main.css">
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvOEtQIfXWSZq8tKg2S2RrHhOkikKxcY0&callback=initialize" async defer></script>
 <script src="/static/javascript/get_members.js"></script>
@@ -8,78 +8,75 @@
 <div class="container-fluid">
 
 	<div class="row main">
-		<div class="col-md-2 sidebar" id="sidebar">
+		<div class="col-md-2 infobar" id="sidebar">
 
-				<!-- <div id="twitterButton">   -->
-<!-- 					Share page on twitter button -->
-						<!-- <a href="https://twitter.com/share" class="twitter-share-button" data-text="See where your federal representatives get their campaign money" data-via="jcshott" data-size="large" data-count="none" data-hashtags="FollowTheMoneyTrail,Congress">Tweet</a> -->
-				<!-- </div> -->
-
-				<div class="row forms">
-					<div class="form-group">
-						<form id="state_pick" method="post" action="/state_info.json">
-						 
-						  <label> Pick a state:</label>
-						    <select class="form-control" name="state" id="state_value">
-						    	<option> Choose a State </option>
-						    {% for state in states %}
-						      <option value="{{ state[0] }}"> {{ state[1] }} </option>
-						    {% endfor %}  
-						</select>
-						</form>
-					</div>
-					
-					<div id="legislators_display" class="form-group" style="display: none;"> 
-
-						<h2> Pick a Member to Map </h2>
-
-						<form class='repsDistrict' method="get" action='/trail_map'> 
-							<label>Select a Member of Congress: </label>
-							
-							<select name="member" class="member_choice form-control" id="member_list">
-
-							</select>
-
-							<input type="submit" class="btn btn-default" id="submit_member" value="Map this Member">
-						</form>
-					</div>
-
-					<div id="noMember" style="display: none;">Sorry, that seat is currently vacant or there is no data currently available for that Member of Congress. Please choose another state or enter an address
-					</div>
-
-					<!-- find members by address form -->
-					<div id="pick_by_address" class="form-group"> 
-						<form>
-							<label> Enter Address to Find Your Congressional Delegation </label>
-							<input id="address" type="textbox" class="form-control" placeholder="Address">
-							<input type="submit" class="btn btn-default" id="submit_geocode" value="Find My Delegation">
-						</form>
-					</div>
-
-
-					<div id="your_district_reps" class="form-group" style="display: none;"> 
-						<form class='repsDistrict' method="get" action='/trail_map'> 
-							<label id="repsByAddress"> </label>
-						
-							<select name="member" class="member_choice form-control" id="address_member_list">
-							
-							<input type="submit" class="btn btn-default" id="submit_member" value="Map this Member">
-						</form>
-
-					</div>
+			<div class="row forms">
+				<div class="form-group">
+					<form id="state_pick" method="post" action="/state_info.json">
+					 
+					  <label> Pick a state:</label>
+					    <select class="form-control" name="state" id="state_value">
+					    	<option> Choose a State </option>
+					    {% for state in states %}
+					      <option value="{{ state[0] }}"> {{ state[1] }} </option>
+					    {% endfor %}  
+					</select>
+					</form>
 				</div>
-				
-				<div class="row member_profile">
-					<div class="row new_member">
+					
+				<div id="legislators_display" class="form-group" style="display: none;"> 
 
-				 		<button type="button" class="btn btn-default" id="new_choice" style="display: none;"> <span class="glyphicon glyphicon-edit"></span>  Map a new legislator </button> 
-					</div>
-				
+					<form class='repsDistrict' method="get" action='/trail_map'> 
+						<label>Select a Member of Congress: </label>
+						
+						<select name="member" class="member_choice form-control" id="member_list">
+
+						</select>
+
+						<input type="submit" class="btn btn-default" id="submit_member" value="Map this Member">
+					</form>
+				</div>
+
+				<!-- find members by address form -->
+				<div id="pick_by_address" class="form-group"> 
+					<form>
+
+						<label> Or....<br> Enter Address to Find Congressional Delegation </label>
+						<input id="address" type="textbox" class="form-control" placeholder="Address">
+						<input type="submit" class="btn btn-default" id="submit_geocode" value="Find My Delegation">
+					</form>
+				</div>
+
+
+				<div id="your_district_reps" class="form-group" style="display: none;"> 
+					<form class='repsDistrict' method="get" action='/trail_map'> 
+						<label id="repsByAddress"> </label>
+					
+						<select name="member" class="member_choice form-control" id="address_member_list">
+						
+						<input type="submit" class="btn btn-default" id="submit_member" value="Map this Member">
+					</form>
+
+				</div>
+
+				<div id="noMember" class="bg-danger" style="display: none;"><span class="glyphicon glyphicon-exclamation-sign"></span> Sorry, that seat is currently vacant or there is no data currently available for that Member of Congress. Please choose another state/district or enter another address.
 				</div>
 
 			</div>
+				
+			<div class="row member_profile">
+				<div class="row new_member">
 
+			 		<button type="button" class="btn btn-default" id="new_choice" style="display: none;"> <span class="glyphicon glyphicon-edit"></span>  Map a new legislator </button> 
+				</div>
+			
+			</div>
 
+				<img id="logo" src="/static/img/logo.png"><img>
+			
+		</div>
+
+<!-- 		visualization area -->
 		<div id="map_viz" class="col-md-10 main" style="display: none;"> </div>
 	
 		<!-- expanding Sidebar -->
@@ -94,7 +91,7 @@
 
 	        	<div id="dataInfo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
 		      		<div class="panel-body">
-		        		Congressional Money Trail utilizes congressional campaign data from the Center for Responsive Politics (OpenSecrets.org).  Contribution figures are based on totals since 1994 and amounts vary depending on how long a Member of Congress has been in office.
+		        		Congressional Money Trail utilizes congressional campaign data from the <a href="http://www.opensecrets.org" target="new">Center for Responsive Politics (OpenSecrets.org)</a>. <br> Contribution figures are only for contributions directly to a Member's campaign from the two types of givers.  Totals go back to 1994 and amounts vary depending on how long a Member of Congress has been in office. <br> Biographical information on Members of Congress was accessed through the <a href="https://sunlightlabs.github.io/congress/" target="new">Sunlight Foundation's CongressAPI </a>.  A big thanks to both incredible organizations for opening up access to their data.
 		      		</div>
 				</div>
 
@@ -102,7 +99,7 @@
 
 	           <div id="graphInfo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
 			      <div class="panel-body">
-			        You are looking at a visualization of campaign contributions for the Member of Congress shown on the left.  First you'll see the distribution how much the Member of Congress recieved from Political Action Committess (PACs) v. Individual donors.  Hover on a node to see more information and click on the nodes to follow the trail - the end will show the Top 10 Individual or PAC contributors.
+			        The graphic rendered on this page is a visualization of campaign contributions for the selected Member of Congress shown on the left. <br>  The first layer is the distribution how much the Member of Congress recieved from Political Action Committess (PACs) v. Individual donors. <br> Hover on a node to see more information and click on the nodes to follow the trail - the end will show the Top 10 Individual or PAC contributors.
 			      </div>
     			</div>
 
@@ -110,7 +107,7 @@
 	          <li><a id="siteButton" class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="siteInfo"><span class="sub_icon glyphicon glyphicon-globe"></span>The site</a></li>
 	        	<div id="siteInfo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
 		      		<div class="panel-body">
-		        		Here I'll put info about the website. Created by Corey Shott. Hackbright Academy Summer 2015
+		        		This site was created by Corey Shott, as her final project for <a href="https://hackbrightacademy.com/" target="new">Hackbright Academy</a> in Summer 2015. You can find out more about Corey and see the code for this project on her  <a href="http://www.github.com/jcshott" target="new">Github</a> page.
 		      		</div>
 				</div>
 	        </ul>
@@ -120,12 +117,7 @@
 	    </div>
 
 	</div>
-			<div class="row" id="footer">
-			<div class="col-md-12">
-    			<img src="/static/img/82px-muddy-boot-print-clip-art-30508.png"><img>
-    		</div>
-		
-		</div>
+
 </div>
 
 </div>
@@ -175,6 +167,8 @@ $("#map_viz").bind("showMap", showTrailMapTree);
 $("form.repsDistrict").on("submit", function (evt) {
 
 	evt.preventDefault();
+
+	$("#footprintGif").show();
 
 	member = {'member': $('select.member_choice option:selected').val()};
 

@@ -1,61 +1,76 @@
 body::after {
-    content : "";
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-image: url(/static/img/MT_Jewel_Basin_2.jpg); 
-    width: 100%;
-    height: 900px;
-    opacity : 0.3;
-    z-index: -1;
-}
-
-
-.btn#twitterButton {
+  content : "";
+  display: block;
   position: absolute;
-  right: 0;
+  top: 0;
+  left: 0;
+  background-image: url(/static/img/MT_Jewel_Basin_2.jpg); 
+  width: 100%;
+  height: 900px;
+  opacity : 0.3;
+  z-index: -1;
 }
 
 #sidebar-wrapper {
-    margin-right: -150px;
-    right: 70px;
-    width: 150px;
-    background: #9C5C19;
-    position: fixed;
-    height: 100%;
-    z-index: 10000;
-    transition: all .4s ease 0s;
+  margin-right: -175px;
+  right: 70px;
+  width: 100px;
+  background: rgba(1, 102, 94, 0.4);
+  position: fixed;
+  height: 100%;
+  z-index: 10000;
+  transition: all .4s ease 0s;
 }
 
 .sidebar-nav {
-    display: block;
-    float: right;
-    width: 150px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  display: block;
+  float: right;
+  width: 100px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: 'Cabin', sans-serif;
 }
 
-#sidebar_menu li a, .sidebar-nav li a {
-    color:  rgb(27, 120, 55);
-    display: block;
-    float: right;
-    text-decoration: none;
-    width: 150px;
-    background: #9C5C19;
 
-    border-bottom: 1px solid #543005;
-    -webkit-transition: background .5s;
-    -moz-transition: background .5s;
-    -o-transition: background .5s;
-    -ms-transition: background .5s;
-    transition: background .5s;
+
+.sidebar-nav li a {
+  color:  rgb(84, 48, 5);
+  display: block;
+  float: right;
+  text-decoration: none;
+  width: 100px;
+  background: rgba(1, 102, 94, 0.4);
+
+  border-bottom: 1px solid rgb(1, 102, 94);
+  -webkit-transition: background .5s;
+  -moz-transition: background .5s;
+  -o-transition: background .5s;
+  -ms-transition: background .5s;
+  transition: background .5s;
 }
+
+#sidebar_menu li a {
+  color:  rgb(84, 48, 5);
+  display: block;
+  float: right;
+  text-decoration: none;
+  width: 150px;
+  background: rgba(1, 102, 94, 0.4);
+
+  border-bottom: 1px solid rgb(1, 102, 94);
+  -webkit-transition: background .5s;
+  -moz-transition: background .5s;
+  -o-transition: background .5s;
+  -ms-transition: background .5s;
+  transition: background .5s;
+
+}
+
 .sidebar_name {
-    padding-top: 25px;
-    color: #CF985F;
-    opacity: .7;
+  padding-top: 25px;
+  color: rgb(84, 48, 5);
+  opacity: .7;
 }
 
 .sidebar-nav li {
@@ -64,7 +79,7 @@ body::after {
 }
 
 .sidebar-nav li a {
-  color: #199C2C;
+  color: rgb(84, 48, 5);
   display: block;
   text-decoration: none;
 }
@@ -75,19 +90,42 @@ body::after {
   text-decoration: none;
 }
 
+
 #wrapper.active .sidebar-nav li a:active,
 #wrapper.active .sidebar-nav li a:focus {
   text-decoration: none;
 }
 
 .sidebar-nav > .sidebar-brand {
-  height: 65px;
+  height: 60px;
   line-height: 60px;
   font-size: 18px;
 }
 
 .sidebar-nav > .sidebar-brand a {
-  color: #CF985F;
+  color: rgb(84, 48, 5);
+}
+
+#wrapper.active .sidebar-nav li a {
+  color:  rgb(84, 48, 5);
+  display: block;
+  float: right;
+  text-decoration: none;
+  width: 150px;
+  background: rgba(1, 102, 94, 0.4);
+
+  border-bottom: 1px solid rgb(1, 102, 94);
+  -webkit-transition: background .5s;
+  -moz-transition: background .5s;
+  -o-transition: background .5s;
+  -ms-transition: background .5s;
+  transition: background .5s;
+}
+
+#wrapper.active .panel-body {
+  width: 150px;
+  float: right;
+  transition: all .4s ease 0s;
 }
 
 #menu-toggle:hover {
@@ -101,25 +139,27 @@ body::after {
   float: left;
   padding-right: 15px;
   padding-top:20px;
+  color: rgb(84, 48, 5)
 }
+
 .sub_icon
 {
   float:left;
   padding-right: 15px;
   padding-top:10px;
-  color:  #199C2C;
+  color: rgb(84, 48, 5);
 }
 
 #sidebar-wrapper {
-    right: 70px;
+  right: 70px;
 }
 #wrapper.active {
-    padding-right: 150px;
+  padding-right: 150px;
 }
 #wrapper.active #sidebar-wrapper {
-    right: 150px;
-    width: 150px;
-    transition: all .4s ease 0s;
+  right: 175px;
+  width: 150px;
+  transition: all .4s ease 0s;
 }
 
 #wrapper.active #main_icon {
@@ -130,23 +170,38 @@ body::after {
   padding-right: 2px;
 }
 
-div.sidebar {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1000;
-    display: block;
-    padding: 20px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    background-color: rgba(149, 161, 141, 0.4);
+div.infobar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  display: block;
+  padding: 20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: rgba(149, 161, 141, 0.4);
 
   }
+
+#logo {
+  width: 250px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  display: inline-block;
+  padding-left: 5px; 
+  padding-right: 10px;
+}
 
 div.main {
     margin-left: 10%;
+    font-family: 'Cabin', sans-serif;
   }
+
+div.main label {
+  font-size: 18px;
+}
 
 .btn#new_choice {
   background: none;
@@ -157,7 +212,8 @@ div.main {
 
 .node { cursor: pointer; } 
 .node text { 
-  font: 13px sans-serif; 
+  font-family: 'Cabin', sans-serif;
+  font-size: 16px;
 } 
 
 .link { fill: none; opacity: 0.6;}
@@ -165,10 +221,12 @@ div.main {
 div.tooltip {   
   position: absolute;           
   text-align: center;           
-  width: 120px;                  
-  padding: 5px;             
-  font: 12px sans-serif;        
-  background: #f0f0f0;
+  width: 140px;                  
+  padding: 7px;             
+  /*font: 12px sans-serif;        */
+  font-family: 'Cabin', sans-serif;
+  font-size: 16px;
+  background: white;
   opacity: 0.5;  
   border: 0px;      
   border-radius: 8px;           
@@ -179,11 +237,25 @@ div.tooltip {
 .new_member {
   padding-top: 50px;
   padding-left: 10px;
+  margin-left: 5px;
 }
 
-.member_profile {
-  padding-left: 10px;
+#member_profile {
+ /* padding-left: 5px;*/
+  font-family: 'Cabin', sans-serif;
+  font-size: 16px;
 }
+
+#member_profile a {
+  font-size: 14px;
+}
+
+.btn#twitterButton {
+  padding-left: 5px;
+  position: absolute;
+  right: 0;
+}
+
 
 
 /* The footer always appears at the bottom of the browser window. */
@@ -194,4 +266,10 @@ div.tooltip {
     width: 100%;  /* required because fixed position */
     text-align: left;
     margin: 2px;
+}
+
+input[type="submit"] {
+  font-family: 'Cabin', sans-serif;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }

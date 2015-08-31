@@ -1,7 +1,7 @@
 
 function showTrailMapTree() {
 
-var margin = {top: 2, right: 50, bottom: 75, left: 150},
+var margin = {top: 2, right: 50, bottom: 75, left: 175},
     width = 1200 - margin.right - margin.left,
     height = 800 - margin.top - margin.bottom;
 
