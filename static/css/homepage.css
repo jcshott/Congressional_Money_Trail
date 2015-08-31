@@ -3,12 +3,14 @@
    Everything is centered and in white. */
 
 body {
-    background: #333 url("/static/img/US_Capitol_west_side.jpg");
+    background: url("/static/img/US_Capitol_dome_5.jpg");
     background-size: cover;
-
     color: white;
     text-align: center;
+    font-family: 'Alike Angular', serif;
 }
+
+
 
 /* site-wrapper and site-wrapper-inner are to vertically center content using
    table/table-cell vertical centering. */
@@ -24,6 +26,17 @@ body {
     vertical-align: middle;
 }
 
+a {
+    color: white;
+}
+
+.glyphicon {
+    margin-top: 50px;
+}
+/*.site-wrapper-inner .btn {
+    margin-left: 300px;
+    color: #137527*/
+}
 /* The footer always appears at the bottom of the browser window. */
 
 #footer {

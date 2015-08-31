@@ -9,13 +9,14 @@ body::after {
   height: 900px;
   opacity : 0.3;
   z-index: -1;
+  overflow: none;
 }
 
 #sidebar-wrapper {
   margin-right: -175px;
   right: 70px;
   width: 100px;
-  background: rgba(1, 102, 94, 0.4);
+  background: rgb(149, 161, 141);
   position: fixed;
   height: 100%;
   z-index: 10000;
@@ -23,6 +24,7 @@ body::after {
 }
 
 .sidebar-nav {
+  color:  rgb(84, 48, 5);
   display: block;
   float: right;
   width: 100px;
@@ -40,9 +42,9 @@ body::after {
   float: right;
   text-decoration: none;
   width: 100px;
-  background: rgba(1, 102, 94, 0.4);
+  background: rgba(149, 161, 141, 0.5);
 
-  border-bottom: 1px solid rgb(1, 102, 94);
+  /*border-bottom: 1px solid rgb(1, 102, 94);*/
   -webkit-transition: background .5s;
   -moz-transition: background .5s;
   -o-transition: background .5s;
@@ -56,9 +58,9 @@ body::after {
   float: right;
   text-decoration: none;
   width: 150px;
-  background: rgba(1, 102, 94, 0.4);
+  background: rgb(149, 161, 141);
 
-  border-bottom: 1px solid rgb(1, 102, 94);
+  /*border-bottom: 1px solid rgb(1, 102, 94);*/
   -webkit-transition: background .5s;
   -moz-transition: background .5s;
   -o-transition: background .5s;
@@ -112,9 +114,9 @@ body::after {
   float: right;
   text-decoration: none;
   width: 150px;
-  background: rgba(1, 102, 94, 0.4);
+  background: rgba(149, 161, 141, 0.7);
 
-  border-bottom: 1px solid rgb(1, 102, 94);
+  /*border-bottom: 1px solid rgb(1, 102, 94);*/
   -webkit-transition: background .5s;
   -moz-transition: background .5s;
   -o-transition: background .5s;
@@ -221,7 +223,7 @@ div.main label {
 div.tooltip {   
   position: absolute;           
   text-align: center;           
-  width: 140px;                  
+  width: 175px;                  
   padding: 7px;             
   /*font: 12px sans-serif;        */
   font-family: 'Cabin', sans-serif;
@@ -234,10 +236,11 @@ div.tooltip {
    
 }
 
-.new_member {
-  padding-top: 50px;
+.new_member .btn {
+  padding-top: 10px;
   padding-left: 10px;
-  margin-left: 5px;
+  margin-left: 20px;
+  font-size: 18px;
 }
 
 #member_profile {

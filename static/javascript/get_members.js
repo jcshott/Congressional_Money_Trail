@@ -34,6 +34,7 @@ function geocodeAddress(geocoder) {
         var legislators = result.legislators_by_address
 
         for (var i in legislators) { 
+          var state = legislators[i].state;
           if (legislators[i].chamber === "House" && legislators[i].district === 0) {
               district = legislators[i].state
             } else if (legislators[i].chamber === "House") {
@@ -41,7 +42,7 @@ function geocodeAddress(geocoder) {
             };
           }
           
-        $('#repsByAddress').html("District " + district);
+        $('#repsByAddress').html(state + " District " + district);
          
         $('.member_choice option').remove();
 
@@ -78,7 +79,7 @@ function showLegislators(evt) {
 
   $.post("/state_info", state_value, function (result) {
     
-    $('#member_list').append("<option class='form-control'>" + "State Delegation" +"</option>");  
+    // $('#member_list').append("<option class='form-control'>" + "State Delegation" +"</option>");  
 
     if (result.senators) {
       $('#member_list').append("<option class='chamber_label form-control'>" + "Senators" +"</option>");

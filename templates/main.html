@@ -75,7 +75,8 @@
 				<img id="logo" src="/static/img/logo.png"><img>
 			
 		</div>
-
+		
+		<div>
 <!-- 		visualization area -->
 		<div id="map_viz" class="col-md-10 main" style="display: none;"> </div>
 	
@@ -99,7 +100,7 @@
 
 	           <div id="graphInfo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
 			      <div class="panel-body">
-			        The graphic rendered on this page is a visualization of campaign contributions for the selected Member of Congress shown on the left. <br>  The first layer is the distribution how much the Member of Congress recieved from Political Action Committess (PACs) v. Individual donors. <br> Hover on a node to see more information and click on the nodes to follow the trail - the end will show the Top 10 Individual or PAC contributors.
+			        The graphic rendered on this page is a visualization of campaign contributions for the selected Member of Congress. <br>  The first layer is the distribution how much the Member of Congress recieved from Political Action Committess (PACs) v. Individual donors. <br> Hover on a node to see more information and click on the nodes to follow the trail - the end will show the Top 10 Individual or PAC contributors.
 			      </div>
     			</div>
 
@@ -168,7 +169,6 @@ $("form.repsDistrict").on("submit", function (evt) {
 
 	evt.preventDefault();
 
-	$("#footprintGif").show();
 
 	member = {'member': $('select.member_choice option:selected').val()};
 
