@@ -198,6 +198,9 @@ function click(d) {
     d._children = null;
   }
   update(d);
+  tooltip.transition()        
+                .duration(500)      
+                .style("opacity", 0); 
 
 };
 
