@@ -91,19 +91,19 @@ $ python server.py
 
 
 ##Additional Screenshots
-*Homepage*
+**Homepage**
 
 ![homepage_screenshot](/static/img/homepage_ss.png)
 
-*Example of tooltip and view of individual donor branch*
+**Example of tooltip and view of individual donor branch**
 ![indiv_donors_screenshot](/static/img/indiv_donors_ss.png)
 
-*Search by address results*
+**Search by address results**
 ![search_address_screenshot](/static/img/choose_by_address_ss.png)
 
-*Location for user on information used for the site*
+**Location for user on information used for the site**
 ![infobar_screenshot](/static/img/info_bar_ss.png)
 
 
-
+**Additional Full Visualization**
 ![repub_screenshot](/static/img/repub_full_ss.png)
