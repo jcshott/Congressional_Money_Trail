@@ -41,7 +41,7 @@ To run the seed file and use the find congressional delegation by address functi
 
 ##Backend and Database
 
-Python runs the backend of Congressional Money Trail.  Given the amount of data and speed necessary to deliver information to the DOM, queries are done in both SQLAlchemy and raw SQL with indices added to the database to further increase querying speed.  In addition much of the information and calculations needed to form the JSON object for the D3 visualization are [done in pushed to Python rather than multiple queries.
+Python runs the backend of Congressional Money Trail.  Given the amount of data and speed necessary to deliver information to the DOM, queries are done in both SQLAlchemy and raw SQL with indices added to the database to further increase querying speed.  In addition much of the information and calculations needed to form the JSON object for the D3 visualization are pushed to Python rather than multiple queries.
 
 
 
