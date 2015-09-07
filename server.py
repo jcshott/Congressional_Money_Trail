@@ -98,9 +98,7 @@ def show_members_for_address():
 	# Geocoding and address
 	geocode_result = gmaps.geocode(address)
 
-	print "geocode", geocode_result
-
-	# [{u'geometry': {u'location': {u'lat': 37.4770169, u'lng': -122.237806}
+	#parse the geocode result to get lat/long
 	geocode_info = geocode_result[0]
 	geometry = geocode_info.get('geometry')
 	location_data = geometry.get("location")

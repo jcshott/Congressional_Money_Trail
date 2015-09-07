@@ -22,6 +22,7 @@ Campaign contributions to our federal officials are publicly disclosed but rarel
 
 *Future*
 
+- [ ] Search Members of Congress by name
 - [ ] Color lines/nodes according to industry of contributor
 - [ ] Capture image to share on social media
 - [ ] Extend data to include contributions to top PACs
