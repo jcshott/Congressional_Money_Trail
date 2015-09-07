@@ -1,31 +1,13 @@
-// control get members by address using Google geocode and ajax req to get_address route
-var geocoder
-
-function initialize() {
-  console.log("initialized")
-  geocoder = new google.maps.Geocoder();
-  
-  document.getElementById('submit_geocode').addEventListener('click', function(evt) {
+// controls getting congressional delegation by address using Google Maps Geocode API on server
+function SearchByAddress(evt) {
+    
     evt.preventDefault();
-    geocodeAddress(geocoder);
-});
-}
 
-function geocodeAddress(geocoder) {
-  
-  var address = document.getElementById('address').value;
-  
-  geocoder.geocode({'address': address}, function(results, status) {
-    if (status === google.maps.GeocoderStatus.OK) {
+    console.log("in event");
+    
+    address = {'address': $("#address").val()};
 
-      // {'state_value': $("#state_value").val()};
-      var latitude = results[0].geometry.location.G
-      var longitude = results[0].geometry.location.K
-
-
-      var coordinates = {'latitude': latitude, 'longitude': longitude}
-
-        $.post("/address_search", coordinates, function (result) {
+    $.post("/address_search", address, function (result) {
         
         $('#repsByAddress').html();
         $('#your_district_reps').show();
@@ -54,14 +36,7 @@ function geocodeAddress(geocoder) {
         }
                 
         });
-
-      }
-
-     else {
-      alert('Address could not be found for the following reason: ' + status);
-    }
-  });
-}
+};
 
 
 // Control drop-down menu using Ajax show only the legislators from the selected state

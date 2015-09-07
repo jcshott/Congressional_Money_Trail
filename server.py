@@ -6,6 +6,7 @@ from helper_functions import ordered_tuples
 from model import connect_to_db, db, Legislator, Contrib_leg, Contributors, Type_contrib, Contrib_pac
 import sqlite3, operator, os
 from sunlight import congress
+import googlemaps
 
 app = Flask(__name__)
 
@@ -90,8 +91,21 @@ def show_members_for_address():
 
 	"""
 
-	latitude = request.form.get('latitude')
-	longitude = request.form.get('longitude')
+	gmapKey = os.environ['Google_Maps_API_Key']
+	gmaps = googlemaps.Client(key=gmapKey)
+
+	address = request.form.get("address")
+	# Geocoding and address
+	geocode_result = gmaps.geocode(address)
+
+	print "geocode", geocode_result
+
+	# [{u'geometry': {u'location': {u'lat': 37.4770169, u'lng': -122.237806}
+	geocode_info = geocode_result[0]
+	geometry = geocode_info.get('geometry')
+	location_data = geometry.get("location")
+	latitude = location_data.get('lat')
+	longitude = location_data.get('lng')
 	
 	#API call to Sunlight Foundation for legislators by lat/lon
 	legislators_list = congress.locate_legislators_by_lat_lon(lat=latitude, lon=longitude)

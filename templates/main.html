@@ -2,7 +2,6 @@
 {% block content %}
 <link href='https://fonts.googleapis.com/css?family=Cabin:700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="/static/css/main.css">
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvOEtQIfXWSZq8tKg2S2RrHhOkikKxcY0&callback=initialize" async defer></script>
 <script src="/static/javascript/get_members.js"></script>
 
 <div class="container-fluid">
@@ -39,7 +38,7 @@
 
 				<!-- find members by address form -->
 				<div id="pick_by_address" class="form-group"> 
-					<form>
+					<form id="address_pick" method="post" action="/address_search">
 
 						<label> Or....<br> Enter Address to Find Congressional Delegation </label>
 						<input id="address" type="textbox" class="form-control" placeholder="Address">
@@ -159,12 +158,14 @@ $('.collapse').collapse("toggle");
 $("#state_pick").change("state_value", showLegislators);
 $("#state_pick").change("state_value", function () {
 	$("#noMember").hide();
-})
+});
+
+$("#address_pick").on("submit", SearchByAddress);
 
 // bind showing the TrailMapTree function call to the event named show map that is called after member choice is submitted (below)
 $("#map_viz").bind("showMap", showTrailMapTree);
 
-// send member_id to route that will send back info for member_profile NOT PICKING UP FORMS ANYMORE
+// send member_id to route that will send back info for member_profile
 $("form.repsDistrict").on("submit", function (evt) {
 
 	evt.preventDefault();
