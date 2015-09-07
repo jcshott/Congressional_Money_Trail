@@ -100,6 +100,7 @@ $ python server.py
 ![indiv_donors_screenshot](/static/img/indiv_donors_ss.png)
 
 **Search by address results**
+
 ![search_address_screenshot](/static/img/choose_by_address_ss.png)
 
 **Location for user on information used for the site**
