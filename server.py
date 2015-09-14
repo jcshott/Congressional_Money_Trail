@@ -14,6 +14,8 @@ app = Flask(__name__)
 app.secret_key = "ABC"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
+PORT = int(os.environ.get("PORT", 5000))
+
 #need a connection to sqldb directly for quicker queries on db
 db_connection = sqlite3.connect("contributions.db", check_same_thread=False)
 db_cursor = db_connection.cursor()
@@ -159,13 +161,8 @@ def get_tree_data():
 
 
 if __name__ == "__main__":
-    # We have to set debug=True here, since it has to be True at the point
-    # that we invoke the DebugToolbarExtension
-    app.debug = True
-
     connect_to_db(app)
 
-    # Use the DebugToolbar
+    # Use the DebugToolbar set debug to True if using
     # DebugToolbarExtension(app)
-
-    app.run()
+    app.run(debug=False, host="0.0.0.0", port=PORT)

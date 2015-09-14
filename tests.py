@@ -59,6 +59,7 @@ def connect_to_db(app):
 if __name__ == "__main__":
     
     connect_to_db(app)
+    
     with app.app_context():
         unittest.main()
     
