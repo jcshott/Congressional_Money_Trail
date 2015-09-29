@@ -11,7 +11,8 @@ import googlemaps
 app = Flask(__name__)
 
 # Required to use Flask sessions and the debug toolbar
-app.secret_key = "ABC"
+SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "ABCDEF")
+app.secret_key = SECRET_KEY
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 PORT = int(os.environ.get("PORT", 5000))
@@ -93,7 +94,7 @@ def show_members_for_address():
 
 	"""
 
-	gmapKey = os.environ['Google_Maps_API_Key']
+	gmapKey = os.environ.get('Google_Maps_API_Key')
 	gmaps = googlemaps.Client(key=gmapKey)
 
 	address = request.form.get("address")
@@ -131,9 +132,8 @@ def show_members_for_address():
 @app.route('/trail_map', methods=["POST"])
 def show_trail_map():
 	"""Page where info on selected Member of Congress will display"""
-	
-	member_choice_id = request.form.get("member")
 
+	member_choice_id = request.form.get("member")
 	session["member_choice_id"] = member_choice_id
 
 	member = Legislator.query.filter_by(leg_id = member_choice_id).first()
@@ -159,10 +159,18 @@ def get_tree_data():
 	return jsonify(contributions)
 	
 
+# @app.route('/top_ten')
+# def get_top_ten():
+# 	""" query db for top overall contributors"""
+
+# 	top_contributors = get_top_ten()
+
+# 	return render_template("top_ten.html", top_contributors=top_contributors)
+
 
 if __name__ == "__main__":
     connect_to_db(app)
 
     # Use the DebugToolbar set debug to True if using
     # DebugToolbarExtension(app)
-    app.run(debug=False, host="0.0.0.0", port=PORT)
+    app.run(debug=True, host="0.0.0.0", port=PORT)

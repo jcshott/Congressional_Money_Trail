@@ -2,8 +2,6 @@
 function SearchByAddress(evt) {
     
     evt.preventDefault();
-
-    console.log("in event");
     
     address = {'address': $("#address").val()};
 
