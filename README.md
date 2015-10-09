@@ -31,7 +31,7 @@ Here is an example of a full visualization.
 ![main_screenshot](/static/img/main_ss.png)
 
 This is a screencast demo of the application - click to play on YouTube:
-![ScreenCast](http://img.youtube.com/vi/iHa8WhCfHA0/0.jpg)](https://youtu.be/iHa8WhCfHA0)
+[![ScreenCast](http://img.youtube.com/vi/iHa8WhCfHA0/0.jpg)](https://youtu.be/iHa8WhCfHA0)
 
 Examples of other stages of the app at the end of the document.
 
