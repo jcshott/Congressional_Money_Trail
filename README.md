@@ -1,6 +1,6 @@
 Congressional Money Trail
 ====================================
-Learn more about the developer on [LinkedIn] (www.linkedin.com/in/coreyshott/) and find the project on [GitHub] (www.github.com/jcshott).
+Learn more about the developer on [LinkedIn] (www.linkedin.com/in/coreyshott/).
 
 Campaign contributions to our federal officials are publicly disclosed but rarely easy to access. Utilizing the past decade of campaign contribution data, Congressional Money Trail seeks to help the public better understand from where their federal congressional representatives receive their campaign money. Just select a state or find a Member of Congress by address and a visual representation of how they finance their campaigns is revealed.
 
@@ -31,7 +31,7 @@ Here is an example of a full visualization.
 ![main_screenshot](/static/img/main_ss.png)
 
 This is a screencast demo of the application - click to play on YouTube:
-[![ScreenCast](http://img.youtube.com/vi/iHa8WhCfHA0/0.jpg)](https://youtu.be/iHa8WhCfHA0)
+![ScreenCast](http://img.youtube.com/vi/iHa8WhCfHA0/0.jpg)](https://youtu.be/iHa8WhCfHA0)
 
 Examples of other stages of the app at the end of the document.
 
