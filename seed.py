@@ -75,21 +75,21 @@ def load_legislators():
 
     db.session.commit()
 
+
 def load_industry_types():
     """input industry codes with their associated name into database"""
 
-    file_open = open("./src/catcodes.csv")
+    file_open = open("./src/CRP_Categories.txt")
     
     for index, line in enumerate(file_open):
-        if index > 0: #skip first line that is a header
-            temp_data = line.rstrip()
-            industry_info = temp_data.split(",")
+        temp_data = line.rstrip()
+        industry_info = temp_data.split("\t")
 
-            industry_code = industry_info[1].strip('"')
-            industry_name = capwords(industry_info[3]).strip('"')
+        industry_code = capwords(industry_info[0]).strip('"')
+        industry_name = capwords(industry_info[1]).strip('"')
 
-            temp_industry_object = Industry(industry_id=industry_code, industry_name=industry_name)
-            db.session.add(temp_industry_object)
+        temp_industry_object = Industry(industry_id=industry_code, industry_name=industry_name)
+        db.session.add(temp_industry_object)
     db.session.commit()
 
 
@@ -230,8 +230,8 @@ def load_pac_contributors():
 if __name__ == "__main__":
     connect_to_db(app)
 
-    load_legislators()
-    # load_industry_types()
+    # load_legislators()
+    load_industry_types()
     # load_indiv_contribution_data()
     # load_pac_to_leg_contribution_data()
     # load_pac_contributors()
