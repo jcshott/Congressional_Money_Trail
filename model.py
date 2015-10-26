@@ -3,12 +3,14 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.sql import label
-import requests, os, sqlite3, operator
+import requests, os, sqlite3, operator, psycopg2
 
 #Create connection to database
 
 db = SQLAlchemy()
 
+#postgres connection for deployment
+# db_connection = psycopg2.connect("dbname='contributions' user='coreyshott' host='localhost'")
 db_connection = sqlite3.connect("contributions.db", check_same_thread=False)
 db_cursor = db_connection.cursor()
 
@@ -23,7 +25,7 @@ class Legislator(db.Model):
 	__tablename__='legislators'
 
 	leg_id = db.Column(db.String(50), primary_key=True) #unique ID given by Ctr for Responsive Politics
-	bioguide_id = db.Column(db.String(8), nullable=False) #need for getting picture
+	bioguide_id = db.Column(db.String(10), nullable=False) #need for getting picture
 	first = db.Column(db.String(30), nullable=False)
 	last = db.Column(db.String(50), nullable=False)
 	nickname = db.Column(db.String(20), nullable=True)
@@ -389,13 +391,16 @@ class Industry(db.Model):
 		return "<Ind Name = %s, ID = %s>" % (self.industry_name, self.industry_id)
 
 ##############################################################################
-# Helper functions
+# Helper functions for flask app
 
 def connect_to_db(app):
     """Connect the database to our Flask app."""
 
     # Configure to use our SQLite database
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///contributions.db'
+    #postgresql connection for deployment
+    # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://coreyshott@localhost:5432/contributions')
+
     db.app = app
     db.init_app(app)
 

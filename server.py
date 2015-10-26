@@ -7,6 +7,7 @@ from model import connect_to_db, db, Legislator, Contrib_leg, Contributors, Type
 import sqlite3, operator, os
 from sunlight import congress
 import googlemaps
+import psycopg2
 
 app = Flask(__name__)
 
@@ -19,6 +20,9 @@ PORT = int(os.environ.get("PORT", 5000))
 
 #need a connection to sqldb directly for quicker queries on db
 db_connection = sqlite3.connect("contributions.db", check_same_thread=False)
+
+# connection for postgres for deployment
+# db_connection = psycopg2.connect("dbname='contributions' user='coreyshott' host='localhost'")
 db_cursor = db_connection.cursor()
 
 # Normally, if you use an undefined variable in Jinja2, it fails silently.
@@ -158,15 +162,6 @@ def get_tree_data():
 
 	return jsonify(contributions)
 	
-
-# @app.route('/top_ten')
-# def get_top_ten():
-# 	""" query db for top overall contributors"""
-
-# 	top_contributors = get_top_ten()
-
-# 	return render_template("top_ten.html", top_contributors=top_contributors)
-
 
 if __name__ == "__main__":
     connect_to_db(app)
