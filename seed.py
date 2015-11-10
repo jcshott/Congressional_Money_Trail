@@ -12,6 +12,10 @@ current_legislator_dict = {}
 #to track contributor ids so don't try to add to db more than once
 cont_id_dict = {} 
 
+#track industry IDs as added - some contributors are tagged with IDs that aren't listed in source data, which has been a problem moving to posgres, so will tag those not in industry table as industry 'unknown'
+industry_id_dict = {}
+
+
 def load_legislators():
     """Take information from Sunlight Fdn csv file; calls to Sunlight API for the first election"""
     #for first year elected. I have a function to do the API call for me, where do I define function?
@@ -87,6 +91,7 @@ def load_industry_types():
 
         industry_code = capwords(industry_info[0]).strip('"')
         industry_name = capwords(industry_info[1]).strip('"')
+        industry_id_dict[industry_code] = industry_name
 
         temp_industry_object = Industry(industry_id=industry_code, industry_name=industry_name)
         db.session.add(temp_industry_object)
@@ -124,9 +129,11 @@ def load_indiv_contribution_data():
                     split_ind_amt_data = value[7].split(',')
                     if split_ind_amt_data[0]:
                         if split_ind_amt_data[0] == "NONE":
-                                industry_id = None
+                            industry_id = None
                         else:
                             industry_id = split_ind_amt_data[0].strip('|')
+                            if industry_id not in industry_id_dict:
+                                industry_id = "unknown"
                     else:
                         industry_id = None
 
@@ -172,6 +179,7 @@ def load_pac_to_leg_contribution_data():
             if leg_id in current_legislator_dict:
                 cont_type = value[7].strip('|')
                 industry_id = value[6].strip('|')
+
                 #z9 and z4 are considered non-contribution types -> transfers
                 if industry_id[0:2] != "z9" and industry_id[0:2] != "z4":
                     if cont_type != "24A" and value[7] != "24N":
@@ -191,7 +199,7 @@ def load_pac_to_leg_contribution_data():
 
 
 def load_pac_contributors():
-    """ load details on pact contributors into db from committee files"""
+    """ load details on pac contributors into db from committee files"""
 
     file_list = ["./src/pac_info/cmtes14.txt", "./src/pac_info/cmtes12.txt", "./src/pac_info/cmtes10.txt","./src/pac_info/cmtes08.txt", "./src/pac_info/cmtes06.txt", "./src/pac_info/cmtes04.txt"] 
 
@@ -203,15 +211,17 @@ def load_pac_contributors():
             contrib_id = value[1].strip('|')      
             contrib_type = "C"
 
-            print "preloop: ", contrib_id
+
             #check if contributor has been entered by checking dictionary of those already in db
             if contrib_id not in cont_id_dict:
                 cont_id_dict.setdefault(contrib_id, True)
-                print "post-loop: ", contrib_id
                 name = value[2].strip('|')
 
                 if value[9]:
                     industry_id = value[9].strip("|")
+
+                    if industry_id not in industry_id_dict:
+                        industry_id = "unknown"
 
                 temp_contrib_obj = Contributors(contrib_id=contrib_id, industry_id=industry_id, name=name, contrib_type=contrib_type)
                 print "successful addition on line: ", index
@@ -230,8 +240,8 @@ def load_pac_contributors():
 if __name__ == "__main__":
     connect_to_db(app)
 
-    # load_legislators()
+    load_legislators()
     load_industry_types()
-    # load_indiv_contribution_data()
-    # load_pac_to_leg_contribution_data()
-    # load_pac_contributors()
+    load_indiv_contribution_data()
+    load_pac_to_leg_contribution_data()
+    load_pac_contributors()

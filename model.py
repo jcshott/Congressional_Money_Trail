@@ -9,7 +9,7 @@ import requests, os, sqlite3, operator
 
 db = SQLAlchemy()
 
-db_connection = sqlite3.connect("contributions.db", check_same_thread=False)
+db_connection = psycopg2.connect("dbname='contributions' user='coreyshott' host='localhost'")
 db_cursor = db_connection.cursor()
 
 ####################################################################

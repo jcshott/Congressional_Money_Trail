@@ -158,15 +158,6 @@ def get_tree_data():
 	contributions = selected_member.create_contribution_dict()
 
 	return jsonify(contributions)
-	
-
-# @app.route('/top_ten')
-# def get_top_ten():
-# 	""" query db for top overall contributors"""
-
-# 	top_contributors = get_top_ten()
-
-# 	return render_template("top_ten.html", top_contributors=top_contributors)
 
 
 if __name__ == "__main__":
