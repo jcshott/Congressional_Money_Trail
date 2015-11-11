@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.sql import label
 import requests, os, sqlite3, operator
+import psycopg2
 
 #Create connection to database
 

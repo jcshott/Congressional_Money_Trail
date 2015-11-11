@@ -7,6 +7,7 @@ from model import connect_to_db, db, Legislator, Contrib_leg, Contributors, Type
 import sqlite3, operator, os
 from sunlight import congress
 import googlemaps
+import psycopg2
 
 app = Flask(__name__)
 

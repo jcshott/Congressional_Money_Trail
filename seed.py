@@ -1,3 +1,6 @@
+#Current problem - because the contributor ID is a foreign key restraint, if it isn't in a table before trying to add the contribution data, I get an error from Postgres.  
+#The way the data is formatted, I only get the contributor ID from the contribution data so no way to input the ID before the $$
+
 ###All the data from CRP to the db! 
 import requests, os, csv
 from model import  connect_to_db, db, Legislator, Contrib_leg, Contributors, Type_contrib, Contrib_pac, Industry
@@ -62,7 +65,7 @@ def load_legislators():
                 
                 pict_link = "https://theunitedstates.io/images/congress/225x275/"+legislators[16]+".jpg"
 
-                first_elected = get_first_term_year(crp_id, os.environ['Sunlight_API_Key']) #API call to SLF to get the year
+                first_elected = get_first_term_year(crp_id, os.environ['SUNLIGHT_API_KEY']) #API call to SLF to get the year
                 
                 temp_legislator_object = Legislator(leg_id=crp_id, bioguide_id=bioguide_id, first=first, last=last, nickname=nickname, suffix=suffix, 
                                                     title=title, state=state, party=party, chamber=chamber, twitter_id=twitter_id, 
@@ -96,6 +99,17 @@ def load_industry_types():
         temp_industry_object = Industry(industry_id=industry_code, industry_name=industry_name)
         db.session.add(temp_industry_object)
     db.session.commit()
+    print "industry data added"
+
+def load_contributor_types():
+    """load contrib-id to contributor types data - individuals and PACs right now"""
+
+    indiv_object = Type_contrib(contrib_type="I", type_label="Individual")
+    pac_object = Type_contrib(contrib_type="C", type_label="PAC")
+    db.session.add(indiv_object)
+    db.session.add(pac_object)
+
+    db.session.commit()
 
 
 def load_indiv_contribution_data():
@@ -105,7 +119,8 @@ def load_indiv_contribution_data():
     """
 
     #make sure we read most recent file first so we get the most recent info on the contributors (like employer) since they are only added once.
-    file_list = ["./src/individuals/indivs14.txt", "./src/individuals/indivs12.txt", "./src/individuals/indivs10.txt", "./src/individuals/indivs08.txt", "./src/individuals/indivs06.txt", "./src/individuals/indivs04.txt"] 
+    # file_list = ["./src/individuals/indivs14.txt", "./src/individuals/indivs12.txt", "./src/individuals/indivs10.txt", "./src/individuals/indivs08.txt", "./src/individuals/indivs06.txt", "./src/individuals/indivs04.txt"] 
+    file_list=["./src/testing/indivs06_test.txt"]
     for file_path in file_list:
         file_open = open(file_path)
         
@@ -167,8 +182,8 @@ def load_pac_to_leg_contribution_data():
         First proccesses Contributors & Contributor types (indiv or pac), then adds in the different kinds of contributions: Contrib to legislator and Contrib to PAC
     """
     
-    file_list = ["./src/pac_to_cand/pacs14.txt", "./src/pac_to_cand/pacs12.txt", "./src/pac_to_cand/pacs10.txt", "./src/pac_to_cand/pacs08.txt", "./src/pac_to_cand/pacs06.txt", "./src/pac_to_cand/pacs04.txt"] 
-
+    # file_list = ["./src/pac_to_cand/pacs14.txt", "./src/pac_to_cand/pacs12.txt", "./src/pac_to_cand/pacs10.txt", "./src/pac_to_cand/pacs08.txt", "./src/pac_to_cand/pacs06.txt", "./src/pac_to_cand/pacs04.txt"] 
+    file_list = ["./src/testing/pacs06_test.txt"]
     for file_path in file_list:
         file_open = open(file_path)
         
@@ -201,8 +216,8 @@ def load_pac_to_leg_contribution_data():
 def load_pac_contributors():
     """ load details on pac contributors into db from committee files"""
 
-    file_list = ["./src/pac_info/cmtes14.txt", "./src/pac_info/cmtes12.txt", "./src/pac_info/cmtes10.txt","./src/pac_info/cmtes08.txt", "./src/pac_info/cmtes06.txt", "./src/pac_info/cmtes04.txt"] 
-
+    # file_list = ["./src/pac_info/cmtes14.txt", "./src/pac_info/cmtes12.txt", "./src/pac_info/cmtes10.txt","./src/pac_info/cmtes08.txt", "./src/pac_info/cmtes06.txt", "./src/pac_info/cmtes04.txt"] 
+    file_list = ["./src/testing/cmtes06_test.txt"]
     for file_path in file_list:
         file_open = open(file_path)
        
@@ -242,6 +257,7 @@ if __name__ == "__main__":
 
     load_legislators()
     load_industry_types()
+    load_contributor_types()
     load_indiv_contribution_data()
     load_pac_to_leg_contribution_data()
     load_pac_contributors()
