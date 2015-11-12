@@ -239,10 +239,8 @@ def load_pac_contributors():
                         industry_id = "unknown"
 
                 temp_contrib_obj = Contributors(contrib_id=contrib_id, industry_id=industry_id, name=name, contrib_type=contrib_type)
-                print "successful addition on line: ", index
                 db.session.add(temp_contrib_obj)
-                print "successful commit on line: ", index
-
+               
 
             if index % 100 == 0:
                 db.session.commit()

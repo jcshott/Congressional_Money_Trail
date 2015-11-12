@@ -93,7 +93,7 @@ class Legislator(db.Model):
 		QUERY = """
 	        SELECT contrib_id, amount
 	        FROM contrib_legislators JOIN contributors USING (contrib_id)
-	        WHERE contrib_legislators.leg_id = ? AND contributors.contrib_type = 'I'
+	        WHERE contrib_legislators.leg_id = ? AND contributors.contrib_type ='I'
 	        """
 		db_cursor.execute(QUERY, (self.leg_id,))
 
@@ -102,7 +102,7 @@ class Legislator(db.Model):
 		QUERY = """
 	        SELECT contrib_id, amount
 	        FROM contrib_legislators JOIN contributors USING (contrib_id)
-	        WHERE contrib_legislators.leg_id = ? AND contributors.contrib_type = 'C'
+	        WHERE contrib_legislators.leg_id = ? AND contributors.contrib_type ='C'
 	        """
 		db_cursor.execute(QUERY, (self.leg_id,))
 
@@ -226,12 +226,6 @@ class Legislator(db.Model):
 		if self.party == "I" or self.party == None:
 			contributions["tooltip_click"] = "Click through map to see who contributes to %s. %s (Independent)" % (self.title, self.last)
 
-
-		# if member_obj.party == "D":
-		# 	contributions["icon"] = "/static/img/donkey-democrat-logo.jpg"
-		# if member_obj.party == "R":
-		# 	contributions["icon"] = "http://www.clipartbest.com/cliparts/4i9/E6k/4i9E6kzRT.jpeg"
-
 		return contributions
 
 
@@ -246,17 +240,17 @@ class Contrib_leg(db.Model):
 
 	transact_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
 	FEC_trans_id = db.Column(db.String(20), nullable=False) #only unique within cycle
-	contrib_id = db.Column(db.String(15), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
-	# contrib_id = db.Column(db.String(15), nullable=False)
-	leg_id = db.Column(db.String(10), db.ForeignKey('legislators.leg_id'), nullable=False) #ID of who gets contribution
+	# contrib_id = db.Column(db.String(15), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
+	contrib_id = db.Column(db.String(15), nullable=False)
+	# leg_id = db.Column(db.String(10), db.ForeignKey('legislators.leg_id'), nullable=False) #ID of who gets contribution
 	
 	# had problems when experimenting moving to postgres. turned off FK, but caused other problems.
-	# leg_id = db.Column(db.String(10), nullable=False) 
+	leg_id = db.Column(db.String(10), nullable=False) 
 	amount = db.Column(db.Integer, nullable=False)
 	cycle = db.Column(db.Integer)
 	
-	contributor = db.relationship("Contributors", backref=db.backref('contrib_legislators', order_by=amount))
-	legislator = db.relationship("Legislator", backref=db.backref('contrib_legislators', order_by=amount))
+	# contributor = db.relationship("Contributors", backref=db.backref('contrib_legislators', order_by=amount))
+	# legislator = db.relationship("Legislator", backref=db.backref('contrib_legislators', order_by=amount))
 	
 
 	def __repr__(self):
@@ -276,13 +270,13 @@ class Contributors(db.Model):
 	name = db.Column(db.String(100), nullable=False)
 	contrib_state = db.Column(db.String(2), nullable=True)
 	contrib_type = db.Column(db.String(2), db.ForeignKey('contributor_types.contrib_type'), nullable=False)
-	industry_id = db.Column(db.String(50), db.ForeignKey('industry.industry_id'), nullable=True)
+	# industry_id = db.Column(db.String(50), db.ForeignKey('industry.industry_id'), nullable=True)
 	
-	# had problems when experimenting moving to postgres. turned off FK, but caused other problems. need to figure out why some industry IDs aren't in my table - prob. subcategories
-	# industry_id = db.Column(db.String(50), nullable=True)
-	
-	industry = db.relationship('Industry', backref=db.backref('contributors'))
-	cont_type = db.relationship('Type_contrib', backref=db.backref('contributors'))
+	# had problems when moving to postgres, so turned off FK for seeding db. then manually reinstate.
+	industry_id = db.Column(db.String(50), nullable=True)
+	contrib_type = db.Column(db.String(2), nullable=False)
+	# industry = db.relationship('Industry', backref=db.backref('contributors'))
+	# cont_type = db.relationship('Type_contrib', backref=db.backref('contributors'))
 
 
 	def __repr__(self):
@@ -367,13 +361,14 @@ class Contrib_pac(db.Model):
 	__tablename__='contrib_pacs'
 
 	transact_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-	contrib_id = db.Column(db.String(50), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
+	contrib_id = db.Column(db.String(50), nullable=False)
+	# contrib_id = db.Column(db.String(50), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
 	recpt_id = db.Column(db.String(50)) #ID of who gets contribution
 	amount = db.Column(db.Integer, nullable=False)
 	rec_party = db.Column(db.String(3), nullable=True)
 	cycle = db.Column(db.Integer)
 
-	contributor = db.relationship("Contributors", backref=db.backref("contrib_pacs", order_by=amount))
+	# contributor = db.relationship("Contributors", backref=db.backref("contrib_pacs", order_by=amount))
 	
 	def __repr__(self):
 		return "<Contributor ID=%s, Recipient ID=%s, Amount=%s>" % (self.contrib_id, self.recpt_id, self.amount)
