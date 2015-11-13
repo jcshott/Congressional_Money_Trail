@@ -93,7 +93,7 @@ class Legislator(db.Model):
 		QUERY = """
 	        SELECT contrib_id, amount
 	        FROM contrib_legislators JOIN contributors USING (contrib_id)
-	        WHERE contrib_legislators.leg_id = ? AND contributors.contrib_type ='I'
+	        WHERE contrib_legislators.leg_id = %s AND contributors.contrib_type ='I'
 	        """
 		db_cursor.execute(QUERY, (self.leg_id,))
 
@@ -102,7 +102,7 @@ class Legislator(db.Model):
 		QUERY = """
 	        SELECT contrib_id, amount
 	        FROM contrib_legislators JOIN contributors USING (contrib_id)
-	        WHERE contrib_legislators.leg_id = ? AND contributors.contrib_type ='C'
+	        WHERE contrib_legislators.leg_id = %s AND contributors.contrib_type ='C'
 	        """
 		db_cursor.execute(QUERY, (self.leg_id,))
 
@@ -146,8 +146,8 @@ class Legislator(db.Model):
 			contrib_name = contributor.name
 			contrib_total = tup[1]
 			
-			if contributor.industry:
-				contrib_industry = contributor.industry.industry_name
+			if contributor.industry_id:
+				contrib_industry = contributor.industry_id
 				top_ten_indiv_child_list.append({"name": contrib_name, "value": 10, "industry": contrib_industry, "tooltip_text": "Top 10 Indiv. Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "indiv", "member_party": self.party})
 			else:
 				top_ten_indiv_child_list.append({"name": contrib_name, "value": 10, "industry": "unknown", "tooltip_text": "Top 10 Indiv. Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "indiv", "member_party": self.party})
@@ -157,8 +157,8 @@ class Legislator(db.Model):
 			contrib_name = contributor.name
 			contrib_total = tup[1]
 
-			if contributor.industry:
-				contrib_industry = contributor.industry.industry_name
+			if contributor.industry_id:
+				contrib_industry = contributor.industry_id
 				top_ten_pac_child_list.append({"name": contrib_name, "value": 10, "industry": contrib_industry, "tooltip_text": "Top 10 PAC Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "PAC", "member_party": self.party})
 			else:
 				top_ten_pac_child_list.append({"name": contrib_name, "value": 10, "industry": "unknown", "tooltip_text": "Top 10 PAC Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "PAC", "member_party": self.party})
@@ -291,7 +291,7 @@ class Contributors(db.Model):
 		QUERY = """
 		SELECT contrib_pacs.amount, contributors.name
 		FROM contrib_pacs JOIN contributors USING (contrib_id)
-		WHERE contrib_pacs.recpt_id = ? AND contributors.contrib_type = 'I'
+		WHERE contrib_pacs.recpt_id = %s AND contributors.contrib_type = 'I'
 		"""
 		db_cursor.execute(QUERY, (self.contrib_id,))
 
@@ -319,7 +319,7 @@ class Contributors(db.Model):
 		QUERY = """
         SELECT contrib_pacs.amount, contributors.name
         FROM contrib_pacs JOIN contributors USING (contrib_id)
-        WHERE contrib_pacs.recpt_id = ? AND contributors.contrib_type = 'C'
+        WHERE contrib_pacs.recpt_id = %s AND contributors.contrib_type = 'C'
         """
 		db_cursor.execute(QUERY, (self.contrib_id,))
 
