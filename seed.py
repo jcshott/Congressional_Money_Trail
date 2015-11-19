@@ -58,7 +58,7 @@ def load_legislators():
                 
                 pict_link = "https://theunitedstates.io/images/congress/225x275/"+legislators[16]+".jpg"
 
-                first_elected = get_first_term_year(crp_id, os.environ['Sunlight_API_Key']) #API call to SLF to get the year
+                first_elected = get_first_term_year(crp_id, os.environ['SUNLIGHT_API_KEY']) #API call to SLF to get the year
                 
                 temp_legislator_object = Legislator(leg_id=crp_id, bioguide_id=bioguide_id, first=first, last=last, nickname=nickname, suffix=suffix, 
                                                     title=title, state=state, party=party, chamber=chamber, twitter_id=twitter_id, 

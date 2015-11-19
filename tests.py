@@ -12,7 +12,7 @@ db = SQLAlchemy()
 class MyAppUnitTestCase(unittest.TestCase):
 
     def test_get_first_term_year(self):
-        assert(get_first_term_year("N00007335", os.environ['Sunlight_API_Key']) == 1993)
+        assert(get_first_term_year("N00007335", os.environ['SUNLIGHT_API_KEY']) == 1993)
 
     def test_ordered_tuples(self):
     	assert(ordered_tuples({'MT': 'Montana', 'NC': 'North Carolina', 'ND': 'North Dakota', 'NE': 'Nebraska',}) == [('MT', "Montana"), ("NE", "Nebraska"), ("NC", "North Carolina"), ("ND", "North Dakota")])
@@ -21,8 +21,8 @@ class MyAppUnitTestCase(unittest.TestCase):
         testMember = Legislator.query.filter_by(leg_id  = "N00007335").one()
         self.assertIn("name", testMember.create_contribution_dict().keys())
 
-    def test_load_legislators(self):
-        self.assertIsInstance(load_legislators(), Legislator)
+    # def test_load_legislators(self):
+    #     self.assertIsInstance(load_legislators(), Legislator)
 
 class MyAppIntegrationTest(unittest.TestCase):
 
