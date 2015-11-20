@@ -1,6 +1,3 @@
-#Current problem - because the contributor ID is a foreign key restraint, if it isn't in a table before trying to add the contribution data, I get an error from Postgres.  
-#The way the data is formatted, I only get the contributor ID from the contribution data so no way to input the ID before the $$
-
 ###All the data from CRP to the db! 
 import requests, os, csv
 from model import  connect_to_db, db, Legislator, Contrib_leg, Contributors, Type_contrib, Contrib_pac, Industry
@@ -119,8 +116,8 @@ def load_indiv_contribution_data():
     """
 
     #make sure we read most recent file first so we get the most recent info on the contributors (like employer) since they are only added once.
-    # file_list = ["./src/individuals/indivs14.txt", "./src/individuals/indivs12.txt", "./src/individuals/indivs10.txt", "./src/individuals/indivs08.txt", "./src/individuals/indivs06.txt", "./src/individuals/indivs04.txt"] 
-    file_list=["./src/testing/indivs06_test.txt"]
+    file_list = ["./src/individuals/indivs14.txt", "./src/individuals/indivs12.txt", "./src/individuals/indivs10.txt", "./src/individuals/indivs08.txt", "./src/individuals/indivs06.txt", "./src/individuals/indivs04.txt"] 
+    # file_list=["./src/testing/indivs06_test.txt"]
     for file_path in file_list:
         file_open = open(file_path)
         
@@ -131,7 +128,7 @@ def load_indiv_contribution_data():
                 # this worked on the test set but not when running the full thing, non-I-contributors still got in. unsure why. so, just deleted 
                 # from db directly by deleting all from contrib_legislators table where id was 11-spaces long.
                 value[2].replace(" ", "")
-                if value[2] != ' ':
+                if value[2] != ' ': #change this to ''??
                     contrib_id = value[2].strip()
                     FEC_trans_id = value[1]
                     name = capwords(value[3])
@@ -182,8 +179,8 @@ def load_pac_to_leg_contribution_data():
         First proccesses Contributors & Contributor types (indiv or pac), then adds in the different kinds of contributions: Contrib to legislator and Contrib to PAC
     """
     
-    # file_list = ["./src/pac_to_cand/pacs14.txt", "./src/pac_to_cand/pacs12.txt", "./src/pac_to_cand/pacs10.txt", "./src/pac_to_cand/pacs08.txt", "./src/pac_to_cand/pacs06.txt", "./src/pac_to_cand/pacs04.txt"] 
-    file_list = ["./src/testing/pacs06_test.txt"]
+    file_list = ["./src/pac_to_cand/pacs14.txt", "./src/pac_to_cand/pacs12.txt", "./src/pac_to_cand/pacs10.txt", "./src/pac_to_cand/pacs08.txt", "./src/pac_to_cand/pacs06.txt", "./src/pac_to_cand/pacs04.txt"] 
+    # file_list = ["./src/testing/pacs06_test.txt"]
     for file_path in file_list:
         file_open = open(file_path)
         
@@ -216,8 +213,8 @@ def load_pac_to_leg_contribution_data():
 def load_pac_contributors():
     """ load details on pac contributors into db from committee files"""
 
-    # file_list = ["./src/pac_info/cmtes14.txt", "./src/pac_info/cmtes12.txt", "./src/pac_info/cmtes10.txt","./src/pac_info/cmtes08.txt", "./src/pac_info/cmtes06.txt", "./src/pac_info/cmtes04.txt"] 
-    file_list = ["./src/testing/cmtes06_test.txt"]
+    file_list = ["./src/pac_info/cmtes14.txt", "./src/pac_info/cmtes12.txt", "./src/pac_info/cmtes10.txt","./src/pac_info/cmtes08.txt", "./src/pac_info/cmtes06.txt", "./src/pac_info/cmtes04.txt"] 
+    # file_list = ["./src/testing/cmtes06_test.txt"]
     for file_path in file_list:
         file_open = open(file_path)
        
