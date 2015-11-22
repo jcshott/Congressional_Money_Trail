@@ -1,13 +1,14 @@
-## Lets make a web app! ##
 from jinja2 import StrictUndefined
 from flask import Flask, render_template, request, redirect, flash, session, jsonify, g
 from flask_debugtoolbar import DebugToolbarExtension
 from helper_functions import ordered_tuples
 from model import connect_to_db, db, Legislator, Contrib_leg, Contributors, Type_contrib, Contrib_pac
-import sqlite3, operator, os
+import operator, os
 from sunlight import congress
 import googlemaps
 import psycopg2
+import urlparse
+
 
 app = Flask(__name__)
 
@@ -17,12 +18,8 @@ app.secret_key = SECRET_KEY
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 PORT = int(os.environ.get("PORT", 5000))
-
-#need a connection to sqldb directly for quicker queries on db
-
-# db_connection = sqlite3.connect("contributions.db", check_same_thread=False)
-db_connection = psycopg2.connect("dbname='contributions' user='coreyshott' host='localhost'")
-db_cursor = db_connection.cursor()
+#set debug-mode to false for deployed version but true locally
+DEBUG = "NO_DEBUG" not in os.environ
 
 # Normally, if you use an undefined variable in Jinja2, it fails silently.
 # This is horrible. Fix this so that, instead, it raises an error.
@@ -167,4 +164,4 @@ if __name__ == "__main__":
 
     # Use the DebugToolbar set debug to True if using
     # DebugToolbarExtension(app)
-    app.run(debug=True, host="0.0.0.0", port=PORT)
+    app.run(debug=DEBUG, host="0.0.0.0", port=PORT)

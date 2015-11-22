@@ -3,19 +3,22 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.sql import label
-import requests, os, sqlite3, operator
+import requests, os, operator 
 import psycopg2
+import urlparse
 
-
-#Create connection to database
 
 db = SQLAlchemy()
 
-#postgres connection for deployment
-db_connection = psycopg2.connect("dbname='contributions' user='coreyshott' host='localhost'")
+#need a connection to db directly for quicker queries
+if "NO_DEBUG" in os.environ:
+	urlparse.uses_netloc.append("postgres")
+	url = urlparse.urlparse(os.environ["DATABASE_URL"])
+	db_connection = psycopg2.connect(database=url.path[1:], user=url.username, password=url.password, host=url.hostname, port=url.port)
+else:
+	db_connection = psycopg2.connect("dbname='contributions' user='coreyshott' host='localhost'")
+	
 db_cursor = db_connection.cursor()
-
-# db_connection = sqlite3.connect("contributions.db", check_same_thread=False)
 
 
 ####################################################################
@@ -397,13 +400,14 @@ def connect_to_db(app):
 
     # old SQLite database
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///contributions.db'
-
+    
     # Configure to use postgresql database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://coreyshott@localhost:5432/contributions'
+    DATABASE_URL = os.environ.get("DATABASE_URL", 'postgresql://coreyshott@localhost:5432/contributions')
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+
     db.app = app
     db.init_app(app)
-
-
 
 if __name__ == "__main__":
     # As a convenience, if we run this module interactively, it will leave
