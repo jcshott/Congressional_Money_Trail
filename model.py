@@ -3,16 +3,23 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.sql import label
+<<<<<<< HEAD
 import requests, os, sqlite3, operator, psycopg2
+=======
+import requests, os, sqlite3, operator
+import psycopg2
+>>>>>>> dev
 
 #Create connection to database
 
 db = SQLAlchemy()
 
 #postgres connection for deployment
-# db_connection = psycopg2.connect("dbname='contributions' user='coreyshott' host='localhost'")
-db_connection = sqlite3.connect("contributions.db", check_same_thread=False)
+db_connection = psycopg2.connect("dbname='contributions' user='coreyshott' host='localhost'")
 db_cursor = db_connection.cursor()
+
+# db_connection = sqlite3.connect("contributions.db", check_same_thread=False)
+
 
 ####################################################################
 #Model definitions
@@ -94,7 +101,7 @@ class Legislator(db.Model):
 		QUERY = """
 	        SELECT contrib_id, amount
 	        FROM contrib_legislators JOIN contributors USING (contrib_id)
-	        WHERE contrib_legislators.leg_id = ? AND contributors.contrib_type = 'I'
+	        WHERE contrib_legislators.leg_id = %s AND contributors.contrib_type ='I'
 	        """
 		db_cursor.execute(QUERY, (self.leg_id,))
 
@@ -103,7 +110,7 @@ class Legislator(db.Model):
 		QUERY = """
 	        SELECT contrib_id, amount
 	        FROM contrib_legislators JOIN contributors USING (contrib_id)
-	        WHERE contrib_legislators.leg_id = ? AND contributors.contrib_type = 'C'
+	        WHERE contrib_legislators.leg_id = %s AND contributors.contrib_type ='C'
 	        """
 		db_cursor.execute(QUERY, (self.leg_id,))
 
@@ -147,8 +154,8 @@ class Legislator(db.Model):
 			contrib_name = contributor.name
 			contrib_total = tup[1]
 			
-			if contributor.industry:
-				contrib_industry = contributor.industry.industry_name
+			if contributor.industry_id:
+				contrib_industry = contributor.industry_id
 				top_ten_indiv_child_list.append({"name": contrib_name, "value": 10, "industry": contrib_industry, "tooltip_text": "Top 10 Indiv. Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "indiv", "member_party": self.party})
 			else:
 				top_ten_indiv_child_list.append({"name": contrib_name, "value": 10, "industry": "unknown", "tooltip_text": "Top 10 Indiv. Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "indiv", "member_party": self.party})
@@ -158,8 +165,8 @@ class Legislator(db.Model):
 			contrib_name = contributor.name
 			contrib_total = tup[1]
 
-			if contributor.industry:
-				contrib_industry = contributor.industry.industry_name
+			if contributor.industry_id:
+				contrib_industry = contributor.industry_id
 				top_ten_pac_child_list.append({"name": contrib_name, "value": 10, "industry": contrib_industry, "tooltip_text": "Top 10 PAC Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "PAC", "member_party": self.party})
 			else:
 				top_ten_pac_child_list.append({"name": contrib_name, "value": 10, "industry": "unknown", "tooltip_text": "Top 10 PAC Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "PAC", "member_party": self.party})
@@ -227,12 +234,6 @@ class Legislator(db.Model):
 		if self.party == "I" or self.party == None:
 			contributions["tooltip_click"] = "Click through map to see who contributes to %s. %s (Independent)" % (self.title, self.last)
 
-
-		# if member_obj.party == "D":
-		# 	contributions["icon"] = "/static/img/donkey-democrat-logo.jpg"
-		# if member_obj.party == "R":
-		# 	contributions["icon"] = "http://www.clipartbest.com/cliparts/4i9/E6k/4i9E6kzRT.jpeg"
-
 		return contributions
 
 
@@ -247,17 +248,17 @@ class Contrib_leg(db.Model):
 
 	transact_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
 	FEC_trans_id = db.Column(db.String(20), nullable=False) #only unique within cycle
-	contrib_id = db.Column(db.String(15), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
-	# contrib_id = db.Column(db.String(15), nullable=False)
-	leg_id = db.Column(db.String(10), db.ForeignKey('legislators.leg_id'), nullable=False) #ID of who gets contribution
+	# contrib_id = db.Column(db.String(15), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
+	contrib_id = db.Column(db.String(15), nullable=False)
+	# leg_id = db.Column(db.String(10), db.ForeignKey('legislators.leg_id'), nullable=False) #ID of who gets contribution
 	
 	# had problems when experimenting moving to postgres. turned off FK, but caused other problems.
-	# leg_id = db.Column(db.String(10), nullable=False) 
+	leg_id = db.Column(db.String(10), nullable=False) 
 	amount = db.Column(db.Integer, nullable=False)
 	cycle = db.Column(db.Integer)
 	
-	contributor = db.relationship("Contributors", backref=db.backref('contrib_legislators', order_by=amount))
-	legislator = db.relationship("Legislator", backref=db.backref('contrib_legislators', order_by=amount))
+	# contributor = db.relationship("Contributors", backref=db.backref('contrib_legislators', order_by=amount))
+	# legislator = db.relationship("Legislator", backref=db.backref('contrib_legislators', order_by=amount))
 	
 
 	def __repr__(self):
@@ -277,13 +278,13 @@ class Contributors(db.Model):
 	name = db.Column(db.String(100), nullable=False)
 	contrib_state = db.Column(db.String(2), nullable=True)
 	contrib_type = db.Column(db.String(2), db.ForeignKey('contributor_types.contrib_type'), nullable=False)
-	industry_id = db.Column(db.String(50), db.ForeignKey('industry.industry_id'), nullable=True)
+	# industry_id = db.Column(db.String(50), db.ForeignKey('industry.industry_id'), nullable=True)
 	
-	# had problems when experimenting moving to postgres. turned off FK, but caused other problems. need to figure out why some industry IDs aren't in my table - prob. subcategories
-	# industry_id = db.Column(db.String(50), nullable=True)
-	
-	industry = db.relationship('Industry', backref=db.backref('contributors'))
-	cont_type = db.relationship('Type_contrib', backref=db.backref('contributors'))
+	# had problems when moving to postgres, so turned off FK for seeding db. then manually reinstate.
+	industry_id = db.Column(db.String(50), nullable=True)
+	contrib_type = db.Column(db.String(2), nullable=False)
+	# industry = db.relationship('Industry', backref=db.backref('contributors'))
+	# cont_type = db.relationship('Type_contrib', backref=db.backref('contributors'))
 
 
 	def __repr__(self):
@@ -298,7 +299,7 @@ class Contributors(db.Model):
 		QUERY = """
 		SELECT contrib_pacs.amount, contributors.name
 		FROM contrib_pacs JOIN contributors USING (contrib_id)
-		WHERE contrib_pacs.recpt_id = ? AND contributors.contrib_type = 'I'
+		WHERE contrib_pacs.recpt_id = %s AND contributors.contrib_type = 'I'
 		"""
 		db_cursor.execute(QUERY, (self.contrib_id,))
 
@@ -326,7 +327,7 @@ class Contributors(db.Model):
 		QUERY = """
         SELECT contrib_pacs.amount, contributors.name
         FROM contrib_pacs JOIN contributors USING (contrib_id)
-        WHERE contrib_pacs.recpt_id = ? AND contributors.contrib_type = 'C'
+        WHERE contrib_pacs.recpt_id = %s AND contributors.contrib_type = 'C'
         """
 		db_cursor.execute(QUERY, (self.contrib_id,))
 
@@ -368,13 +369,14 @@ class Contrib_pac(db.Model):
 	__tablename__='contrib_pacs'
 
 	transact_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-	contrib_id = db.Column(db.String(50), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
+	contrib_id = db.Column(db.String(50), nullable=False)
+	# contrib_id = db.Column(db.String(50), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
 	recpt_id = db.Column(db.String(50)) #ID of who gets contribution
 	amount = db.Column(db.Integer, nullable=False)
 	rec_party = db.Column(db.String(3), nullable=True)
 	cycle = db.Column(db.Integer)
 
-	contributor = db.relationship("Contributors", backref=db.backref("contrib_pacs", order_by=amount))
+	# contributor = db.relationship("Contributors", backref=db.backref("contrib_pacs", order_by=amount))
 	
 	def __repr__(self):
 		return "<Contributor ID=%s, Recipient ID=%s, Amount=%s>" % (self.contrib_id, self.recpt_id, self.amount)
@@ -396,11 +398,11 @@ class Industry(db.Model):
 def connect_to_db(app):
     """Connect the database to our Flask app."""
 
-    # Configure to use our SQLite database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///contributions.db'
-    #postgresql connection for deployment
-    # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://coreyshott@localhost:5432/contributions')
+    # old SQLite database
+    # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///contributions.db'
 
+    # Configure to use postgresql database
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://coreyshott@localhost:5432/contributions'
     db.app = app
     db.init_app(app)
 

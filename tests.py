@@ -21,9 +21,6 @@ class MyAppUnitTestCase(unittest.TestCase):
         testMember = Legislator.query.filter_by(leg_id  = "N00007335").one()
         self.assertIn("name", testMember.create_contribution_dict().keys())
 
-    # def test_load_legislators(self):
-    #     self.assertIsInstance(load_legislators(), Legislator)
-
 class MyAppIntegrationTest(unittest.TestCase):
 
 	def setUp(self):
@@ -50,11 +47,10 @@ class MyAppIntegrationTest(unittest.TestCase):
 def connect_to_db(app):
     """Connect the database to our Flask app."""
 
-    # Configure to use our SQLite database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///contributions.db'
+    # Configure to use postgresql database
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://coreyshott@localhost:5432/contributions'
     db.app = app
     db.init_app(app)
-
 
 if __name__ == "__main__":
     

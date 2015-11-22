@@ -19,10 +19,9 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 PORT = int(os.environ.get("PORT", 5000))
 
 #need a connection to sqldb directly for quicker queries on db
-db_connection = sqlite3.connect("contributions.db", check_same_thread=False)
 
-# connection for postgres for deployment
-# db_connection = psycopg2.connect("dbname='contributions' user='coreyshott' host='localhost'")
+# db_connection = sqlite3.connect("contributions.db", check_same_thread=False)
+db_connection = psycopg2.connect("dbname='contributions' user='coreyshott' host='localhost'")
 db_cursor = db_connection.cursor()
 
 # Normally, if you use an undefined variable in Jinja2, it fails silently.
@@ -161,7 +160,7 @@ def get_tree_data():
 	contributions = selected_member.create_contribution_dict()
 
 	return jsonify(contributions)
-	
+
 
 if __name__ == "__main__":
     connect_to_db(app)

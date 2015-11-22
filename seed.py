@@ -5,12 +5,17 @@ from server import app
 from helper_functions import get_first_term_year
 from codecs import encode
 from string import capwords
+import psycopg2
 
 #keep track of current legislators so can weed out cont. data we won't use
 current_legislator_dict = {}
 
 #to track contributor ids so don't try to add to db more than once
 cont_id_dict = {} 
+
+#track industry IDs as added - some contributors are tagged with IDs that aren't listed in source data, which has been a problem moving to posgres, so will tag those not in industry table as industry 'unknown'
+industry_id_dict = {}
+
 
 def load_legislators():
     """Take information from Sunlight Fdn csv file; calls to Sunlight API for the first election"""
@@ -70,26 +75,38 @@ def load_legislators():
                 
                 #commit every 100 records, but ensures our index (where we are in file) stays the same so we don't start over!
                 if index % 100 == 0:
-                    print "number of legislative rows processed for db=", index
                     db.session.commit()
 
     db.session.commit()
+    print "legislator info successfully added"
+
 
 def load_industry_types():
     """input industry codes with their associated name into database"""
 
-    file_open = open("./src/catcodes.csv")
+    file_open = open("./src/CRP_Categories.txt")
     
     for index, line in enumerate(file_open):
-        if index > 0: #skip first line that is a header
-            temp_data = line.rstrip()
-            industry_info = temp_data.split(",")
+        temp_data = line.rstrip()
+        industry_info = temp_data.split("\t")
 
-            industry_code = industry_info[1].strip('"')
-            industry_name = capwords(industry_info[3]).strip('"')
+        industry_code = capwords(industry_info[0]).strip('"')
+        industry_name = capwords(industry_info[1]).strip('"')
+        industry_id_dict[industry_code] = industry_name
 
-            temp_industry_object = Industry(industry_id=industry_code, industry_name=industry_name)
-            db.session.add(temp_industry_object)
+        temp_industry_object = Industry(industry_id=industry_code, industry_name=industry_name)
+        db.session.add(temp_industry_object)
+    db.session.commit()
+    print "industry data added"
+
+def load_contributor_types():
+    """load contrib-id to contributor types data - individuals and PACs right now"""
+
+    indiv_object = Type_contrib(contrib_type="I", type_label="Individual")
+    pac_object = Type_contrib(contrib_type="C", type_label="PAC")
+    db.session.add(indiv_object)
+    db.session.add(pac_object)
+
     db.session.commit()
 
 
@@ -101,6 +118,7 @@ def load_indiv_contribution_data():
 
     #make sure we read most recent file first so we get the most recent info on the contributors (like employer) since they are only added once.
     file_list = ["./src/individuals/indivs14.txt", "./src/individuals/indivs12.txt", "./src/individuals/indivs10.txt", "./src/individuals/indivs08.txt", "./src/individuals/indivs06.txt", "./src/individuals/indivs04.txt"] 
+    
     for file_path in file_list:
         file_open = open(file_path)
         
@@ -111,7 +129,7 @@ def load_indiv_contribution_data():
                 # this worked on the test set but not when running the full thing, non-I-contributors still got in. unsure why. so, just deleted 
                 # from db directly by deleting all from contrib_legislators table where id was 11-spaces long.
                 value[2].replace(" ", "")
-                if value[2] != ' ':
+                if value[2] != "":
                     contrib_id = value[2].strip()
                     FEC_trans_id = value[1]
                     name = capwords(value[3])
@@ -124,9 +142,11 @@ def load_indiv_contribution_data():
                     split_ind_amt_data = value[7].split(',')
                     if split_ind_amt_data[0]:
                         if split_ind_amt_data[0] == "NONE":
-                                industry_id = None
+                            industry_id = None
                         else:
                             industry_id = split_ind_amt_data[0].strip('|')
+                            if industry_id not in industry_id_dict:
+                                industry_id = "unknown"
                     else:
                         industry_id = None
 
@@ -148,10 +168,10 @@ def load_indiv_contribution_data():
                         db.session.add(temp_contrib_leg_obj)
 
                         if index % 100 == 0:
-                            print "rows of indiv data: ", index
                             db.session.commit()
             
             db.session.commit()
+        print "individuals data from %s successfully added", file_path
 
 
 def load_pac_to_leg_contribution_data():
@@ -172,6 +192,7 @@ def load_pac_to_leg_contribution_data():
             if leg_id in current_legislator_dict:
                 cont_type = value[7].strip('|')
                 industry_id = value[6].strip('|')
+
                 #z9 and z4 are considered non-contribution types -> transfers
                 if industry_id[0:2] != "z9" and industry_id[0:2] != "z4":
                     if cont_type != "24A" and value[7] != "24N":
@@ -184,17 +205,17 @@ def load_pac_to_leg_contribution_data():
                         db.session.add(temp_contrib_leg_obj)  
 
                         if index % 100 == 0:
-                            print "rows of pac data: ", index
                             db.session.commit()
 
-        db.session.commit()             
+        db.session.commit()
+        print "pac contribution data from %s successfully added", file_path         
 
 
 def load_pac_contributors():
-    """ load details on pact contributors into db from committee files"""
+    """ load details on pac contributors into db from committee files"""
 
     file_list = ["./src/pac_info/cmtes14.txt", "./src/pac_info/cmtes12.txt", "./src/pac_info/cmtes10.txt","./src/pac_info/cmtes08.txt", "./src/pac_info/cmtes06.txt", "./src/pac_info/cmtes04.txt"] 
-
+    
     for file_path in file_list:
         file_open = open(file_path)
        
@@ -203,35 +224,47 @@ def load_pac_contributors():
             contrib_id = value[1].strip('|')      
             contrib_type = "C"
 
-            print "preloop: ", contrib_id
+
             #check if contributor has been entered by checking dictionary of those already in db
             if contrib_id not in cont_id_dict:
                 cont_id_dict.setdefault(contrib_id, True)
-                print "post-loop: ", contrib_id
                 name = value[2].strip('|')
 
                 if value[9]:
                     industry_id = value[9].strip("|")
 
-                temp_contrib_obj = Contributors(contrib_id=contrib_id, industry_id=industry_id, name=name, contrib_type=contrib_type)
-                print "successful addition on line: ", index
-                db.session.add(temp_contrib_obj)
-                print "successful commit on line: ", index
+                    if industry_id not in industry_id_dict:
+                        industry_id = "unknown"
 
+                temp_contrib_obj = Contributors(contrib_id=contrib_id, industry_id=industry_id, name=name, contrib_type=contrib_type)
+                db.session.add(temp_contrib_obj)
+               
 
             if index % 100 == 0:
                 db.session.commit()
-                print "number of rows processed: ", index
         
         db.session.commit()
+        print "pac contributor info for %s data successfully added", file_path
                                     
 
 
 if __name__ == "__main__":
+    
     connect_to_db(app)
+    
+    #connection to db for raw sql so can create indexes
+    db_connection = psycopg2.connect("dbname='contributions' user='coreyshott' host='localhost'")
+    db_cursor = db_connection.cursor()
 
     load_legislators()
-    # load_industry_types()
-    # load_indiv_contribution_data()
-    # load_pac_to_leg_contribution_data()
-    # load_pac_contributors()
+    load_industry_types()
+    load_contributor_types()
+    load_indiv_contribution_data()
+    load_pac_to_leg_contribution_data()
+    load_pac_contributors()
+
+    # create indexes on columns in contributions table to help speed up querying
+    db_cursor.execute("CREATE INDEX ON contrib_legislators (contrib_id)")
+    db_connection.commit()
+    db_cursor.execute("CREATE INDEX ON contrib_legislators (leg_id)")
+    db_connection.commit()
