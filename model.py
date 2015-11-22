@@ -3,12 +3,9 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.sql import label
-<<<<<<< HEAD
-import requests, os, sqlite3, operator, psycopg2
-=======
 import requests, os, sqlite3, operator
 import psycopg2
->>>>>>> dev
+
 
 #Create connection to database
 
