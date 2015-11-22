@@ -118,7 +118,7 @@ def load_indiv_contribution_data():
 
     #make sure we read most recent file first so we get the most recent info on the contributors (like employer) since they are only added once.
     file_list = ["./src/individuals/indivs14.txt", "./src/individuals/indivs12.txt", "./src/individuals/indivs10.txt", "./src/individuals/indivs08.txt", "./src/individuals/indivs06.txt", "./src/individuals/indivs04.txt"] 
-    # file_list=["./src/testing/indivs06_test.txt"]
+    
     for file_path in file_list:
         file_open = open(file_path)
         
@@ -171,7 +171,7 @@ def load_indiv_contribution_data():
                             db.session.commit()
             
             db.session.commit()
-            print "individuals data successfully added"
+        print "individuals data from %s successfully added", file_path
 
 
 def load_pac_to_leg_contribution_data():
@@ -181,7 +181,7 @@ def load_pac_to_leg_contribution_data():
     """
     
     file_list = ["./src/pac_to_cand/pacs14.txt", "./src/pac_to_cand/pacs12.txt", "./src/pac_to_cand/pacs10.txt", "./src/pac_to_cand/pacs08.txt", "./src/pac_to_cand/pacs06.txt", "./src/pac_to_cand/pacs04.txt"] 
-    # file_list = ["./src/testing/pacs06_test.txt"]
+
     for file_path in file_list:
         file_open = open(file_path)
         
@@ -205,18 +205,17 @@ def load_pac_to_leg_contribution_data():
                         db.session.add(temp_contrib_leg_obj)  
 
                         if index % 100 == 0:
-                            print "rows of pac data: ", index
                             db.session.commit()
 
         db.session.commit()
-         print "pac contribution data successfully added"           
+        print "pac contribution data from %s successfully added", file_path         
 
 
 def load_pac_contributors():
     """ load details on pac contributors into db from committee files"""
 
     file_list = ["./src/pac_info/cmtes14.txt", "./src/pac_info/cmtes12.txt", "./src/pac_info/cmtes10.txt","./src/pac_info/cmtes08.txt", "./src/pac_info/cmtes06.txt", "./src/pac_info/cmtes04.txt"] 
-    # file_list = ["./src/testing/cmtes06_test.txt"]
+    
     for file_path in file_list:
         file_open = open(file_path)
        
@@ -245,11 +244,12 @@ def load_pac_contributors():
                 db.session.commit()
         
         db.session.commit()
-        print "pac contributor info data successfully added"
+        print "pac contributor info for %s data successfully added", file_path
                                     
 
 
 if __name__ == "__main__":
+    
     connect_to_db(app)
     
     #connection to db for raw sql so can create indexes
