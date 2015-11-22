@@ -5,6 +5,7 @@ from server import app
 from helper_functions import get_first_term_year
 from codecs import encode
 from string import capwords
+import psycopg2
 
 #keep track of current legislators so can weed out cont. data we won't use
 current_legislator_dict = {}
@@ -74,10 +75,10 @@ def load_legislators():
                 
                 #commit every 100 records, but ensures our index (where we are in file) stays the same so we don't start over!
                 if index % 100 == 0:
-                    print "number of legislative rows processed for db=", index
                     db.session.commit()
 
     db.session.commit()
+    print "legislator info successfully added"
 
 
 def load_industry_types():
@@ -128,7 +129,7 @@ def load_indiv_contribution_data():
                 # this worked on the test set but not when running the full thing, non-I-contributors still got in. unsure why. so, just deleted 
                 # from db directly by deleting all from contrib_legislators table where id was 11-spaces long.
                 value[2].replace(" ", "")
-                if value[2] != ' ': #change this to ''??
+                if value[2] != "":
                     contrib_id = value[2].strip()
                     FEC_trans_id = value[1]
                     name = capwords(value[3])
@@ -167,10 +168,10 @@ def load_indiv_contribution_data():
                         db.session.add(temp_contrib_leg_obj)
 
                         if index % 100 == 0:
-                            print "rows of indiv data: ", index
                             db.session.commit()
             
             db.session.commit()
+            print "individuals data successfully added"
 
 
 def load_pac_to_leg_contribution_data():
@@ -207,7 +208,8 @@ def load_pac_to_leg_contribution_data():
                             print "rows of pac data: ", index
                             db.session.commit()
 
-        db.session.commit()             
+        db.session.commit()
+         print "pac contribution data successfully added"           
 
 
 def load_pac_contributors():
@@ -241,14 +243,18 @@ def load_pac_contributors():
 
             if index % 100 == 0:
                 db.session.commit()
-                print "number of rows processed: ", index
         
         db.session.commit()
+        print "pac contributor info data successfully added"
                                     
 
 
 if __name__ == "__main__":
     connect_to_db(app)
+    
+    #connection to db for raw sql so can create indexes
+    db_connection = psycopg2.connect("dbname='contributions' user='coreyshott' host='localhost'")
+    db_cursor = db_connection.cursor()
 
     load_legislators()
     load_industry_types()
@@ -256,3 +262,9 @@ if __name__ == "__main__":
     load_indiv_contribution_data()
     load_pac_to_leg_contribution_data()
     load_pac_contributors()
+
+    # create indexes on columns in contributions table to help speed up querying
+    db_cursor.execute("CREATE INDEX ON contrib_legislators (contrib_id)")
+    db_connection.commit()
+    db_cursor.execute("CREATE INDEX ON contrib_legislators (leg_id)")
+    db_connection.commit()
