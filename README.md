@@ -1,8 +1,8 @@
 Congressional Money Trail
 ====================================
-Learn more about the developer on [LinkedIn](https://www.linkedin.com/in/coreyshott/).
+Learn more about the developer on <a href="https://www.linkedin.com/in/coreyshott/" target="new">LinkedIn</a>.
 
-Check it out live at [https://congressional-money-trail.herokuapp.com/](https://congressional-money-trail.herokuapp.com/)
+Check it out live at <a href="https://congressional-money-trail.herokuapp.com/" target="new">congressional-money-trail.herokuapp.com</a>
 
 Campaign contributions to our federal officials are publicly disclosed but rarely easy to access. Utilizing the past decade of campaign contribution data, Congressional Money Trail seeks to help the public better understand from where their federal congressional representatives receive their campaign money. Just select a state or find a Member of Congress by address and a visual representation of how they finance their campaigns is revealed.
 
@@ -33,7 +33,7 @@ Here is an example of a full visualization.
 ![main_screenshot](/static/img/main_ss.png)
 
 This is a screencast demo of the application - click to play on YouTube:
-![ScreenCast](http://img.youtube.com/vi/iHa8WhCfHA0/0.jpg)(https://youtu.be/iHa8WhCfHA0)
+<a href="https://youtu.be/iHa8WhCfHA0" target="new" src="http://img.youtube.com/vi/iHa8WhCfHA0/0.jpg"></a>
 
 Examples of other stages of the app at the end of the document.
 
