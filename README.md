@@ -39,7 +39,7 @@ Examples of other stages of the app at the end of the document.
 
 ##Technology
 
-Python, Flask, PostgreSQL, SQLAlchemy ORM, D3.js, jQuery, JS,  AJAX, HTML, CSS, Sunlight Foundation CongressAPI, Google Geocode API
+Python, Flask, ~~SQLite~~ PostgreSQL, SQLAlchemy ORM, D3.js, jQuery, JS,  AJAX, HTML, CSS, Sunlight Foundation CongressAPI, Google Geocode API
 
 Dependencies are listed in requirements.txt.  
 
