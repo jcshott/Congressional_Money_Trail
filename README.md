@@ -2,13 +2,15 @@ Congressional Money Trail
 ====================================
 Learn more about the developer on [LinkedIn] (www.linkedin.com/in/coreyshott/).
 
+Check it out live at [https://congressional-money-trail.herokuapp.com/](https://congressional-money-trail.herokuapp.com/)
+
 Campaign contributions to our federal officials are publicly disclosed but rarely easy to access. Utilizing the past decade of campaign contribution data, Congressional Money Trail seeks to help the public better understand from where their federal congressional representatives receive their campaign money. Just select a state or find a Member of Congress by address and a visual representation of how they finance their campaigns is revealed.
 
 ## Features ##
 
 *Current*
 
-- [x] Campaign Contribution data (pipe and comma separated format) from Opensecrets.org imported into SQLite Database
+- [x] Campaign Contribution data (pipe and comma separated format) from Opensecrets.org imported into PostgreSQL
 - [x] SQLAlchemy and raw SQL queries database for total campaign contributions to a user-selected Member of Congress.
 - [x] Flask-Python server sends JSON object to DOM.
 
@@ -31,13 +33,13 @@ Here is an example of a full visualization.
 ![main_screenshot](/static/img/main_ss.png)
 
 This is a screencast demo of the application - click to play on YouTube:
-![ScreenCast](http://img.youtube.com/vi/iHa8WhCfHA0/0.jpg)](https://youtu.be/iHa8WhCfHA0)
+![ScreenCast](http://img.youtube.com/vi/iHa8WhCfHA0/0.jpg)(https://youtu.be/iHa8WhCfHA0)
 
 Examples of other stages of the app at the end of the document.
 
 ##Technology
 
-Python, Flask, SQLite, SQLAlchemy ORM, D3.js, jQuery, JS,  AJAX, HTML, CSS, Sunlight Foundation CongressAPI, Google Geocode API
+Python, Flask, PostgreSQL, SQLAlchemy ORM, D3.js, jQuery, JS,  AJAX, HTML, CSS, Sunlight Foundation CongressAPI, Google Geocode API
 
 Dependencies are listed in requirements.txt.  
 
@@ -56,7 +58,7 @@ The front-end is composed  using HTML, custom CSS combined with Bootstrap.  Inte
 D3.js was chosen for the visualization technology because of its prevalence in the data visualization realm and strong documentation.  
 
 ##File Guide
-* <kbd>model.py</kbd>  Creates the database
+* <kbd>model.py</kbd>  Creates the tables for the database
 * <kbd>seed.py</kbd>  Seeds the database from source files
 * <kbd>server.py</kbd> Controls the flask app 
 * <kbd>TrailMapTree.js</kbd>  Handles the D3.js visualization rendering
@@ -75,6 +77,8 @@ Download datasets and save to a src subdirectory in project directory:
 - Contribution data must be downloaded from [OpenSecrets.org] (http://www.opensecrets.org/myos/bulk.php)  (free account required).
 
 - Legislator information from [Sunlight Foundation] (https://sunlightlabs.github.io/congress/#legislator-spreadsheet)
+
+- Make sure you have PostgreSQL installed and create a database named contributions
 
 At the command line:
 
