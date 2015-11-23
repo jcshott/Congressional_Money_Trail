@@ -204,7 +204,7 @@ $("form.repsDistrict").on("submit", function (evt) {
 $("#new_choice").on("click", function (evt){
 	$("#map_viz").empty();
 	$("#state_pick").show();
-	$('#state_pick').find('option:first').attr('selected', 'selected');
+	$('#state_pick').find('option:first').prop('selected', 'selected');
 	$("#pick_by_address").show();
 	$("#new_choice").hide();
 	$("#member_profile").remove();
