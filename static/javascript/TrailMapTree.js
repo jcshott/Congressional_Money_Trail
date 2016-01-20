@@ -19,7 +19,6 @@ var diagonal = d3.svg.diagonal()
 var svg = d3.select("#map_viz").append("svg:svg")
     .attr("width", width + margin.right + margin.left)
     .attr("height", height + margin.top + margin.bottom)
-    .attr("id", "mapSVG")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -59,7 +58,7 @@ d3.json("/map_info.json", function(error, mapData) {
   if (error) throw error;
 
   spinner.stop();
-  
+
   root = mapData;
   root.x0 = height / 2;
   root.y0 = 0;
