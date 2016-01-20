@@ -19,18 +19,47 @@ var diagonal = d3.svg.diagonal()
 var svg = d3.select("#map_viz").append("svg:svg")
     .attr("width", width + margin.right + margin.left)
     .attr("height", height + margin.top + margin.bottom)
+    .attr("id", "mapSVG")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-var tooltip = d3.select("#map_viz").append("div")   
-    .attr("class", "tooltip")               
+var tooltip = d3.select("#map_viz").append("div")
+    .attr("class", "tooltip")
     .style("opacity", 0);
 
+//loading spinner (via spin.js) b/c my data is slow
+var opts = {
+  lines: 13 // The number of lines to draw
+, length: 28 // The length of each line
+, width: 14 // The line thickness
+, radius: 42 // The radius of the inner circle
+, scale: 2 // Scales overall size of the spinner
+, corners: 1 // Corner roundness (0..1)
+, color: '#401D15' // #rgb or #rrggbb or array of colors
+, opacity: 0.25 // Opacity of the lines
+, rotate: 0 // The rotation offset
+, direction: 1 // 1: clockwise, -1: counterclockwise
+, speed: 1 // Rounds per second
+, trail: 60 // Afterglow percentage
+, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+, zIndex: 2e9 // The z-index (defaults to 2000000000)
+, className: 'spinner' // The CSS class to assign to the spinner
+, top: '50%' // Top position relative to parent
+, left: '50%' // Left position relative to parent
+, shadow: false // Whether to render a shadow
+, hwaccel: false // Whether to use hardware acceleration
+, position: 'absolute' // Element positioning
+}
+
+var target = document.getElementById("map_viz");
+var spinner = new Spinner(opts).spin(target);
 
 d3.json("/map_info.json", function(error, mapData) {
   if (error) throw error;
 
+  spinner.stop();
+  
   root = mapData;
   root.x0 = height / 2;
   root.y0 = 0;
@@ -63,7 +92,7 @@ function update(source) {
     links = tree.links(nodes);
 
   // Normalize for fixed-depth.
-  nodes.forEach(function(d) { 
+  nodes.forEach(function(d) {
     if (d.type === "indiv") {
           return d.y = d.depth * 250;
         } else {
@@ -79,35 +108,35 @@ function update(source) {
       .attr("class", "node")
       .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
       .on("click", click)
-      .on("mouseover", function(d) {      
-            tooltip.transition()        
-                .duration(200)      
-                .style("opacity", .9);      
-            tooltip.html(d.tooltip_text)  
-                .style("left", (d3.event.pageX - 300) + "px")     
+      .on("mouseover", function(d) {
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", .9);
+            tooltip.html(d.tooltip_text)
+                .style("left", (d3.event.pageX - 300) + "px")
                 .style("top", (d3.event.pageY - 28) + "px");
             d3.select(".tooltip").append("div")
                 .text(d.tooltip_click)
                 .style("font-weight", "bold")
                 .style("margin-top", "5px");
-            })                  
-        .on("mouseout", function(d) {       
-            tooltip.transition()        
-                .duration(500)      
-                .style("opacity", 0);   
+            })
+        .on("mouseout", function(d) {
+            tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
         });
 
 
   nodeEnter.append("circle")
       .attr("r", function(d) { return d.value; })
-      .style("fill", function (d) { 
+      .style("fill", function (d) {
         if (d.industry === "R") {
           return "#B5150C";
         } else if (d.industry === "D") {
           return "#313695";
         } else if (d.industry === "I") {
           return "#88419d";
-        } else { 
+        } else {
           return color(d.industry);
         }
       });
@@ -198,12 +227,11 @@ function click(d) {
     d._children = null;
   }
   update(d);
-  tooltip.transition()        
-                .duration(500)      
-                .style("opacity", 0); 
+  tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
 
 };
 
 
 }
-

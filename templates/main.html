@@ -4,7 +4,6 @@
 <link rel="stylesheet" href="/static/css/main.css">
 <script src="/static/javascript/get_members.js"></script>
 
-
 <div class="container-fluid">
 
 	<div class="row main">
@@ -13,22 +12,22 @@
 			<div class="row forms">
 				<div class="form-group">
 					<form id="state_pick" method="post" action="/state_info.json">
-					 
+
 					  <label> Pick a state:</label>
 					    <select class="form-control" name="state" id="state_value">
 					    	<option> Choose a State </option>
 					    {% for state in states %}
 					      <option value="{{ state[0] }}"> {{ state[1] }} </option>
-					    {% endfor %}  
+					    {% endfor %}
 					</select>
 					</form>
 				</div>
-					
-				<div id="legislators_display" class="form-group" style="display: none;"> 
 
-					<form class='repsDistrict' method="get" action='/trail_map'> 
+				<div id="legislators_display" class="form-group" style="display: none;">
+
+					<form class='repsDistrict' method="get" action='/trail_map'>
 						<label>Select a Member of Congress: </label>
-						
+
 						<select name="member" class="member_choice form-control" id="member_list">
 
 						</select>
@@ -38,7 +37,7 @@
 				</div>
 
 				<!-- find members by address form -->
-				<div id="pick_by_address" class="form-group"> 
+				<div id="pick_by_address" class="form-group">
 					<form id="address_pick" method="post" action="/address_search">
 
 						<label> Or....<br> Enter Address to Find Congressional Delegation </label>
@@ -48,12 +47,12 @@
 				</div>
 
 
-				<div id="your_district_reps" class="form-group" style="display: none;"> 
-					<form class='repsDistrict' method="get" action='/trail_map'> 
+				<div id="your_district_reps" class="form-group" style="display: none;">
+					<form class='repsDistrict' method="get" action='/trail_map'>
 						<label id="repsByAddress"> </label>
-					
+
 						<select name="member" class="member_choice form-control" id="address_member_list">
-						
+
 						<input type="submit" class="btn btn-default" id="submit_member" value="Map this Member">
 					</form>
 
@@ -63,23 +62,23 @@
 				</div>
 
 			</div>
-				
+
 			<div class="row member_profile">
 				<div class="row new_member">
 
-			 		<button type="button" class="btn btn-default" id="new_choice" style="display: none;"> <span class="glyphicon glyphicon-edit"></span>  Map a new legislator </button> 
+			 		<button type="button" class="btn btn-default" id="new_choice" style="display: none;"> <span class="glyphicon glyphicon-edit"></span>  Map a new legislator </button>
 				</div>
-			
+
 			</div>
 
 				<img id="logo" src="/static/img/logo.png"><img>
-			
+
 		</div>
-		
+
 		<div>
 <!-- 		visualization area -->
 		<div id="map_viz" class="col-md-10 main" style="display: none;"> </div>
-	
+
 		<!-- expanding Sidebar -->
 		<div id="wrapper">
 
@@ -87,7 +86,7 @@
 	      <ul id="sidebar_menu" class="sidebar-nav">
 	           <li class="sidebar-brand"><a id="menu-toggle" href="#"><span id="main_icon" class="glyphicon glyphicon-question-sign"></span>More Info</a></li>
 	      </ul>
-	        <ul class="sidebar-nav" id="sidebar">     
+	        <ul class="sidebar-nav" id="sidebar">
 	          <li><a id="dataButton" class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="dataInfo"><span class="sub_icon glyphicon glyphicon-stats"></span>The data</a></li>
 
 	        	<div id="dataInfo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
@@ -114,7 +113,7 @@
 	        </ul>
 
 	      </div>
-	    
+
 	    </div>
 
 	</div>
@@ -139,7 +138,7 @@ function initAutocomplete() {
 // info sidebar toggle
 $("#menu-toggle").click(function(e) {
 	e.preventDefault();
-	
+
 	$("#wrapper").toggleClass("active");
 
     if ($('#dataButton').attr("href")) {
@@ -165,7 +164,7 @@ $("#menu-toggle").click(function(e) {
 // accordion toggle in info
 $('.collapse').collapse("toggle");
 
-//list possible representatives only after choose state.  
+//list possible representatives only after choose state.
 $("#state_pick").change("state_value", showLegislators);
 $("#state_pick").change("state_value", function () {
 	$("#noMember").hide();
@@ -173,7 +172,8 @@ $("#state_pick").change("state_value", function () {
 
 $("#address_pick").on("submit", SearchByAddress);
 
-// bind showing the TrailMapTree function call to the event named show map that is called after member choice is submitted (below)
+// bind showing the TrailMapTree function call to the event named show map
+//that is called after member choice is submitted (below)
 $("#map_viz").bind("showMap", showTrailMapTree);
 
 // send member_id to route that will send back info for member_profile
@@ -219,5 +219,5 @@ $("#new_choice").on("click", function (evt){
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB5Z7gICmKng7w9wWaYIwI7omuUmP6jzds&signed_in=true&libraries=places&callback=initAutocomplete"
         async defer></script>
-
+<script src="http://spin.js.org/spin.js"></script>
 {% endblock %}
