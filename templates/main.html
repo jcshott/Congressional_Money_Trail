@@ -189,6 +189,9 @@ $("form.repsDistrict").on("submit", function (evt) {
 		$("#map_viz").show('slow', function () {
 
 			 $(this).trigger('showMap');
+			 $("body::before").attr("width", "120%");
+			 $("body::before").attr("height", "120%");
+
 		});
 
 		$("#legislators_display").hide();
