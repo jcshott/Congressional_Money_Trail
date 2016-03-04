@@ -7,7 +7,7 @@ from codecs import encode
 from string import capwords
 import psycopg2
 
-#keep track of current legislators so can weed out cont. data we won't use
+#keep track of current legislators so can weed out data we won't use
 current_legislator_dict = {}
 
 #to track contributor ids so don't try to add to db more than once
@@ -246,7 +246,31 @@ def load_pac_contributors():
         db.session.commit()
         print "pac contributor info for %s data successfully added", file_path
                                     
+def calc_top_contributor_info():
+    """
+    go through the list of legislators and create the dictionary/json object of the contributor information & store in db. 
+    this will help querying speed on web - only have to go and get the json object rather than do all calculations.
+    TODO: create UPDATE function when there is new data available.
+    """
 
+    # go through all our legislators by crp_id and build the dictionary/to be json using the method in Legislator class
+    for i in current_legislator_dict.keys():
+        #get the member object from the database
+        try:
+            member = Legislator.query.filter_by(leg_id = i).first()
+
+            #get the dictionary to be stored as json using method
+
+            contribution_dict = member.create_contribution_dict()
+
+            # add to the legislator table
+            member.top_contributors = contribution_dict
+            db.session.commit()
+
+        except Exception, e:
+            print i
+            continue
+        
 
 if __name__ == "__main__":
     
@@ -257,13 +281,15 @@ if __name__ == "__main__":
     db_cursor = db_connection.cursor()
 
     load_legislators()
+    
+
     load_industry_types()
     load_contributor_types()
     load_indiv_contribution_data()
     load_pac_to_leg_contribution_data()
     load_pac_contributors()
-
-    # create indexes on columns in contributions table to help speed up querying
+    calc_top_contributor_info()
+    create indexes on columns in contributions table to help speed up querying
     db_cursor.execute("CREATE INDEX ON contrib_legislators (contrib_id)")
     db_connection.commit()
     db_cursor.execute("CREATE INDEX ON contrib_legislators (leg_id)")

@@ -154,9 +154,13 @@ def get_tree_data():
 
 	selected_member = Legislator.query.filter_by(leg_id = member_choice_id).first()
 	
-	contributions = selected_member.create_contribution_dict()
-
-	return jsonify(contributions)
+	try:
+		contributions = selected_member.top_contributors
+		return jsonify(contributions)
+	
+	except Exception, e:
+		print "error"
+		return "None"
 
 
 if __name__ == "__main__":
