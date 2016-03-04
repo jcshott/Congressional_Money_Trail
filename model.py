@@ -3,6 +3,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.sql import label
+from sqlalchemy.dialects.postgresql import JSON
 import requests, os, sqlite3, operator
 import psycopg2
 
@@ -41,6 +42,7 @@ class Legislator(db.Model):
 	off_website = db.Column(db.String(100), nullable=True) 
 	open_cong_url = db.Column(db.String(100), nullable=True)
 	first_elected = db.Column(db.Integer) #get from SLF call
+	top_contributors = db.Column(JSON, nullable=True)
 
 	def __repr__(self):
 		"""prints useful info on legislator"""

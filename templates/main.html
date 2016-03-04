@@ -77,7 +77,26 @@
 
 		<div>
 <!-- 		visualization area -->
-		<div id="map_viz" class="col-md-10 main" style="display: none;"> </div>
+		<div id="map_viz" class="col-md-10 main" style="display: none;"> 
+			<!-- Modal for alert that no info avail. -->
+			<div class="modal" id="noInfoModal" tabindex="-1" role="dialog">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title"><span class="glyphicon glyphicon-alert"></span> Oops!</h4>
+				      </div>
+				      <div class="modal-body">
+				        <p>Sorry, there is no campaign data currently available at this site for that Member of Congress. This may be because the Member was elected in a special election. Please try a different member. <br><br>
+				        You can also try <a href="http://www.opensecrets.org" target="new">Center for Responsive Politics (OpenSecrets.org)</a> where mid-cycle data may be available.</p>
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				      </div>
+				    </div><!-- /.modal-content -->
+				  </div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+		</div>
 
 		<!-- expanding Sidebar -->
 		<div id="wrapper">
@@ -219,5 +238,5 @@ $("#new_choice").on("click", function (evt){
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB5Z7gICmKng7w9wWaYIwI7omuUmP6jzds&signed_in=true&libraries=places&callback=initAutocomplete"
         async defer></script>
-<script src="http://spin.js.org/spin.js"></script>
+
 {% endblock %}
