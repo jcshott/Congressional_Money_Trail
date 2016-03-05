@@ -16,7 +16,7 @@ Campaign contributions to our federal officials are publicly disclosed but rarel
 
 - [x] Result rendered as a tree-diagram graph (d3.js)
 - [x] Flask app renders HTML, Jinja2 and handles AJAX requests to the database
-- [x] Option to find a Member of Congress by state 
+- [x] Option to find a Member of Congress by state
 - [x] Option to search for Congressional delegation by address (Google GeocodeAPI and Sunlight Foundation CongressAPI)
 - [x] Nodes are sized based on proportion of contributions from identified category as compared to whole
 
@@ -47,7 +47,11 @@ To run the seed file and use the find congressional delegation by address functi
 
 ##Backend and Database
 
-Python runs the backend of Congressional Money Trail.  Given the amount of data and speed necessary to deliver information to the DOM, queries are done in both SQLAlchemy and raw SQL with indices added to the database to further increase querying speed.  In addition much of the information and calculations needed to form the JSON object for the D3 visualization are pushed to Python rather than multiple queries.
+Python runs the backend of Congressional Money Trail.  Given the amount of data and speed necessary to deliver information to the DOM, I originally made my queries with both SQLAlchemy and raw SQL with indices added to the database to further increase querying speed.  In addition I had much of the information and calculations needed to form the JSON object for the D3 visualization are pushed to Python rather than multiple queries.
+
+*Update (March, 2016):* After noticing the data was being delivered slowly to the DOM in production, I have since created a new JSON column in the Legislator table that holds the necessary information.  The JSON object is now created and loaded when you seed the database.
+
+This means I will need to take that into account when I write an update function to update numbers when new data is available.
 
 
 
@@ -60,7 +64,7 @@ D3.js was chosen for the visualization technology because of its prevalence in t
 ##File Guide
 * <kbd>model.py</kbd>  Creates the tables for the database
 * <kbd>seed.py</kbd>  Seeds the database from source files
-* <kbd>server.py</kbd> Controls the flask app 
+* <kbd>server.py</kbd> Controls the flask app
 * <kbd>TrailMapTree.js</kbd>  Handles the D3.js visualization rendering
 * <kbd>get_members.js</kbd> Handles retrieving data on Congressional Delegations from database either via select-by-state option or select-by-address option.
 
@@ -83,7 +87,7 @@ Download datasets and save to a src subdirectory in project directory:
 At the command line:
 
 ```sh
-$ python -i model.py 
+$ python -i model.py
 $ db.create_all()
 ```
 ...then run
@@ -91,12 +95,28 @@ $ db.create_all()
 ```sh
 $ python seed.py
  ```
+This will likely take awhile, depending on how many years of data you decide to include (see note on source files below).
+
 To start server:
- 
+
 ```sh
 $ python server.py
 ```
 
+###A note on campaign finance source files:
+Right now, the seed file is looking for the file handles for <kbd>legislators.csv</kbd> and <kbd>CRP_Categories.txt</kbd> (industry codes) in './src/'
+
+For the contribution info - the seed file is looking for:
+
+* Individual information in './src/individuals/'
+<kbd>indivs04.txt</kbd> through <kbd>indivs14.txt</kbd>
+
+* PAC contribution information in './src/pac_to_cand/'
+<kbd>pacs04.txt</kbd> through <kbd>pac14.txt</kbd>
+
+* PAC information in 'pac_info/' <kbd>cmtes04.txt</kbd> to <kbd>cmtes14.txt</kbd>
+
+This may change to utilizing a config file in future versions.
 
 ##Additional Screenshots
 **Homepage**
