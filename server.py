@@ -153,7 +153,7 @@ def get_tree_data():
 	member_choice_id = session.get("member_choice_id")
 
 	selected_member = Legislator.query.filter_by(leg_id = member_choice_id).first()
-	
+	print "RESPONSE: ", selected_member.top_contributors
 	try:
 		contributions = selected_member.top_contributors
 		return jsonify(contributions)
