@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.sql import label
 from sqlalchemy.dialects.postgresql import JSON
-import requests, os, sqlite3, operator
+import requests, os, operator
 import psycopg2
 
 #Create connection to database
@@ -364,13 +364,10 @@ class Contrib_pac(db.Model):
 
 	transact_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
 	contrib_id = db.Column(db.String(50), nullable=False)
-	# contrib_id = db.Column(db.String(50), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
 	recpt_id = db.Column(db.String(50)) #ID of who gets contribution
 	amount = db.Column(db.Integer, nullable=False)
 	rec_party = db.Column(db.String(3), nullable=True)
 	cycle = db.Column(db.Integer)
-
-	# contributor = db.relationship("Contributors", backref=db.backref("contrib_pacs", order_by=amount))
 	
 	def __repr__(self):
 		return "<Contributor ID=%s, Recipient ID=%s, Amount=%s>" % (self.contrib_id, self.recpt_id, self.amount)
@@ -391,9 +388,6 @@ class Industry(db.Model):
 
 def connect_to_db(app):
     """Connect the database to our Flask app."""
-
-    # Configure to use our SQLite database
-    # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///contributions.db'
 
     # Configure to use postgresql database
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://coreyshott@localhost:5432/contributions'

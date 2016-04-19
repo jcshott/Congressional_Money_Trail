@@ -175,11 +175,9 @@ def load_indiv_contribution_data():
 
 
 def load_pac_to_leg_contribution_data():
-    """load data from all the contributions files into 4 different tables in database:
-
-        First proccesses Contributors & Contributor types (indiv or pac), then adds in the different kinds of contributions: Contrib to legislator and Contrib to PAC
+    """ 
+        load data on PAC conributions to legislators
     """
-    
     file_list = ["./src/pac_to_cand/pacs14.txt", "./src/pac_to_cand/pacs12.txt", "./src/pac_to_cand/pacs10.txt", "./src/pac_to_cand/pacs08.txt", "./src/pac_to_cand/pacs06.txt", "./src/pac_to_cand/pacs04.txt"] 
 
     for file_path in file_list:
