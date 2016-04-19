@@ -289,7 +289,7 @@ if __name__ == "__main__":
     load_pac_to_leg_contribution_data()
     load_pac_contributors()
     calc_top_contributor_info()
-    create indexes on columns in contributions table to help speed up querying
+    #create indexes on columns in contributions table to help speed up querying
     db_cursor.execute("CREATE INDEX ON contrib_legislators (contrib_id)")
     db_connection.commit()
     db_cursor.execute("CREATE INDEX ON contrib_legislators (leg_id)")
