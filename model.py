@@ -5,6 +5,7 @@ from sqlalchemy import func
 from sqlalchemy.sql import label
 import requests, os, operator 
 from sqlalchemy.dialects.postgresql import JSON
+
 import psycopg2
 import urlparse
 
@@ -372,13 +373,10 @@ class Contrib_pac(db.Model):
 
 	transact_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
 	contrib_id = db.Column(db.String(50), nullable=False)
-	# contrib_id = db.Column(db.String(50), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
 	recpt_id = db.Column(db.String(50)) #ID of who gets contribution
 	amount = db.Column(db.Integer, nullable=False)
 	rec_party = db.Column(db.String(3), nullable=True)
 	cycle = db.Column(db.Integer)
-
-	# contributor = db.relationship("Contributors", backref=db.backref("contrib_pacs", order_by=amount))
 	
 	def __repr__(self):
 		return "<Contributor ID=%s, Recipient ID=%s, Amount=%s>" % (self.contrib_id, self.recpt_id, self.amount)
@@ -400,9 +398,6 @@ class Industry(db.Model):
 def connect_to_db(app):
     """Connect the database to our Flask app."""
 
-    # old SQLite database
-    # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///contributions.db'
-    
     # Configure to use postgresql database
     DATABASE_URL = os.environ.get("DATABASE_URL", 'postgresql://coreyshott@localhost:5432/contributions')
 
