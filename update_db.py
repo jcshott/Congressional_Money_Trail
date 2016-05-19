@@ -23,7 +23,7 @@ def update_legislators():
 
 	apikey = os.environ['SUNLIGHT_API_KEY']
 	query_params = { 'apikey': apikey,
-					'per_page': 'all', 
+					'per_page': 'all',
 			       }
 
 	endpoint = 'https://congress.api.sunlightfoundation.com/legislators/'
@@ -59,7 +59,7 @@ def update_legislators():
 
 			db.session.add(temp_legislator_object)
 
-	# if member is in our db but isn't current member, remove from db 
+	# if member is in our db but isn't current member, remove from db
 	for x in loaded_ids.keys():
 		if x not in current_mem_ids:
 			member = Legislator.query.filter_by(leg_id = x).first()
@@ -77,13 +77,13 @@ def update_indiv_to_leg(file_path):
 	cont_id_dict = {}
 
 	file_open = open(file_path)
-	
+
 	for index, line in enumerate(file_open):
 		value = line.split("|,|")
-		# TODO: change this to checking if val[4] (crp_id) is in our legislator table (leg_id) 
+		# TODO: change this to checking if val[4] (crp_id) is in our legislator table (leg_id)
 		if Legislator.query.get(value[4]):
                 # per CRP documentation. to make sure only get indiv. donors, check that contrib_id has a value. first need to strip whitespace.
-                # this worked on the test set but not when running the full thing, non-I-contributors still got in. unsure why. so, just deleted 
+                # this worked on the test set but not when running the full thing, non-I-contributors still got in. unsure why. so, just deleted
                 # from db directly by deleting all from contrib_legislators table where id was empty string.
 			value[2].replace(" ", "")
 			if value[2] != "":
@@ -102,7 +102,7 @@ def update_indiv_to_leg(file_path):
 						industry_id = None
 					else:
 						industry_id = split_ind_amt_data[0].strip('|')
-						
+
 						if not Industry.query.get(industry_id):
 							industry_id = "unknown"
 				else:
@@ -156,7 +156,7 @@ def update_pac_to_leg(file_path):
 				amount = int(float(value[4]))
 
 				temp_contrib_leg_obj = Contrib_leg(contrib_id=contrib_id, FEC_trans_id=FEC_trans_id, leg_id=leg_id, amount=amount, cycle=cycle)
-				db.session.add(temp_contrib_leg_obj)  
+				db.session.add(temp_contrib_leg_obj)
 
 				if index % 100 == 0:
 					db.session.commit()
@@ -174,7 +174,7 @@ def update_pac_contributors(file_path):
 
 	for index, line in enumerate(file_open):
 		value = line.split(",")
-		contrib_id = value[1].strip('|')      
+		contrib_id = value[1].strip('|')
 		contrib_type = "C"
 
 		#check if contributor has been entered by checking db and dict of those already in db
@@ -198,6 +198,11 @@ def update_pac_contributors(file_path):
 
 
 def update_top_contributors():
+	db_connection = psycopg2.connect("dbname='contributions' user='corey' host='localhost'")
+	db_cursor = db_connection.cursor()
+ #    db_cursor.execute("DELETE from contributors where contrib_id = ''")
+ #    db_cursor.execute("DELETE from contrib_legislators where contrib_id = ''")
+ #    db_connection.commit()
 	# this is where we'll update top contributors
 	currently_loaded = db.session.query(Legislator.leg_id).all() #list of tuples => [(leg_id (known as crp_id in sunlight data,), (leg_id,)]
 	loaded_ids = {tup[0]: True for tup in currently_loaded}
@@ -213,8 +218,8 @@ def update_top_contributors():
 			member.top_contributors = contribution_dict
 			db.session.commit()
 		except Exception, e:
-			print "Exception: ", e
-			print "not loaded: ", item
+			# print "Exception: ", e
+			# print "not loaded: ", item
 			continue
 
 def main():
@@ -238,7 +243,6 @@ def main():
 		print "please use 'legislators', 'pac_contributions' or 'indiv_contributions', or 'update_top_contributors' as additional argument"
 
 if __name__ == "__main__":
-    
+
 	connect_to_db(app)
 	main()
-

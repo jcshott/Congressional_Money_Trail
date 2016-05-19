@@ -36,14 +36,14 @@ STATE_DICT = {
         'VT': 'Vermont', 'WA': 'Washington', 'WI': 'Wisconsin', 'WV': 'West Virginia', 'WY': 'Wyoming'}
 
 
+# @app.route('/')
+# def index():
+# 	"""Homepage  """
+#
+# 	return render_template("homepage.html")
+
+
 @app.route('/')
-def index():
-	"""Homepage  """
-
-	return render_template("homepage.html")
-
-
-@app.route('/main')
 def show_main_page():
 	"""all the magic"""
 
@@ -70,12 +70,12 @@ def show_legislators():
 
 	senators = []
 	representatives = []
-	
+
 	for member_object in state_legislators:
 		if member_object.chamber == "Senate":
 			senator = member_object.serialize()
 			senators.append(senator)
-		
+
 		else:
 			rep = member_object.serialize()
 			representatives.append(rep)
@@ -83,7 +83,7 @@ def show_legislators():
 	#account for D.C./territories with no senators.
 	if not senators:
 		return jsonify(state_selected=state_selected, representatives=representatives)
-	
+
 	else:
 		return jsonify(state_selected=state_selected, senators=senators, representatives=representatives)
 
@@ -107,7 +107,7 @@ def show_members_for_address():
 	location_data = geometry.get("location")
 	latitude = location_data.get('lat')
 	longitude = location_data.get('lng')
-	
+
 	#API call to Sunlight Foundation for legislators by lat/lon
 	legislators_list = congress.locate_legislators_by_lat_lon(lat=latitude, lon=longitude)
 
@@ -118,7 +118,7 @@ def show_members_for_address():
 	for legislator in legislators_list:
 		crp_id = legislator.get('crp_id')
 		crp_ids.append(crp_id)
-		
+
 	for item in crp_ids:
 		member = Legislator.query.filter_by(leg_id = item).first()
 		legislators_to_serialize.append(member)
@@ -141,7 +141,7 @@ def show_trail_map():
 	member_info = member.serialize()
 
 	states = STATE_DICT
-	
+
 	return render_template("memberprofilehold.html", member_info=member_info, states=states)
 
 
@@ -157,7 +157,7 @@ def get_tree_data():
 	try:
 		contributions = selected_member.top_contributors
 		return jsonify(contributions)
-	
+
 	except Exception, e:
 		print "error"
 		return "None"

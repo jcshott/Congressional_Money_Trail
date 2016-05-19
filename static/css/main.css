@@ -14,9 +14,67 @@ body::before{
 }
 
 body {
-  background-color: transparent;
+  background-image: url("/static/img/US_Capitol_dome.jpg");
+  background-size: cover;
+  /*background-color: transparent;*/
+  background-color: rgb(137,131,119);
   overflow: scroll;
 }
+
+div.callout {
+	height: 120px;
+	width: 300px;
+	float: left;
+}
+
+div.callout {
+	background-color: #444;
+	background-image: -moz-linear-gradient(top, #444, #444);
+	position: relative;
+	/*color: #ccc;*/
+    color: white;
+	padding: 10px;
+	border-radius: 3px;
+	box-shadow: 0px 0px 20px #999;
+	margin: 25px;
+	min-height: 50px;
+	border: 1px solid #333;
+	text-shadow: 0 0 1px #000;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Arial, sans-serif;
+    font-size: 14px;
+    opacity: .75;
+    -webkit-animation: mymove 3s infinite; /* Chrome, Safari, Opera */
+    animation: mymove 3s infinite;
+
+	/*box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset;*/
+}
+
+.callout::before {
+	content: "";
+	width: 0px;
+	height: 0px;
+	border: 0.8em solid transparent;
+	position: absolute;
+}
+
+.callout.right::before {
+	left: -20px;
+	top: 40%;
+	border-right: 10px solid #444;
+    content: " ";
+}
+
+#start-here {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#opening {
+    padding-left: 0px;
+    margin-left: 75px;
+}
+
 
 #sidebar-wrapper {
   margin-right: -175px;
@@ -39,8 +97,6 @@ body {
   padding: 0;
   font-family: 'Cabin', sans-serif;
 }
-
-
 
 .sidebar-nav li a {
   color:  rgb(84, 48, 5);
@@ -199,7 +255,9 @@ div.infobar {
   padding: 20px;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: rgba(149, 161, 141, 0.4);
+  /*background-color: rgba(149, 161, 141, 0.9);*/
+  background-color: rgba(190, 255, 147, 0.2);
+
 
   }
 

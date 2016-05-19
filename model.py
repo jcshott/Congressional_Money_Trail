@@ -3,7 +3,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.sql import label
-import requests, os, operator 
+import requests, os, operator
 from sqlalchemy.dialects.postgresql import JSON
 
 import psycopg2
@@ -18,8 +18,8 @@ if "NO_DEBUG" in os.environ:
 	url = urlparse.urlparse(os.environ["DATABASE_URL"])
 	db_connection = psycopg2.connect(database=url.path[1:], user=url.username, password=url.password, host=url.hostname, port=url.port)
 else:
-	db_connection = psycopg2.connect("dbname='contributions' user='coreyshott' host='localhost'")
-	
+	db_connection = psycopg2.connect("dbname='contributions' user='corey' host='localhost'")
+
 db_cursor = db_connection.cursor()
 
 
@@ -48,7 +48,7 @@ class Legislator(db.Model):
 	twitter_id = db.Column(db.String(20), nullable=True)
 	facebook_id = db.Column(db.String(50), nullable=True)
 	pict_link = db.Column(db.String(100)) #get from webaddress
-	off_website = db.Column(db.String(100), nullable=True) 
+	off_website = db.Column(db.String(100), nullable=True)
 	open_cong_url = db.Column(db.String(100), nullable=True)
 	first_elected = db.Column(db.Integer) #get from SLF call
 	top_contributors = db.Column(JSON, nullable=True)
@@ -95,7 +95,8 @@ class Legislator(db.Model):
 
 		#take in selected member id, get member object from db and extract information to be displayed on node in browser.
 		member = "%s. %s" % (self.title, self.last)
-			
+		print "member being uploaded", member
+
 		## use dictionaries to store how much each indiv person/pac gives to the member then can sort and get top contributors
 		indiv_to_mem_dict = {}
 		pac_to_mem_dict = {}
@@ -109,6 +110,7 @@ class Legislator(db.Model):
 		db_cursor.execute(QUERY, (self.leg_id,))
 
 		indiv_contributions = db_cursor.fetchall()
+		print indiv_contributions[0]
 		#PAC info gathering
 		QUERY = """
 	        SELECT contrib_id, amount
@@ -118,24 +120,24 @@ class Legislator(db.Model):
 		db_cursor.execute(QUERY, (self.leg_id,))
 
 		pac_contributions = db_cursor.fetchall()
-		
-		## populate indiv. & PAC dictionaries with key = contributor ID, value = total given to member 
+
+		## populate indiv. & PAC dictionaries with key = contributor ID, value = total given to member
 		indiv_sum = 0.0
 
 		for tup in indiv_contributions:
 			indiv_sum += float(tup[1])
 			indiv_to_mem_dict[tup[0]] = indiv_to_mem_dict.get(tup[0], 0) + tup[1]
-		
+
 		pac_sum = 0.0
 
 		for tup in pac_contributions:
 			pac_sum += float(tup[1])
 			pac_to_mem_dict[tup[0]] = pac_to_mem_dict.get(tup[0], 0) + tup[1]
-		
+
 		## create sorted (by amt given) lists of tuples (id, amt) to get top contributors
 		sorted_dict_pac = sorted(pac_to_mem_dict.items(), key=operator.itemgetter(1), reverse=True)
 		sorted_dict_indiv = sorted(indiv_to_mem_dict.items(), key=operator.itemgetter(1), reverse=True)
-		
+
 		#### Get totals for indiv contributors who give >= $2,000 in one contribution and small contributors (<$2,000)
 		sum_large_contrib = 0.0
 		sum_small_contrib = 0.0
@@ -156,7 +158,7 @@ class Legislator(db.Model):
 			contributor = Contributors.query.filter(Contributors.contrib_id == tup[0]).one()
 			contrib_name = contributor.name
 			contrib_total = tup[1]
-			
+
 			if contributor.industry_id:
 				contrib_industry = contributor.industry_id
 				top_ten_indiv_child_list.append({"name": contrib_name, "value": 10, "industry": contrib_industry, "tooltip_text": "Top 10 Indiv. Donor: %s total donated to %s. %s" % ('${:,.0f}'.format(contrib_total), self.title, self.last), "type": "indiv", "member_party": self.party})
@@ -177,11 +179,11 @@ class Legislator(db.Model):
 
 		#### Future: Query for the top individual to PAC and PAC to PAC donations
 
-		
+
 	###################################################################
 	##### Build the dictionary that will become the JSON magic ########
 	###################################################################
-		
+
 	### Empty Dictionaries to fill the tree ###
 		# Main branch
 		contributions = {}
@@ -200,7 +202,7 @@ class Legislator(db.Model):
 		large_contrib["tooltip_click"] = "Click to see top 10 individual donors"
 		large_contrib["tooltip_text"] = "Total Contributions from Large Donors: %s" % ('${:,.0f}'.format(sum_large_contrib))
 		large_contrib["member_party"] = self.party
-		
+
 		small_contrib["name"] = "Small Individual Donors"
 		small_contrib["value"] = int(100*(sum_small_contrib/(sum_large_contrib+sum_small_contrib)))
 		small_contrib["industry"] = "Small"
@@ -254,15 +256,15 @@ class Contrib_leg(db.Model):
 	# contrib_id = db.Column(db.String(15), db.ForeignKey('contributors.contrib_id'), nullable=False) #ID of who made contribution
 	contrib_id = db.Column(db.String(15), nullable=False)
 	# leg_id = db.Column(db.String(10), db.ForeignKey('legislators.leg_id'), nullable=False) #ID of who gets contribution
-	
+
 	# had problems when experimenting moving to postgres. turned off FK, but caused other problems.
-	leg_id = db.Column(db.String(10), nullable=False) 
+	leg_id = db.Column(db.String(10), nullable=False)
 	amount = db.Column(db.Integer, nullable=False)
 	cycle = db.Column(db.Integer)
-	
+
 	# contributor = db.relationship("Contributors", backref=db.backref('contrib_legislators', order_by=amount))
 	# legislator = db.relationship("Legislator", backref=db.backref('contrib_legislators', order_by=amount))
-	
+
 
 	def __repr__(self):
 		return "<Contributor ID=%s, Reciever ID=%s, Amount=%s>" % (self.contrib_id, self.leg_id, self.amount)
@@ -282,7 +284,7 @@ class Contributors(db.Model):
 	contrib_state = db.Column(db.String(2), nullable=True)
 	contrib_type = db.Column(db.String(2), db.ForeignKey('contributor_types.contrib_type'), nullable=False)
 	# industry_id = db.Column(db.String(50), db.ForeignKey('industry.industry_id'), nullable=True)
-	
+
 	# had problems when moving to postgres, so turned off FK for seeding db. then manually reinstate.
 	industry_id = db.Column(db.String(50), nullable=True)
 	contrib_type = db.Column(db.String(2), nullable=False)
@@ -294,7 +296,7 @@ class Contributors(db.Model):
 		return "<Contributor Name=%s, Type=%s, ID=%s>" % (self.name, self.contrib_type, self.contrib_id)
 
 	def get_top_indiv_to_pac(self):
-		""" Get contributions to PACs 
+		""" Get contributions to PACs
 		for a given PAC id, returns top 10 individual contributors to that pac from the contrib_pac table"""
 
 		indiv_to_pac_dict = {}
@@ -307,7 +309,7 @@ class Contributors(db.Model):
 		db_cursor.execute(QUERY, (self.contrib_id,))
 
 		indiv_to_pac_cont = db_cursor.fetchall()
-		
+
 		indiv_to_pac_sum = 0
 
 		#fills dictionary of all individual contributors to a PAC with name: amount given.
@@ -322,11 +324,11 @@ class Contributors(db.Model):
 		return sorted_pac2pac[:10]
 
 	def get_top_pac_to_pac(self):
-		""" Get contributions to PACs 
+		""" Get contributions to PACs
 		for a given PAC id, returns top 10 PAC contributors to that pac from the contrib_pac table"""
 
 		pac_to_pac_dict = {}
-	
+
 		QUERY = """
         SELECT contrib_pacs.amount, contributors.name
         FROM contrib_pacs JOIN contributors USING (contrib_id)
@@ -335,7 +337,7 @@ class Contributors(db.Model):
 		db_cursor.execute(QUERY, (self.contrib_id,))
 
 		pac_to_pac_cont = db_cursor.fetchall()
-		
+
 		pac_to_pac_sum = 0
 
 		#fills dictionary of all PAC contributors to a PAC with name: amount given.
@@ -350,7 +352,7 @@ class Contributors(db.Model):
 		return sorted_pac2pac[:10]
 
 class Type_contrib(db.Model):
-	"""Details on what contributor types there are. I for Indivdual; C for PACs 
+	"""Details on what contributor types there are. I for Indivdual; C for PACs
 	leaving room for more than just indiv. and pac in the futures
 	"""
 
@@ -377,7 +379,7 @@ class Contrib_pac(db.Model):
 	amount = db.Column(db.Integer, nullable=False)
 	rec_party = db.Column(db.String(3), nullable=True)
 	cycle = db.Column(db.Integer)
-	
+
 	def __repr__(self):
 		return "<Contributor ID=%s, Recipient ID=%s, Amount=%s>" % (self.contrib_id, self.recpt_id, self.amount)
 
@@ -399,7 +401,7 @@ def connect_to_db(app):
     """Connect the database to our Flask app."""
 
     # Configure to use postgresql database
-    DATABASE_URL = os.environ.get("DATABASE_URL", 'postgresql://coreyshott@localhost:5432/contributions')
+    DATABASE_URL = os.environ.get("DATABASE_URL", 'postgresql://corey@localhost:5432/contributions')
 
     app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 
@@ -413,4 +415,3 @@ if __name__ == "__main__":
     from server import app
     connect_to_db(app)
     print "Connected to DB."
-

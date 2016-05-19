@@ -13,7 +13,7 @@
 				<div class="form-group">
 					<form id="state_pick" method="post" action="/state_info.json">
 
-					  <label> Pick a state:</label>
+					  <label> By state:</label>
 					    <select class="form-control" name="state" id="state_value">
 					    	<option> Choose a State </option>
 					    {% for state in states %}
@@ -40,7 +40,7 @@
 				<div id="pick_by_address" class="form-group">
 					<form id="address_pick" method="post" action="/address_search">
 
-						<label> Or....<br> Enter Address to Find Congressional Delegation </label>
+						<label> Find Congressional Delegation by Address</label>
 						<input id="address" type="textbox" class="form-control" placeholder="Address">
 						<input type="submit" class="btn btn-default" id="submit_geocode" value="Find My Delegation">
 					</form>
@@ -76,9 +76,17 @@
 		</div>
 
 		<div>
+		<div id="opening" class="col-md-10">
+      <div class="callout right" id="my-callout">
+       <p id="start-here"> Start Here! </p>
+       Pick a Member of Congress by state or address and explore their campaign contributions.
+
+      </div>
+		</div>
 <!-- 		visualization area -->
-		<div id="map_viz" class="col-md-10 main" style="display: none;"> 
-			
+		<div id="map_viz" class="col-md-10 main" style="display: none;">
+
+
 		</div>
 		<!-- Modal for alert that no info avail. -->
 			<div class="modal" id="noInfoModal" tabindex="-1" role="dialog">
@@ -207,6 +215,9 @@ $("form.repsDistrict").on("submit", function (evt) {
 	$.post("/trail_map", member, function (result){
 		console.log("ajax call")
 		// show the map visualization div and trigger the function call to d3 j.s. of TrailMapTree
+		$("#my-callout").hide();
+
+		$('body').css('background-image', 'none');
 		$("#map_viz").show('slow', function () {
 
 			 $(this).trigger('showMap');
