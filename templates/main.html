@@ -2,7 +2,8 @@
 {% block content %}
 <link href='https://fonts.googleapis.com/css?family=Cabin:700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="/static/css/main.css">
-<script src="/static/javascript/get_members.js"></script>
+<!-- <script src="/static/javascript/get_members.js"></script>
+<script src="/static/javascript/sidebar.js"></script> -->
 
 <div class="container-fluid">
 
@@ -151,8 +152,11 @@
 
 </div>
 
+<script src="/static/javascript/get_members.js"></script>
+<script src="/static/javascript/sidebar.js"></script>
 
 <script>
+
 // Google autocomplete on address search form
 var placeSearch, autocomplete;
 
@@ -163,88 +167,6 @@ function initAutocomplete() {
       /** @type {!HTMLInputElement} */(document.getElementById('address')),
       {types: ['address']});
 }
-
-// info sidebar toggle
-$("#menu-toggle").click(function(e) {
-	e.preventDefault();
-
-	$("#wrapper").toggleClass("active");
-
-    if ($('#dataButton').attr("href")) {
-        $('#dataButton').removeAttr("href");
-    } else {
-        $('#dataButton').attr("href", "#dataInfo");
-    };
-
-    if ($('#graphButton').attr("href")) {
-        $('#graphButton').removeAttr("href");
-    } else {
-        $('#graphButton').attr("href", "#graphInfo");
-    };
-
-    if ($('#siteButton').attr("href")) {
-        $('#siteButton').removeAttr("href");
-    } else {
-        $('#siteButton').attr("href", "#siteInfo");
-    };
-
-});
-
-// accordion toggle in info
-$('.collapse').collapse("toggle");
-
-//list possible representatives only after choose state.
-$("#state_pick").change("state_value", showLegislators);
-$("#state_pick").change("state_value", function () {
-	$("#noMember").hide();
-});
-
-$("#address_pick").on("submit", SearchByAddress);
-
-// bind showing the TrailMapTree function call to the event named show map
-//that is called after member choice is submitted (below)
-$("#map_viz").bind("showMap", showTrailMapTree);
-
-// send member_id to route that will send back info for member_profile
-$("form.repsDistrict").on("submit", function (evt) {
-
-	evt.preventDefault();
-
-	member = {'member': $('select.member_choice option:selected').val()};
-
-	$.post("/trail_map", member, function (result){
-		console.log("ajax call")
-		// show the map visualization div and trigger the function call to d3 j.s. of TrailMapTree
-		$("#my-callout").hide();
-
-		$('body').css('background-image', 'none');
-		$("#map_viz").show('slow', function () {
-
-			 $(this).trigger('showMap');
-			 $("body::before").attr("width", "120%");
-			 $("body::before").attr("height", "120%");
-
-		});
-
-		$("#legislators_display").hide();
-		$("#state_pick").hide();
-		$("#pick_by_address").hide();
-		$("#your_district_reps").hide();
-		$("#new_choice").show();
-		$(".forms").append(result);
-
-	});
-});
-
-$("#new_choice").on("click", function (evt){
-	$("#map_viz").empty();
-	$("#state_pick").show();
-	$('#state_pick').find('option:first').prop('selected', 'selected');
-	$("#pick_by_address").show();
-	$("#new_choice").hide();
-	$("#member_profile").remove();
-
-});
 
 // twitter functionality
 !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');

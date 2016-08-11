@@ -129,20 +129,21 @@ def show_members_for_address():
 
 	return jsonify(legislators_by_address=legislators_by_address)
 
-@app.route('/trail_map', methods=["POST"])
+@app.route('/trail_map', methods=["POST", "GET"])
 def show_trail_map():
-	"""Page where info on selected Member of Congress will display"""
+    """Page where info on selected Member of Congress will display"""
 
-	member_choice_id = request.form.get("member")
-	session["member_choice_id"] = member_choice_id
+    member_choice_id = request.args.get("member")
 
-	member = Legislator.query.filter_by(leg_id = member_choice_id).first()
+    session["member_choice_id"] = member_choice_id
 
-	member_info = member.serialize()
+    member = Legislator.query.filter_by(leg_id = member_choice_id).first()
 
-	states = STATE_DICT
+    member_info = member.serialize()
 
-	return render_template("memberprofilehold.html", member_info=member_info, states=states)
+    states = STATE_DICT
+
+    return render_template("memberprofilehold.html", member_info=member_info, states=states)
 
 
 @app.route('/map_info.json', methods=["GET"])
